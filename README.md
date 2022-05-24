@@ -1,9 +1,3 @@
-# ICFP 2022 Artifact (Source)
-
-Name:    **Modular Probabilistic Models via Algebraic Effects**
-
-## Artifact Instructions
-
 **Dependencies**
 
 -- _Wasabaye_ --
