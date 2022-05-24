@@ -123,7 +123,7 @@ benchmark "linear regression simulation" simLinRegr
 ```
 
 
-**Paper to artifact overview**
+**[Paper](https://github.com/min-nguyen/wasabaye/blob/master/paper.pdf) to artifact overview**
 
 - § 1: Linear regression `(src/Examples/LinRegr.hs)`
   - Simulating  (Fig 1a) is done via `./wasabaye.sh simLinRegr`.
