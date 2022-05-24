@@ -155,11 +155,11 @@ benchmark "linear regression simulation" simLinRegr
     The effect type `Dist` (§ 4.2.1) is in `src/Effects/Dist.hs`, and `ObsReader` (§ 4.2.2) is in `src/Effects/ObsReader.hs`.
 
 - § 5: Interpreting multimodal models
-  - Intro:   Coinflip example: `src/Examples/CoinFlip.hs`
+  - Intro: Coinflip example: `src/Examples/CoinFlip.hs`
   - § 5.1: Model environments: `src/Env.hs`.
   - § 5.2: Handling `ObsReader`: `src/Effects/ObsReader.hs`.
   - § 5.3: Handling `Dist`: `src/Effects/Dist.hs`.
-  - § 5.4: Specialising multimodal models: `src/Models.hs`.
+  - § 5.4: Specialising multimodal models: `src/Model.hs`.
 
 - § 6: Simulation and inference as effect handlers
   - § 6.1: Simulation: `src/Inference/Simulate.hs`. The type of `STrace` is in `src/STrace.hs`.
