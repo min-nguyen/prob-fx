@@ -1,0 +1,8 @@
+dist/
+*.png
+*.pdf
+dist-newstyle/
+model-output.txt
+sys
+*.csv
+*.dat                  
