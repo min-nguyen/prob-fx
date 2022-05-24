@@ -162,7 +162,7 @@ benchmark "linear regression simulation" simLinRegr
   - § 5.4: Specialising multimodal models: `src/Models.hs`.
 
 - § 6: Simulation and inference as effect handlers
-  - § 6.1: Simulation: `src/Inference/Simulation.hs`. The type of `STrace` is in `src/STrace.hs`.
+  - § 6.1: Simulation: `src/Inference/Simulate.hs`. The type of `STrace` is in `src/STrace.hs`.
   - § 6.2.1: Likelihood Weighting: `src/Inference/LW.hs`.
   - § 6.2.2: Metropolis Hastings: `src/Inference.MH.hs`.
 
