@@ -57,19 +57,19 @@ The examples in the paper can be run with one of the following arguments (e.g. `
 
 Extra example models and their corresponding command-line arguments are given below:
 - Linear regression:
-  - `mhLinRegr`  : The generated graph shows the approximative posterior distribution over the model parameter `mu`, being the gradient of the linear relationship.
+  - `mhLinRegr`  : This generates the approximative posterior distribution over the model parameter `mu`, being the gradient of the linear relationship.
 - Logistic regression, which models the occurrence of one event out of two alternatives happening:
-  - `simLogRegr` : 
-  - `lwLogRegr`  : The generated graph shows the likelihood distribution over the model parameter `mu`. 
-  - `mhLogRegr`  : The generated graph shows the approximative posterior distribution over the model parameters `mu` and `b`. 
+  - `simLogRegr`
+  - `lwLogRegr`  : This generates a likelihood distribution over the model parameter `mu`. 
+  - `mhLogRegr`  : This generates an approximative posterior distribution over the model parameters `mu` and `b`. 
 - Latent dirichlet allocation, i.e. a [topic model](https://www.tidytextmining.com/topicmodeling.html) modeling the distribution over topics and words in a text document. We assume the example vocabulary "DNA", "evolution", "parsing", and "phonology" for text documents, and we assume there are two possible topics.
   - `simLDA`     : This simulates a document of unstructured words from the vocabulary according.
   - `mhLDA`      : Given a pre-defined document of words, the generated graph shows a predictive posterior distribution over the two topics occurring in the document, and the distribution over the words occurring in each topic. 
 - A [case study](https://docs.pymc.io/en/v3/pymc-examples/examples/case_studies/multilevel_modeling.html) by Gelman and Hill as a hierarchical linear regression model, modelling the relationship between radon levels in households and whether these houses contain basements:
-  - `simRadon` : The generated graph simulates the log-radon levels of houses with basements and those without basements.
-  - `mhRadon`  : The generated graph shows the predictive posterior distribution over "gradients" for each county; each gradient models the relationship of log-radon levels of houses with and without basements in that county.
+  - `simRadon` : This simulates the log-radon levels of houses with basements and those without basements.
+  - `mhRadon`  : This genereates the predictive posterior distribution over "gradients" for each county; each gradient models the relationship of log-radon levels of houses with and without basements in that county.
 - Another Gelman and Hill [case study](https://cran.r-project.org/web/packages/rstan/vignettes/rstan.html) as a hierarchical model, which quantifies the effect of coaching programs from 8 different schools on students' SAT-V scores:
-  - `mhSchool` : The generated graph shows the posterior distribution over model parameter `mu`, being the effect of general coaching programs on SAT scores, and each school's posterior distribution on model parameter `theta`, being the variation of their effect on SAT scores.
+  - `mhSchool` : This generates a posterior distribution over model parameter `mu`, being the effect of general coaching programs on SAT scores, and each school's posterior distribution on model parameter `theta`, being the variation of their effect on SAT scores.
 
 -- _Example models + Creating and executing models_ --
 
