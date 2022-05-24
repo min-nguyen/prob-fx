@@ -1,3 +1,9 @@
+# ICFP 2022 Artifact (Source)
+
+Name:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/wasabaye/blob/master/paper.pdf)
+
+## Artifact Instructions
+
 **Dependencies**
 
 -- _Wasabaye_ --
@@ -39,7 +45,7 @@ We provide a script below for executing Wasabaye with a set of possible argument
 
 The script **`./wasabaye.sh <arg>`** will execute a Wasabaye program and save the output graph to `model-output.pdf` (the results of simulation and inference will of course vary across different executions).
 
-The examples in the [paper](https://github.com/min-nguyen/wasabaye/blob/master/paper.pdf) can be run with one of the following arguments (e.g. `./wasabaye.sh simSIR`), where the prefix `sim` denotes simulation, `lw` denotes Likelihood-Weighting inference, and `mh` denotes Metropolis-Hastings inference:
+The examples in the paper can be run with one of the following arguments (e.g. `./wasabaye.sh simSIR`), where the prefix `sim` denotes simulation, `lw` denotes Likelihood-Weighting inference, and `mh` denotes Metropolis-Hastings inference:
 - Linear regression
   - `simLinRegr`: (Fig 1a)
   - `lwLinRegr` : (Fig 1b)
@@ -123,7 +129,7 @@ benchmark "linear regression simulation" simLinRegr
 ```
 
 
-**[Paper](https://github.com/min-nguyen/wasabaye/blob/master/paper.pdf) to artifact overview**
+**Paper to artifact overview**
 
 - § 1: Linear regression `(src/Examples/LinRegr.hs)`
   - Simulating  (Fig 1a) is done via `./wasabaye.sh simLinRegr`.
