@@ -6,3 +6,4 @@ model-output.txt
 sys
 *.csv
 *.dat                  
+!paper.pdf
