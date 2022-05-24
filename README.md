@@ -45,38 +45,41 @@ We provide a script below for executing Wasabaye with a set of possible argument
 
 The script **`./wasabaye.sh <arg>`** will execute a Wasabaye program and save the output graph to `model-output.pdf` (the results of simulation and inference will of course vary across different executions).
 
-The examples in the paper can be run with one of the following arguments (e.g. `./wasabaye.sh simSIR`):
+The examples in the paper can be run with one of the following arguments (e.g. `./wasabaye.sh simSIR`), where the prefix `sim` denotes simulation, `lw` denotes Likelihood-Weighting inference, and `mh` denotes Metropolis-Hastings inference:
 - Linear regression
-  - `simLinRegr`: simulation (Fig 1a)
-  - `lwLinRegr` : likelihood weighting inference (Fig 1b)
+  - `simLinRegr`: (Fig 1a)
+  - `lwLinRegr` : (Fig 1b)
 - SIR model
-  - `simSIR`    : simulation (Fig 4a)
-  - `simSIRS`   : simulation on SIR + resusceptible model (Fig 4b)
-  - `simSIRSV`  : simulation on SIR + resusceptible + vacc model (Fig 4c)
-  - `mhSIR`     : metropolis-hastings inference; this takes 2-3 minutes (Fig 5)
+  - `simSIR`    : (Fig 4a)
+  - `simSIRS`   : (Fig 4b) SIR + resusceptible model 
+  - `simSIRSV`  : (Fig 4c) SIR + resusceptible + vacc model 
+  - `mhSIR`     : (Fig 5) this takes 2-3 minutes 
 
 Extra example models and their corresponding command-line arguments are given below:
 - Linear regression:
-  - `mhLinRegr`  : metropolis-hastings inference. The generated graph shows the approximative posterior distribution over the model parameter `mu`, being the gradient of the linear relationship.
+  - `mhLinRegr`  : The generated graph shows the approximative posterior distribution over the model parameter `mu`, being the gradient of the linear relationship.
 - Logistic regression, which models the occurrence of one event out of two alternatives happening:
-  - `simLogRegr` : simulation.
-  - `lwLogRegr`  : likelihood weighting inference. The generated graph shows the likelihood distribution over the model parameter `mu`. 
-  - `mhLogRegr`  : metropolis-hastings inference. The generated graph shows the approximative posterior distribution over the model parameters `mu` and `b`. 
+  - `simLogRegr` : 
+  - `lwLogRegr`  : The generated graph shows the likelihood distribution over the model parameter `mu`. 
+  - `mhLogRegr`  : The generated graph shows the approximative posterior distribution over the model parameters `mu` and `b`. 
 - Latent dirichlet allocation, i.e. a [topic model](https://www.tidytextmining.com/topicmodeling.html) modeling the distribution over topics and words in a text document. We assume the example vocabulary "DNA", "evolution", "parsing", and "phonology" for text documents, and we assume there are two possible topics.
-  - `simLDA`     : simulation. This simulates a document of unstructured words from the vocabulary according.
-  - `mhLDA`      : metropolis-hastings inference. Given a pre-defined document of words, the generated graph shows a predictive posterior distribution over the two topics occurring in the document, and the distribution over the words occurring in each topic. 
+  - `simLDA`     : This simulates a document of unstructured words from the vocabulary according.
+  - `mhLDA`      : Given a pre-defined document of words, the generated graph shows a predictive posterior distribution over the two topics occurring in the document, and the distribution over the words occurring in each topic. 
 - A [case study](https://docs.pymc.io/en/v3/pymc-examples/examples/case_studies/multilevel_modeling.html) by Gelman and Hill as a hierarchical linear regression model, modelling the relationship between radon levels in households and whether these houses contain basements:
-  - `simRadon` : simulation. The generated graph simulates the log-radon levels of houses with basements and those without basements.
-  - `mhRadon`  : metropolis-hastings inference. The generated graph shows the predictive posterior distribution over "gradients" for each county; each gradient models the relationship of log-radon levels of houses with and without basements in that county.
+  - `simRadon` : The generated graph simulates the log-radon levels of houses with basements and those without basements.
+  - `mhRadon`  : The generated graph shows the predictive posterior distribution over "gradients" for each county; each gradient models the relationship of log-radon levels of houses with and without basements in that county.
 - Another Gelman and Hill [case study](https://cran.r-project.org/web/packages/rstan/vignettes/rstan.html) as a hierarchical model, which quantifies the effect of coaching programs from 8 different schools on students' SAT-V scores:
-  - `mhSchool` : metropolis-hastings inference. The generated graph shows the posterior distribution over model parameter `mu`, being the effect of general coaching programs on SAT scores, and each school's posterior distribution on model parameter `theta`, being the variation of their effect on SAT scores.
+  - `mhSchool` : The generated graph shows the posterior distribution over model parameter `mu`, being the effect of general coaching programs on SAT scores, and each school's posterior distribution on model parameter `theta`, being the variation of their effect on SAT scores.
 
 -- _Example models + Creating and executing models_ --
 
-All example models can be found in `src/Examples`, showing variations on how models can be created and executed. `LogRegr.hs` documents a particularly representative walk-through. The general process of doing this is as follows:
+All example models can be found in `src/Examples`, showing variations on how models can be created and executed. [`LogRegr.hs`](https://github.com/min-nguyen/wasabaye/blob/master/src/Examples/LogRegr.hs) documents a particularly representative walk-through. The general process of doing this is as follows:
 1. Define an appropriate model of type `Model env es a`
 2. Execute a model using one of the library functions `simulate`, `lw`, or `mh` detailed in `src/Inference`; this produces an output in the monad `Sampler`.
 3. `Sampler` computations can be evaluated with `sampleIO` (found in `src/Sampler.hs`) to produce an `IO` computation. Examples of this are shown in `Main.hs`.
+
+
+
 
 **Benchmarks**
 
