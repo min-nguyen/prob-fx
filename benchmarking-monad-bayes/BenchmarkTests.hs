@@ -28,19 +28,19 @@ benchmark groupName benchmarkProg params = do
 
 {- Varying over sample size -}
 
-benchmarkLogRegrSim_SampleSize = do
+benchmarkLinRegrSim_SampleSize = do
     let data_size = 100
-    benchmark "logRegr/Sim/sample-size" simLogRegr
+    benchmark "linRegr/Sim/sample-size" simLinRegr
        [(show sample_size, (sample_size, data_size)) | sample_size <- [2000, 4000, 6000, 8000, 10000]]
 
-benchmarkLogRegrLW_SampleSize = do
+benchmarkLinRegrLW_SampleSize = do
     let data_size = 100
-    benchmark "logRegr/LW/sample-size" lwLogRegr
+    benchmark "linRegr/LW/sample-size" lwLinRegr
        [(show sample_size, (sample_size, data_size)) | sample_size <- [2000, 4000, 6000, 8000, 10000]]
 
-benchmarkLogRegrMH_SampleSize = do
+benchmarkLinRegrMH_SampleSize = do
     let data_size = 100
-    benchmark "logRegr/MH/sample-size" mhLogRegr
+    benchmark "linRegr/MH/sample-size" mhLinRegr
        [(show sample_size, (sample_size, data_size)) | sample_size <- [2000, 4000, 6000, 8000, 10000]]
 
 benchmarkHMMSim_SampleSize = do
@@ -75,19 +75,19 @@ benchmarkTopicMH_SampleSize = do
 
 {- Varying over dataset size -}
 
-benchmarkLogRegrSim_DataSize = do
+benchmarkLinRegrSim_DataSize = do
     let sample_size = 2000
-    benchmark "logRegr/Sim/data-size" simLogRegr
+    benchmark "linRegr/Sim/data-size" simLinRegr
        [(show data_size, (sample_size, data_size)) | data_size <- [200, 400, 600, 800, 1000]]
 
-benchmarkLogRegrLW_DataSize = do
+benchmarkLinRegrLW_DataSize = do
     let sample_size = 2000
-    benchmark "logRegr/LW/data-size" lwLogRegr
+    benchmark "linRegr/LW/data-size" lwLinRegr
        [(show data_size, (sample_size, data_size)) | data_size <- [200, 400, 600, 800, 1000]]
 
-benchmarkLogRegrMH_DataSize = do
+benchmarkLinRegrMH_DataSize = do
     let sample_size = 2000
-    benchmark "logRegr/MH/data-size" mhLogRegr
+    benchmark "linRegr/MH/data-size" mhLinRegr
        [(show data_size, (sample_size, data_size)) | data_size <- [200, 400, 600, 800, 1000]]
 
 benchmarkHMMSim_DataSize = do

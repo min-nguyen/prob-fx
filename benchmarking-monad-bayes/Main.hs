@@ -10,9 +10,9 @@ main = do
  benchDataSize
 
 benchSampleSize = do
-  benchmarkLogRegrSim_SampleSize
-  benchmarkLogRegrLW_SampleSize
-  benchmarkLogRegrMH_SampleSize
+  benchmarkLinRegrSim_SampleSize
+  benchmarkLinRegrLW_SampleSize
+  benchmarkLinRegrMH_SampleSize
   benchmarkHMMSim_SampleSize
   benchmarkHMMLW_SampleSize
   benchmarkHMMMH_SampleSize
@@ -21,9 +21,9 @@ benchSampleSize = do
   benchmarkTopicMH_SampleSize
 
 benchDataSize = do
-  benchmarkLogRegrSim_DataSize
-  benchmarkLogRegrLW_DataSize
-  benchmarkLogRegrMH_DataSize
+  benchmarkLinRegrSim_DataSize
+  benchmarkLinRegrLW_DataSize
+  benchmarkLinRegrMH_DataSize
   benchmarkHMMSim_DataSize
   benchmarkHMMLW_DataSize
   benchmarkHMMMH_DataSize

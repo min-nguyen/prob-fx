@@ -15,58 +15,58 @@ import Data.Maybe
 import Data.Vector (Vector, fromList, toList)
 import Data.List
 
-{- LOG REGRESSION -}
+{- Lin Regression -}
 
-data LogRegrParams = LogRegrParams {
+data LinRegrParams = LinRegrParams {
   m :: Double, c :: Double, σ :: Double
 } deriving Show
 
-fromLogRegrParams :: LogRegrParams -> (Double, Double, Double)
-fromLogRegrParams (LogRegrParams m c σ) = (m, c, σ)
+fromLinRegrParams :: LinRegrParams -> (Double, Double, Double)
+fromLinRegrParams (LinRegrParams m c σ) = (m, c, σ)
 
-logRegrPrior :: MonadSample m => Maybe Double -> Maybe Double -> Maybe Double -> m LogRegrParams
-logRegrPrior m0 c0 σ0 = do
+linRegrPrior :: MonadSample m => Maybe Double -> Maybe Double -> Maybe Double -> m LinRegrParams
+linRegrPrior m0 c0 σ0 = do
   m <- normal 0 3
   c <- normal 0 5
   σ <- uniform 1 3
   let m' = fromMaybe m m0
       c' = fromMaybe c c0
       σ' = fromMaybe σ σ0
-  return (LogRegrParams m' c' σ')
+  return (LinRegrParams m' c' σ')
 
-simulateLogRegr :: MonadSample m => Maybe Double -> Maybe Double -> Maybe Double -> [Double] -> m [Double]
-simulateLogRegr m0 c0 σ0 xs  = do
-  LogRegrParams m c σ <- logRegrPrior m0 c0 σ0
+simulateLinRegr :: MonadSample m => Maybe Double -> Maybe Double -> Maybe Double -> [Double] -> m [Double]
+simulateLinRegr m0 c0 σ0 xs  = do
+  LinRegrParams m c σ <- linRegrPrior m0 c0 σ0
   foldM (\ys x -> do
             y <- normal (m * x + c) σ
             return (y:ys)) [] xs
 
-inferLogRegr :: MonadInfer m => Maybe Double -> Maybe Double -> Maybe Double -> [(Double, Double)] -> m LogRegrParams
-inferLogRegr m0 c0 σ0 xys  = do
-  LogRegrParams m c σ <- logRegrPrior m0 c0 σ0
+inferLinRegr :: MonadInfer m => Maybe Double -> Maybe Double -> Maybe Double -> [(Double, Double)] -> m LinRegrParams
+inferLinRegr m0 c0 σ0 xys  = do
+  LinRegrParams m c σ <- linRegrPrior m0 c0 σ0
   mapM_ (\(x, y_obs) -> score (normalPdf (m * x + c) σ y_obs)) xys
-  return (LogRegrParams m c σ)
+  return (LinRegrParams m c σ)
 
 
-logRegrData :: Int -> [(Double, Double)]
-logRegrData n_datapoints = zip [0 .. (fromIntegral n_datapoints)] (map (*3) [0 .. (fromIntegral n_datapoints)])
+linRegrData :: Int -> [(Double, Double)]
+linRegrData n_datapoints = zip [0 .. (fromIntegral n_datapoints)] (map (*3) [0 .. (fromIntegral n_datapoints)])
 
 -- Execute log regression
-simLogRegr :: Int -> Int -> IO [[Double]]
-simLogRegr n_samples n_datapoints = do
-  sampleIO $ replicateM n_samples (simulateLogRegr Nothing Nothing Nothing [0 .. (fromIntegral n_datapoints)])
+simLinRegr :: Int -> Int -> IO [[Double]]
+simLinRegr n_samples n_datapoints = do
+  sampleIO $ replicateM n_samples (simulateLinRegr Nothing Nothing Nothing [0 .. (fromIntegral n_datapoints)])
 
-lwLogRegr :: Int -> Int -> IO ()
-lwLogRegr n_samples n_datapoints = do
-  map snd <$> (sampleIO $ prior $ replicateM n_samples (runWeighted $ inferLogRegr Nothing Nothing Nothing (logRegrData n_datapoints)))
+lwLinRegr :: Int -> Int -> IO ()
+lwLinRegr n_samples n_datapoints = do
+  map snd <$> (sampleIO $ prior $ replicateM n_samples (runWeighted $ inferLinRegr Nothing Nothing Nothing (linRegrData n_datapoints)))
   return ()
 
-mhLogRegr :: Int -> Int -> IO ()
-mhLogRegr n_samples n_datapoints = do
-  sampleIO $ prior $ mh n_samples (inferLogRegr Nothing Nothing Nothing (logRegrData n_datapoints))
+mhLinRegr :: Int -> Int -> IO ()
+mhLinRegr n_samples n_datapoints = do
+  sampleIO $ prior $ mh n_samples (inferLinRegr Nothing Nothing Nothing (linRegrData n_datapoints))
   return ()
 
-{- HIDDEN MARKOV MODEL -}
+{- Hidden Markov Model -}
 
 boolToInt :: Bool -> Int
 boolToInt True  = 1
@@ -157,7 +157,7 @@ mhHMM n_samples n_steps = do
   sampleIO $ prior $ mh n_samples (inferHMM 0 (head ys))
   return ()
 
-{- LATENT DIRICHLET ALLOCATION -}
+{- Latent Dirichlet Allocation -}
 data LDAParams = LDAParams {
     θ :: [Double],   -- probabilities of each topic in a document
     φ :: [[Double]]  -- probabilities of each word in a topic in a document

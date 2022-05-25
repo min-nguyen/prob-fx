@@ -42,53 +42,53 @@ import qualified Freer.Inference.Simulate as Simulate
 import qualified Freer.Inference.LW as LW
 import qualified Freer.Inference.MH as MH
 
-{- Log regression -}
-type LogRegrEnv =
+{- Lin regression -}
+type LinRegrEnv =
     '[  "y" ':= Double,
         "m" ':=  Double,
         "c" ':=  Double,
         "σ" ':=  Double
      ]
 
-logRegr :: forall env rs .
+linRegr :: forall env rs .
   Observables env '["y", "m", "c", "σ"] Double =>
   [Double] -> Model env rs [Double]
-logRegr xs = do
+linRegr xs = do
   m <- normal 0 3 #m
   c <- normal 0 5 #c
   σ <- uniform 1 3 #σ
   foldM (\ys x -> do y <- normal (m * x + c) σ #y
                      return (y:ys)) [] xs
-
-mkRecordLogRegr :: ([Double],  [Double],  [Double],  [Double]) -> Env LogRegrEnv
-mkRecordLogRegr (y_vals, m_vals, c_vals, σ_vals) =
+ 
+mkRecordLinRegr :: ([Double],  [Double],  [Double],  [Double]) -> Env LinRegrEnv
+mkRecordLinRegr (y_vals, m_vals, c_vals, σ_vals) =
   (#y := y_vals) <:> (#m := m_vals) <:> (#c := c_vals) <:> (#σ := σ_vals) <:> nil
 
-mkRecordLogRegrY :: [Double] -> Env LogRegrEnv
-mkRecordLogRegrY y_vals =
+mkRecordLinRegrY :: [Double] -> Env LinRegrEnv
+mkRecordLinRegrY y_vals =
   (#y := y_vals) <:> (#m := []) <:> (#c := []) <:> (#σ := []) <:> nil
 
--- Execute log regression
-simLogRegr :: Int -> Int -> Sampler ()
-simLogRegr n_samples n_datapoints  = do
+-- Execute lin regression
+simLinRegr :: Int -> Int -> Sampler ()
+simLinRegr n_samples n_datapoints  = do
   let n_datapoints' = fromIntegral n_datapoints
-  Simulate.simulateMany n_samples logRegr [[0 .. n_datapoints']] [mkRecordLogRegr ([], [1.0], [0.0], [1.0])]
+  Simulate.simulateMany n_samples linRegr [[0 .. n_datapoints']] [mkRecordLinRegr ([], [1.0], [0.0], [1.0])]
   return ()
 
-lwLogRegr :: Int -> Int -> Sampler ()
-lwLogRegr n_samples n_datapoints  = do
+lwLinRegr :: Int -> Int -> Sampler ()
+lwLinRegr n_samples n_datapoints  = do
   let n_datapoints' = fromIntegral n_datapoints
       xs            = [0 .. n_datapoints']
       env           = (#y := [3*x | x <- xs]) <:> (#m := []) <:> (#c := []) <:> (#σ := []) <:>  nil
-  LW.lw n_samples logRegr (xs, env)
+  LW.lw n_samples linRegr (xs, env)
   return ()
 
-mhLogRegr :: Int -> Int -> Sampler ()
-mhLogRegr n_samples n_datapoints  = do
+mhLinRegr :: Int -> Int -> Sampler ()
+mhLinRegr n_samples n_datapoints  = do
   let n_datapoints' = fromIntegral n_datapoints
       xs            = [0 .. n_datapoints']
       env           = (#y := [3*x | x <- xs]) <:> (#m := []) <:> (#c := []) <:> (#σ := []) <:>  nil
-  MH.mh n_samples logRegr [] xs env
+  MH.mh n_samples linRegr [] xs env
   return ()
 
 {- HMM -}
