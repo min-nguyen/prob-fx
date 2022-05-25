@@ -139,7 +139,7 @@ benchmark "linear regression simulation" simLinRegr
   - You can find both the loop HMM version (Fig 2) and the modular HMM version (Fig 3) in here.
 
 - § 3: SIR model (`src/Examples/SIR.hs`)
-  - § 3.1 The SIR model is the function `hmmSIR'`; the higher-order HMM function it uses is imported from `HMM.hs`, and the `Writer` effect from § 3.2.2 is already integrated.
+  - § 3.1 The SIR model is the function `hmmSIR'`; the higher-order HMM function it uses is imported from `HMM.hs`, and the `Writer` effect it uses from §5.5 is already integrated.
     - Simulating from this (Fig 4a) can be done via `./wasabaye.sh simSIR`.
     - Metropolis-Hastings inference (Fig 5) is done via `./wasabaye.sh mhSIR`; this takes 1-3 minutes
   - § 3.2.1: The _resusceptible_ extension is defined as `hmmSIRS`, and the _resusceptible + vaccinated_ version is `hmmSIRSV`.
@@ -160,6 +160,7 @@ benchmark "linear regression simulation" simLinRegr
   - § 5.2: Handling `ObsReader`: `src/Effects/ObsReader.hs`.
   - § 5.3: Handling `Dist`: `src/Effects/Dist.hs`.
   - § 5.4: Specialising multimodal models: `src/Model.hs`.
+  - § 5.5: Extending models with extra effects: `src/Examples/SIR.hs`
 
 - § 6: Simulation and inference as effect handlers
   - § 6.1: Simulation: `src/Inference/Simulate.hs`. The type of `STrace` is in `src/STrace.hs`.
