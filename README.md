@@ -6,18 +6,18 @@ Name:    [**Modular Probabilistic Models via Algebraic Effects**](https://github
 
 **Dependencies (for source only)**
 
--- _Wasabaye_ --
+— _Wasabaye_ —
 
 Wasabaye uses the most recent Cabal version `3.6.x` and a GHC version `>= 8.4.x`:
 1. Install GHCup by following [these instructions](https://www.haskell.org/ghcup/install/)
 2. Both Cabal and GHC versions can be installed and then set by following [this](https://www.haskell.org/ghcup/guide/). We suggest using Cabal version `3.6.2`, and GHC version `8.6.5`.
 
--- _Visualising Wasabaye examples_ --
+— _Visualising Wasabaye examples_ —
 
 Visualising the provided examples of Wasabaye requires Python3 with the following Python packages:
 - `ast`, `matplotlib`, `scipy`, `sklearn`, `numpy`
 
--- _Benchmarking_ --
+— _Benchmarking_ —
 
 To compare benchmarks with MonadBayes and Turing:
 
@@ -35,13 +35,13 @@ To compare benchmarks with MonadBayes and Turing:
 
 **Interacting with Wasabaye**
 
--- _Directly executing Wasabaye_ --
+— _Directly executing Wasabaye_ —
 
 We provide a script below for executing Wasabaye with a set of possible arguments. Alternatively, you can:
   1. Directly execute a Wasabaye program via `cabal run wasabaye <arg>` (corresponding to `Main.hs`), whose output will be written to `model-output.txt`
   2. Visualise this output as a graph via `python3 graph.py <arg>`, which will be saved to `model-output.pdf` .
 
--- _Executing Wasabaye with the script_ --
+— _Executing Wasabaye with the script_ —
 
 The script **`./wasabaye.sh <arg>`** will execute a Wasabaye program and save the output graph to `model-output.pdf` (the results of simulation and inference will of course vary across different executions).
 
@@ -71,7 +71,7 @@ Extra example models and their corresponding command-line arguments are given be
 - Another Gelman and Hill [case study](https://cran.r-project.org/web/packages/rstan/vignettes/rstan.html) as a hierarchical model, which quantifies the effect of coaching programs from 8 different schools on students' SAT-V scores:
   - `mhSchool` : This generates a posterior distribution over model parameter `mu`, being the effect of general coaching programs on SAT scores, and each school's posterior distribution on model parameter `theta`, being the variation of their effect on SAT scores.
 
--- _Example models + Creating and executing models_ --
+— _Example models + Creating and executing models_ —
 
 All example models can be found in `src/Examples`, showing variations on how models can be created and executed. [`LogRegr.hs`](https://github.com/min-nguyen/wasabaye/blob/master/src/Examples/LogRegr.hs) documents a particularly representative walk-through. The general process of doing this is as follows:
 1. Define an appropriate model of type `Model env es a`
@@ -81,11 +81,11 @@ All example models can be found in `src/Examples`, showing variations on how mod
 
 **Benchmarks**
 
--- _Directly benchmarking Wasabaye_ --
+— _Directly benchmarking Wasabaye_ —
 
 We provide a script for benchmarking below, but Wasabaye can also be directly benchmarked with `cabal run benchmarking-wasabaye` (corresponding to `benchmarking-wasabaye/Main.hs`). The examples programs used for benchmarking are found in `benchmarking-wasabaye/BenchmarkPrograms.hs`, and they are benchmarked them in `benchmarking-wasabaye/BenchmarkTests.hs`.
 
--- _Benchmarking with the script_ --
+— _Benchmarking with the script_ —
 
 The benchmarks in Appendix A can be reproduced by running the script **`./benchmark.sh <arg>`** with one the following arguments:
 - `wasabaye`    : This writes to `benchmarking-wasabaye/wasabaye-benchmarks.csv`
@@ -102,7 +102,7 @@ Each benchmark is given a name of the format `<model>/<algorithm>/<independent-v
 
 For example, `lda/MH/data-size/80` means a latent-dirichlet model is executed under Metropolis-Hastings for a dataset size of 80.
 
--- _Creating new Wasabaye benchmarks_ --
+— _Creating new Wasabaye benchmarks_ —
 
 We use Criterion to benchmark Wasabaye; a tutorial can be found [here](http://www.serpentine.com/criterion/tutorial.html).
 
@@ -167,13 +167,6 @@ benchmark "linear regression simulation" simLinRegr
 ---
 
 ## QEMU Instructions
-
-The ICFP 2022 Artifact Evaluation Process is using a Debian QEMU image as a
-base for artifacts. The Artifact Evaluation Committee (AEC) will verify that
-this image works on their own machines before distributing it to authors.
-Authors are encouraged to extend the provided image instead of creating their
-own. If it is not practical for authors to use the provided image then please
-contact the AEC co-chairs before submission.
 
 QEMU is a hosted virtual machine monitor that can emulate a host processor
 via dynamic binary translation. On common host platforms QEMU can also use
