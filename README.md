@@ -83,7 +83,7 @@ All example models can be found in `src/Examples`, showing variations on how mod
 
 — _Directly benchmarking Wasabaye_ —
 
-We provide a script for benchmarking below, but Wasabaye can also be directly benchmarked with `cabal run benchmarking-wasabaye` (corresponding to `benchmarking-wasabaye/Main.hs`). The examples programs used for benchmarking are found in `benchmarking-wasabaye/BenchmarkPrograms.hs`, and they are benchmarked them in `benchmarking-wasabaye/BenchmarkTests.hs`.
+We provide a script for benchmarking below, but Wasabaye can also be directly benchmarked with `cabal run benchmarking-wasabaye` (corresponding to `benchmarking-wasabaye/Main.hs`). The examples programs used for benchmarking are found in `benchmarking-wasabaye/BenchmarkPrograms.hs`, and they are benchmarked in `benchmarking-wasabaye/BenchmarkTests.hs`.
 
 — _Benchmarking with the script_ —
 
