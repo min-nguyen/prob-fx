@@ -1,10 +1,10 @@
-# ICFP 2022 Artifact (Source)
+# ICFP 2022 Artifact
 
 Name:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/wasabaye/blob/master/paper.pdf)
 
 ## Artifact Instructions
 
-**Dependencies**
+**Dependencies (for source)**
 
 -- _Wasabaye_ --
 
@@ -79,13 +79,11 @@ All example models can be found in `src/Examples`, showing variations on how mod
 3. `Sampler` computations can be evaluated with `sampleIO` (found in `src/Sampler.hs`) to produce an `IO` computation. Examples of this are shown in `Main.hs`.
 
 
-
-
 **Benchmarks**
 
 -- _Directly benchmarking Wasabaye_ --
 
-We provide a script for benchmarking below, but Wasabaye can also be directly benchmarked with `cabal run benchmarking-wasabaye` (corresponding to `benchmarking-wasabaye/Main.hs`).
+We provide a script for benchmarking below, but Wasabaye can also be directly benchmarked with `cabal run benchmarking-wasabaye` (corresponding to `benchmarking-wasabaye/Main.hs`). The examples programs used for benchmarking are found in `benchmarking-wasabaye/BenchmarkPrograms.hs`, and we benchmark them in `benchmarking-wasabaye/BenchmarkTests.hs`.
 
 -- _Benchmarking with the script_ --
 
@@ -127,7 +125,6 @@ benchmark "linear regression simulation" simLinRegr
     [(show sample_size ++ "," ++ show data_size, (sample_size, data_size))
     | (samplesize, datasize) <- [(200, 100), (300, 100), (400, 100)]]
 ```
-
 
 **Paper to artifact overview**
 
