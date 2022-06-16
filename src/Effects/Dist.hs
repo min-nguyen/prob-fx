@@ -37,7 +37,8 @@ import Statistics.Distribution.Binomial
 import Statistics.Distribution.Uniform
 import Numeric.Log
 
--- | Dist effect, where each constructor of type `Dist a` is parameterised by the standard distribution parameters, an optional observed value of type `Maybe a`, and an optional observable variable name of type `Maybe String`
+-- ||| (Section 4.2.1) Effects for distributions
+{- Each constructor of type `Dist a` is parameterised by the standard distribution parameters, an optional observed value of type `Maybe a`, and an optional observable variable name of type `Maybe String` -}
 data Dist a where
   HalfCauchyDist    :: Double -> Maybe Double -> Maybe String -> Dist Double
   CauchyDist        :: Double -> Double -> Maybe Double -> Maybe String -> Dist Double
@@ -55,18 +56,15 @@ data Dist a where
   DirichletDist     :: [Double] -> Maybe [Double] -> Maybe String -> Dist [Double]
   DeterministicDist :: (Eq a, Show a, OpenSum.Member a PrimVal) => a -> Maybe a -> Maybe String -> Dist a
 
--- | Interpret Dist to Sample or Observe, and add address
-type Tag  = String
-type Addr = (Tag, Int)
-type TagMap = Map Tag Int
-
+-- ||| (Section 5.3) Handling Distributions
 data Sample a where
   Sample  :: Dist a -> Addr -> Sample a
 
 data Observe a where
   Observe :: Dist a -> a -> Addr -> Observe a
 
-handleDist :: forall es a. (Member Sample es, Member Observe es)
+-- Interpret Dist to Sample or Observe, and add address
+handleDist :: (Member Sample es, Member Observe es)
         => Prog (Dist : es) a -> Prog es a
 handleDist = loop 0 Map.empty
   where
@@ -83,6 +81,10 @@ handleDist = loop 0 Map.empty
                 tagMap' = Map.insert tag (tagIdx + 1) tagMap
                 k'      = loop (counter + 1) tagMap' . k
     Left  u'  -> Op u' (loop counter tagMap . k)
+
+type Tag  = String
+type Addr = (Tag, Int)
+type TagMap = Map Tag Int
 
 -- | For constraining the output types of distributions
 type PrimVal = '[Int, Double, [Double], Bool, String]

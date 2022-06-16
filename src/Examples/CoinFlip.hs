@@ -13,16 +13,14 @@ import Effects.Dist
 import Data.Kind (Constraint)
 import Env
 
--- | Coin flip model
-
+-- ||| (Section 5) Coin flip model
 coinFlip :: (Observables env '["p"] Double, Observables env '[ "y"] Bool) => Model env es Bool
 coinFlip = do
   p <- uniform 0 1 #p
   y <- bernoulli p #y
   return y
 
--- | Desugared coin flip model
-
+-- Desugared coin flip model
 coinFlip' :: forall env es. (Observables env '["p"] Double, Observables env '[ "y"] Bool) => Model env es Bool
 coinFlip' = Model $ do
   maybe_p  <- call (Ask @env #p)

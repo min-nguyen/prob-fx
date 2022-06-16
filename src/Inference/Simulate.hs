@@ -27,7 +27,7 @@ import Unsafe.Coerce (unsafeCoerce)
 import Util
 import GHC.TypeLits
 
--- | Simulation
+-- ||| (Section 6.1) Simulation
 simulate :: forall env es b a. (FromSTrace env, es ~ '[ObsReader env, Dist,State STrace, Observe, Sample])
   => (b -> Model env es a)  -- A model awaiting an input
   -> Env env                -- A model environment

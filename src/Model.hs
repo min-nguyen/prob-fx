@@ -22,7 +22,7 @@ import Env
 import Control.Monad ( ap )
 import Control.Monad.Trans.Class ( MonadTrans(lift) )
 
-{- Model -}
+-- ||| (Section 4.2) Model definition
 newtype Model env es v =
   Model { runModel :: (Member Dist es, Member (ObsReader env) es, Member Sample es) => Prog es v }
   deriving Functor
@@ -37,12 +37,13 @@ instance Monad (Model env es) where
     f' <- f
     runModel $ x f'
 
-{- Transform multimodal model into program of samples and observes -}
+-- ||| (Section 5.4) Specialising Multimodal Models
 handleCore :: (Member Observe es, Member Sample es) => Env env -> Model env (ObsReader env : Dist : es) a -> Prog es a
-handleCore env = handleDist . handleRead env . runModel
+handleCore env m = (handleDist . handleRead env) (runModel m)
 
-{- Wrap other effects and handlers into the Model type -}
--- | State
+-- | Other effects and handlers as the Model type 
+
+-- State
 getStM :: (Member (State s) es) => Model env es s
 getStM = Model getSt
 
@@ -52,18 +53,18 @@ putStM s = Model (putSt s)
 handleStateM :: s -> Model env (State s : es) a -> Model env es (a, s)
 handleStateM s m = Model $ handleState s $ runModel m
 
--- | Writer
+--  Writer
 tellM :: Member (Writer w) es => w -> Model env es ()
 tellM w = Model $ tell w
 
 handleWriterM :: Monoid w => Model env (Writer w : es) v -> Model env es (v, w)
 handleWriterM m = Model $ handleWriter $ runModel m
 
--- | Lift
+--  Lift
 liftM :: (Member (Lift m) es) => m a -> Model env es a
-liftM = Model . call . Lift
+liftM op = Model (call (Lift op))
 
-{- Distribution smart constructors -}
+-- ||| (Section 4.2.2) Distribution smart constructors 
 deterministic' :: (Eq v, Show v, OpenSum.Member v PrimVal)
   => v -> Model env es v
 deterministic' x = Model $ do

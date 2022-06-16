@@ -18,7 +18,7 @@ import Data.Kind (Constraint)
 import Env
 import Util
 
-{- (Fig 2) HMM Loop -}
+-- ||| (Section 2, Fig 2) HMM Loop 
 type HMMEnv =
   '[ "trans_p" ':= Double,
      "obs_p"   ':= Double,
@@ -50,7 +50,7 @@ inferLwHMM   = do
       env = #trans_p := [] <:> #obs_p := [] <:> #y := [0, 1, 1, 3, 4, 5, 5, 5, 6, 5] <:> nil
   LW.lw 100 (hmmFor n) (x_0, env)
 
-{- (Fig 3) Modular HMM -}
+-- ||| (Section 2, Fig 3) Modular HMM 
 transModel ::  Double -> Int -> Model env ts Int
 transModel transition_p x_prev = do
   dX <- boolToInt <$> bernoulli' transition_p
@@ -76,7 +76,7 @@ hmm n x = do
   obs_p   <- uniform 0 1 #obs_p
   foldr (>=>) return (replicate n (hmmNode trans_p obs_p)) x
 
-{- (Sec 3) Higher-order, generic HMM -}
+-- ||| (Section 3) Higher-order, generic HMM 
 type TransModel env ts params lat   = params -> lat -> Model env ts lat
 type ObsModel env ts params lat obs = params -> lat -> Model env ts obs
 

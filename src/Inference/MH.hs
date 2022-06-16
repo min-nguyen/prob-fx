@@ -30,7 +30,7 @@ import Effects.State
 import Unsafe.Coerce
 import Inference.Simulate (handleObs, traceSamples)
 
--- | Metropolis-Hastings (MH)
+-- ||| (Section 6.2.2) Metropolis-Hastings
 mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
    => Int                    -- Number of MH iterations
    -> (b -> Model env es a)  -- A model awaiting an input

@@ -24,7 +24,7 @@ import Data.Kind (Constraint)
 import Env
 import Util
 
--- | (Section 1) Linear regression
+-- ||| (Section 1) Linear regression
 linRegr :: forall env rs . Member Sample rs =>
   Observables env '["y", "m", "c", "σ"] Double =>
   Double -> Model env rs Double
@@ -35,7 +35,7 @@ linRegr x = do
   y <- normal (m * x + c) σ #y
   return y
 
--- | (Fig 1. a) Simulate from linear regression
+-- ||| (Section 1, Fig 1a) Simulate from linear regression
 simulateLinRegr :: Sampler [(Double, Double)]
 simulateLinRegr = do
   let xs  = [0 .. 100]
@@ -44,7 +44,7 @@ simulateLinRegr = do
   let ys = map fst ys_envs
   return (zip xs ys)
 
--- | (Fig 1. b) Perform likelihood weighting over linear regression; returns sampled mu values and associated likelihood weightings
+-- ||| (Section 1, Fig 1b) Perform likelihood weighting over linear regression; returns sampled mu values and associated likelihood weightings
 inferLwLinRegr :: Sampler [(Double, Double)]
 inferLwLinRegr = do
   let xs  = [0 .. 100]
@@ -55,7 +55,7 @@ inferLwLinRegr = do
       mus = concatMap (get #m) env_outs
   return $ zip mus ps
 
--- | Perform Metropolis-Hastings inference over linear regression
+-- Perform Metropolis-Hastings inference over linear regression
 inferMhLinRegr :: Sampler [Double]
 inferMhLinRegr = do
   let xs  = [0 .. 100]

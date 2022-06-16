@@ -20,7 +20,7 @@ import Effects.State ( modify, handleState, State )
 import STrace
 import Inference.Simulate (traceSamples, handleSamp)
 
--- | Likelihood Weighting (LW)
+-- ||| (Section 6.2.1) Likelihood Weighting (LW)
 lw :: forall env es a b. (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])
    => Int                          -- Number of LW iterations
    -> (b -> Model env es a)        -- A model awaiting an input

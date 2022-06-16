@@ -38,7 +38,7 @@ instance Monad (Model env es) where
 
 {- Transform multimodal model into program of samples and observes -}
 handleCore :: (Member Observe es, Member Sample es) => Env env -> Model env (ObsReader env : Dist : es) a -> Eff es a
-handleCore env = handleDist . handleRead env . runModel
+handleCore env m = (handleDist . handleRead env) (runModel m)
 
 {- Distribution smart constructors -}
 

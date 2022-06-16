@@ -18,7 +18,7 @@ import GHC.TypeLits
     ( TypeError, ErrorMessage(Text, (:<>:), (:$$:), ShowType) )
 import FindElem
 
-{- Prog monad -}
+-- ||| (Section 4.1) Prog 
 data Prog es a where
   Val :: a -> Prog es a
   Op :: EffectSum es x -> (x -> Prog es a) -> Prog es a
@@ -44,10 +44,11 @@ run _ = error "'run' isn't defined for non-pure computations"
 call :: (Member e es) => e x -> Prog es x
 call e = Op (inj e) Val
 
-{- Effect Sum -}
+-- ||| (Section 4.1) EffectSum 
 data EffectSum (es :: [* -> *]) (x :: *) :: * where
   EffectSum :: Int -> e x -> EffectSum es x
 
+-- ||| (Section 4.1) Member
 class (FindElem e es) => Member (e :: * -> *) (es :: [* -> *]) where
   inj ::  e x -> EffectSum es x
   prj ::  EffectSum es x -> Maybe (e x)
@@ -70,6 +71,7 @@ type family Members (es :: [* -> *]) (tss :: [* -> *]) = (cs :: Constraint) | cs
 pattern Other :: EffectSum es x -> EffectSum  (e ': es) x
 pattern Other u <- (discharge -> Left u)
 
+-- ||| (Section 5.2) Discharge
 discharge :: EffectSum (e ': es) x -> Either (EffectSum es x) (e x)
 discharge (EffectSum 0 tv) = Right $ unsafeCoerce tv
 discharge (EffectSum n rv) = Left  $ EffectSum (n-1) rv

@@ -7,7 +7,7 @@
 module Effects.Writer where
 import Prog
 
--- | Writer effect and handler
+-- ||| (Section 5.5) Writer effect and handler
 data Writer w a where
   Tell :: w -> Writer w ()
 

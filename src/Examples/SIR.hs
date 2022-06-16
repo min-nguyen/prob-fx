@@ -20,7 +20,8 @@ import Control.Monad
 import Examples.HMM
 import Data.Extensible (Associated)
 
-{--- SIR model (Sec 3.1) ---}
+-- ||| (Section 3.1 + Section 5.5 extension) The SIR model
+
 data Popl = Popl {
     s   :: Int, -- ^ Number of people susceptible to infection
     i   :: Int, -- ^ Number of people currently infected
@@ -46,11 +47,11 @@ data TransParamsSIR = TransParamsSIR {
     gammaP :: Double  -- ^ Mean recovery rate
 }
 
-transSIR :: Member (Writer [Popl]) es
+transSIR :: Member (Writer [Popl]) es -- || Writer effect from Section 5.5
   => TransModel env es TransParamsSIR Popl
 transSIR (TransParamsSIR beta gamma) sir = do
   sir' <- (transSI beta >=> transIR gamma) sir
-  tellM [sir']
+  tellM [sir'] 
   return sir'
 
 -- | SIR observation model
@@ -87,7 +88,7 @@ hmmSIR' n = handleWriterM . hmmSIR n
 
 type SIRenv = '["β" := Double, "γ"  := Double, "ρ"  := Double, "𝜉" := Int]
 
--- | Simulate from SIR model: ([(s, i, r)], [𝜉])
+-- ||| (Section 3.1, Fig 4a) Simulate from SIR model: ([(s, i, r)], [𝜉])
 simulateSIR :: Sampler ([(Int, Int, Int)], [Reported])
 simulateSIR = do
   let sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
@@ -97,7 +98,7 @@ simulateSIR = do
       sirs = map (\(Popl s i recov) -> (s, i, recov)) sir_trace
   return (sirs, 𝜉s)
 
--- | Infer from SIR model: ([ρ], [β])
+-- ||| (Section 3.3, Fig 5) Infer from SIR model: ([ρ], [β])
 inferSIR :: Sampler ([Double], [Double])
 inferSIR = do
   𝜉s <- snd <$> simulateSIR
@@ -109,13 +110,12 @@ inferSIR = do
   return (ρs, βs)
 
 
+-- ||| (Section 3.2) Modular Extensions to the SIR Model
 
-{- (3.2.1) EXTENSIONS TO SIR MODEL:
-Note that the implementations below aren't as modular as we would like, due to having to redefine the data types Popl and TransParams when adding new variables to the SIR model. The file "src/Examples/SIRModular.hs" shows how one could take steps to resolve this by using extensible records.
--}
+{- Note that the implementations below aren't as modular as we would like, due to having to redefine the data types Popl and TransParams when adding new variables to the SIR model. The file "src/Examples/SIRModular.hs" shows how one could take steps to resolve this by using extensible records. -}
 
 
-{--- SIRS (resusceptible) model ---}
+-- || (Section 3.2)  SIRS (resusceptible) model
 data TransParamsSIRS = TransParamsSIRS {
     betaP_SIRS  :: Double, -- ^ Mean contact rate between susceptible and infected people
     gammaP_SIRS :: Double, -- ^ Mean recovery rate
@@ -147,7 +147,7 @@ transPriorSIRS = do
 hmmSIRS :: (Observables env '["𝜉"] Int, Observables env '["β", "η", "γ", "ρ"] Double) => Int -> Popl -> Model env ts (Popl, [Popl])
 hmmSIRS n = handleWriterM . hmmGen transPriorSIRS obsPriorSIR transSIRS obsSIR n
 
--- | Simulate from SIRS model: ([(s, i, r)], [𝜉])
+-- || (Section 3.2, Fig 4b) Simulate from SIRS model: ([(s, i, r)], [𝜉])
 simulateSIRS :: Sampler ([(Int, Int, Int)], [Reported])
 simulateSIRS = do
   let sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #η := [0.05] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
@@ -158,7 +158,8 @@ simulateSIRS = do
   return (sirs, 𝜉s)
 
 
-{--- SIRSV (resusceptible + vacc) model ---}
+
+-- || (Section 3.2) SIRSV (resusceptible + vacc) model
 data TransParamsSIRSV = TransParamsSIRSV {
     betaP_SIRSV  :: Double, -- ^ Mean contact rate between susceptible and infected people
     gammaP_SIRSV :: Double, -- ^ Mean recovery rate
@@ -223,7 +224,7 @@ obsSIRSV rho (PoplV _ i _ v)  = do
 hmmSIRSV ::  (Observables env '["𝜉"] Int, Observables env '["β", "γ", "η", "ω", "ρ"] Double) => Int -> PoplV -> Model env ts (PoplV, [PoplV])
 hmmSIRSV n = handleWriterM . hmmGen transPriorSIRSV obsPriorSIR transSIRSV obsSIRSV n
 
--- | Simulate from SIRSV model : ([(s, i, r, v)], [𝜉])
+-- || (Section 3.2, Fig 4c) Simulate from SIRSV model : ([(s, i, r, v)], [𝜉])
 simulateSIRSV :: Sampler ([(Int, Int, Int, Int)], [Reported])
 simulateSIRSV = do
   let sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #η := [0.05] <:> #ω := [0.02] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
