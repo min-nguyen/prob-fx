@@ -1,5 +1,3 @@
-# ICFP 2022 Artifact: Source
-
 ### ProbFX:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf)
 
 ---
