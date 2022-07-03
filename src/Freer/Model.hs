@@ -11,7 +11,6 @@
 module Freer.Model where
 
 import Freer.Effects.Dist
--- import Freer.Prog
 import Freer.Effects.ObsReader
 import OpenSum (OpenSum)
 import qualified OpenSum as OpenSum

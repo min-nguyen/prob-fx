@@ -10,17 +10,17 @@
 
 module Model where
 
-import Prog
+import Control.Monad ( ap )
+import Control.Monad.Trans.Class ( MonadTrans(lift) )
 import Effects.Dist
+import Effects.Lift
 import Effects.ObsReader
 import Effects.State ( State, getSt, putSt, modify, handleState )
 import Effects.Writer
-import Effects.Lift
-import OpenSum (OpenSum)
-import qualified OpenSum as OpenSum
 import Env
-import Control.Monad ( ap )
-import Control.Monad.Trans.Class ( MonadTrans(lift) )
+import OpenSum (OpenSum)
+import Prog
+import qualified OpenSum as OpenSum
 
 -- ||| (Section 4.2) Model definition
 newtype Model env es v =
@@ -41,9 +41,9 @@ instance Monad (Model env es) where
 handleCore :: (Member Observe es, Member Sample es) => Env env -> Model env (ObsReader env : Dist : es) a -> Prog es a
 handleCore env m = (handleDist . handleRead env) (runModel m)
 
--- | Other effects and handlers as the Model type 
+-- || Other effects and handlers as the Model type 
 
--- State
+-- | State
 getStM :: (Member (State s) es) => Model env es s
 getStM = Model getSt
 
@@ -53,14 +53,14 @@ putStM s = Model (putSt s)
 handleStateM :: s -> Model env (State s : es) a -> Model env es (a, s)
 handleStateM s m = Model $ handleState s $ runModel m
 
---  Writer
+-- | Writer
 tellM :: Member (Writer w) es => w -> Model env es ()
 tellM w = Model $ tell w
 
 handleWriterM :: Monoid w => Model env (Writer w : es) v -> Model env es (v, w)
 handleWriterM m = Model $ handleWriter $ runModel m
 
---  Lift
+-- | Lift
 liftM :: (Member (Lift m) es) => m a -> Model env es a
 liftM op = Model (call (Lift op))
 
@@ -233,17 +233,3 @@ poisson λ field = Model $ do
   let tag = Just $ varToStr field
   maybe_y <- ask @env field
   call (PoissonDist λ maybe_y tag)
-
-{- Extra effect functions -}
-
-putM :: Member (State s) es => s -> Model env es ()
-putM x = Model $ putSt x
-
-getM :: Member (State s) es => Model env es s
-getM = Model getSt
-
-modifyM :: Member (State s) es => (s -> s) -> Model env es ()
-modifyM f = Model $ modify f
-
-runStateM :: Model env (State [Int] : es) v -> Model env es (v, [Int])
-runStateM m = Model $ handleState [] $ runModel m

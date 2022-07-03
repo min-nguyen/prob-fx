@@ -20,7 +20,7 @@ import Model
 import Sampler
 import Effects.ObsReader
 import Effects.State
-import STrace
+import Trace
 import qualified OpenSum as OpenSum
 import OpenSum (OpenSum)
 import Unsafe.Coerce (unsafeCoerce)

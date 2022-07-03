@@ -21,7 +21,7 @@ import Freer.Model
 import Sampler
 import Freer.Effects.ObsReader
 import Freer.Effects.State
-import Freer.STrace
+import Freer.Trace
 import qualified OpenSum as OpenSum
 import OpenSum (OpenSum)
 import Unsafe.Coerce (unsafeCoerce)

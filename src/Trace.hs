@@ -8,22 +8,24 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Freer.STrace where
+module Trace where
 
-import qualified Data.Map as Map
 import Data.Map (Map)
 import Data.Maybe
-import GHC.TypeLits ( KnownSymbol )
-import Freer.Effects.Dist
+import Effects.Dist
 import Env
-import qualified OpenSum as OpenSum
+import GHC.TypeLits
 import OpenSum (OpenSum)
+import qualified Data.Map as Map
+import qualified OpenSum as OpenSum
 import Util
 
+-- | Sample trace, mapping addresses of sample/observe operations to their distributions and sampled values
 type STrace = Map Addr (PrimDist, OpenSum PrimVal)
 
 type Trace a = [(a, STrace)]
 
+-- | For converting sample traces, as used by simulation and inference, to output model environments
 class FromSTrace a where
   fromSTrace :: STrace -> Env a
 
@@ -43,6 +45,7 @@ updateSTrace :: (Show x, OpenSum.Member x PrimVal)
   => Addr -> Dist x -> x -> STrace -> STrace
 updateSTrace α d x = Map.insert α (PrimDist d, OpenSum.inj x)
 
+-- | Log probability trace, mapping addresses of sample/observe operations to their log probabilities
 type LPTrace = Map Addr Double
 
 updateLPTrace :: Addr -> Dist x -> x -> LPTrace -> LPTrace

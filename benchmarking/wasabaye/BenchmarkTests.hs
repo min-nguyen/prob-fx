@@ -30,12 +30,12 @@ import Env
 import Util
 import Debug.Trace
 import Unsafe.Coerce
-import Freer.STrace
+import Freer.Trace
 import Criterion.Main
 import Criterion.Types
 import Control.DeepSeq
 
-configFile = defaultConfig {csvFile = Just "benchmarking-wasabaye/wasabaye-benchmarks.csv"}
+configFile = defaultConfig {csvFile = Just "benchmarking/wasabaye/wasabaye-benchmarks.csv"}
 
 benchmark :: forall a. NFData a
   => String                     -- benchmark group name

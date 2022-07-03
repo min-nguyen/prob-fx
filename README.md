@@ -1,35 +1,19 @@
-# ICFP 2022 Artifact
+# ICFP 2022 Artifact: Source
 
-Name:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/wasabaye/blob/master/paper.pdf)
+### Wasabaye:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/wasabaye/blob/master/paper.pdf)
+
+---
 
 **Dependencies**
 
-— _Wasabaye_ —
-
-Wasabaye uses the most recent Cabal version `3.6.x` and a GHC version `>= 8.4.x`:
+Wasabaye uses the most recent Cabal version ` >= 3.6.x` and a GHC version `>= 8.4.x`:
 1. Install GHCup by following [these instructions](https://www.haskell.org/ghcup/install/)
-2. Both Cabal and GHC versions can be installed and then set by following [this](https://www.haskell.org/ghcup/guide/). We suggest using Cabal version `3.6.2`, and GHC version `8.6.5`.
+2. Both Cabal and GHC versions can be installed and then set by following [this](https://www.haskell.org/ghcup/guide/). 
 
 — _Visualising Wasabaye examples_ —
 
 Visualising the provided examples of Wasabaye requires Python3 with the following Python packages:
 - `ast`, `matplotlib`, `scipy`, `sklearn`, `numpy`
-
-— _Benchmarking_ —
-
-To compare benchmarks with MonadBayes and Turing:
-
-- _MonadBayes_ uses the most recent Cabal version `3.6.x`, and requires a GHC version of `>= 8.4.x` and `< 8.10.x`. To execute both Wasabaye and MonadBayes in the same environment, we suggest GHC version `8.6.5`.
-- _Turing_ requires the language [Julia](https://julialang.org/downloads/) to be installed. After doing so, the necessary packages can be installed via:
-    ```
-    julia
-    import Pkg
-    Pkg.add("Turing")
-    Pkg.add("BenchmarkTools")
-    Pkg.add("DataFrames")
-    Pkg.add("CSV")
-    Pkg.add("Statistics")
-    ```
 
 **Interacting with Wasabaye**
 
@@ -110,29 +94,45 @@ All example models can be found in `src/Examples`, showing variations on how mod
   - § 5.5: Extending models with extra effects: `src/Examples/SIR.hs`
 
 - § 6: Simulation and inference as effect handlers
-  - § 6.1: Simulation: `src/Inference/Simulate.hs`. The type of `STrace` is in `src/STrace.hs`.
+  - § 6.1: Simulation: `src/Inference/Simulate.hs`. The type of `STrace` is in `src/Trace.hs`.
   - § 6.2.1: Likelihood Weighting: `src/Inference/LW.hs`.
   - § 6.2.2: Metropolis Hastings: `src/Inference.MH.hs`.
 
 **Benchmarks**
 
+— _Benchmarking_ —
+
+To compare benchmarks with MonadBayes and Turing:
+
+- _MonadBayes_ uses the most recent Cabal version `3.6.x`, and requires a GHC version of `>= 8.4.x` and `< 8.10.x`. To execute both Wasabaye and MonadBayes in the same environment, we suggest GHC version `8.6.5`.
+- _Turing_ requires the language [Julia](https://julialang.org/downloads/) to be installed. After doing so, the necessary packages can be installed via:
+    ```
+    julia
+    import Pkg
+    Pkg.add("Turing")
+    Pkg.add("BenchmarkTools")
+    Pkg.add("DataFrames")
+    Pkg.add("CSV")
+    Pkg.add("Statistics")
+    ```
+
 — _Directly benchmarking Wasabaye_ —
 
-We provide a script for benchmarking below, but Wasabaye can also be directly benchmarked with `cabal run benchmarking-wasabaye` (corresponding to `benchmarking-wasabaye/Main.hs`). The examples programs used for benchmarking are found in `benchmarking-wasabaye/BenchmarkPrograms.hs`, and they are benchmarked in `benchmarking-wasabaye/BenchmarkTests.hs`.
+Benchmarking is done with a version of Wasabaye that uses the `freer-simple` library as an algebraic effect encoding; this is found in `src/Freer`. We provide a script for benchmarking below, but Wasabaye can also be directly benchmarked with `cabal run benchmarking-wasabaye` (corresponding to `benchmarking/wasabaye/Main.hs`). The examples programs used for benchmarking are found in `benchmarking/wasabaye/BenchmarkPrograms.hs`, and they are benchmarked in `benchmarking/wasabaye/BenchmarkTests.hs`.
 
 — _Benchmarking with the script_ —
 
 The benchmarks in Appendix A can be reproduced by running the script **`./benchmark.sh <arg>`** with one the following arguments:
-- `wasabaye`    : This writes to `benchmarking-wasabaye/wasabaye-benchmarks.csv`
-- `monad-bayes` : This writes to `benchmarking-monad-bayes/monad-bayes-benchmarks.csv`
-- `turing`      : This writes to `benchmarking-turing/turing-benchmarks.csv`
+- `wasabaye`    : This writes to `benchmarking/wasabaye/wasabaye-benchmarks.csv`
+- `monad-bayes` : This writes to `benchmarking/monad-bayes/monad-bayes-benchmarks.csv`
+- `turing`      : This writes to `benchmarking/turing/turing-benchmarks.csv`
 
 These will run a given language's benchmarks in the order shown in Appendix A (Figure 8 and then Figure 9), from left to right, and top to bottom.
 
 Each benchmark is given a name of the format `<model>/<algorithm>/<independent-variable>/<value>` where:
-- `<model` is the model shown on the LHS Y-axis of the figures
-- `<algorithm`> is the model execution algorithm shown on the top of the figures
-- `<independent-variable`> is the variable being varied over on the bottom of the figures: this can be `sample-size` which corresponds to Fig 8, or `data-size` corresponding to Fig 9.
+- `<model>` is the model shown on the LHS Y-axis of the figures
+- `<algorithm>` is the model execution algorithm shown on the top of the figures
+- `<independent-variable>` is the variable being varied over on the bottom of the figures: this can be `sample-size` which corresponds to Fig 8, or `data-size` corresponding to Fig 9.
 - `<value>` is the value assigned to the `<independent-variable>`.
 
 For example, `lda/MH/data-size/80` means a latent-dirichlet model is executed under Metropolis-Hastings for a dataset size of 80.

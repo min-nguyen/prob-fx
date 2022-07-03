@@ -18,7 +18,7 @@ import Control.Monad.Freer.Internal
 import Freer.Model hiding (runModelFree)
 import Sampler
 import Freer.Effects.State ( modify, handleState, State )
-import Freer.STrace
+import Freer.Trace
 import Freer.Inference.Simulate (traceSamples, handleSamp)
 
 -- | Run LW n times for multiple data points
@@ -32,7 +32,7 @@ lw n model xs_envs = do
   lwTrace <- runN xs_envs
   return $ map (\((_, strace), p) -> (fromSTrace strace, p)) lwTrace
 
-runLW :: es ~ '[ObsReader env, Dist,State STrace,  Observe, Sample]
+runLW :: es ~ '[ObsReader env, Dist, State STrace,  Observe, Sample]
   => Env env -> Model env es a
   -> Sampler ((a, STrace), Double)
 runLW env = handleSamp . handleObs 0 . handleState Map.empty . traceSamples . handleCore env

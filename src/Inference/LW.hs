@@ -17,7 +17,7 @@ import Prog
 import Model hiding (runModelFree)
 import Sampler
 import Effects.State ( modify, handleState, State )
-import STrace
+import Trace
 import Inference.Simulate (traceSamples, handleSamp)
 
 -- ||| (Section 6.2.1) Likelihood Weighting (LW)

@@ -24,7 +24,7 @@ import Control.Monad.Freer
 import Control.Monad.Freer.Internal
 import Freer.Model hiding (runModelFree)
 import Sampler
-import Freer.STrace
+import Freer.Trace
 import qualified OpenSum as OpenSum
 import OpenSum (OpenSum(..))
 import Freer.Effects.ObsReader

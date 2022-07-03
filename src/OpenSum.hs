@@ -13,7 +13,6 @@
 
 module OpenSum where
 
--- import Fcf
 import Data.Kind (Type, Constraint)
 import Data.Proxy
 import Data.Typeable
@@ -22,6 +21,7 @@ import GHC.TypeLits (Nat, KnownNat, natVal, TypeError, ErrorMessage (Text, (:$$:
 import qualified GHC.TypeLits as TL
 import Unsafe.Coerce
 
+-- | Open sum of values
 data OpenSum (as :: [k]) where
   UnsafeOpenSum :: Int -> a -> OpenSum as
 
@@ -44,6 +44,7 @@ instance forall a as. (Show a, Show (OpenSum as)) => Show (OpenSum (a : as)) whe
 instance {-# OVERLAPPING #-} Show a => Show (OpenSum '[a]) where
   show (UnsafeOpenSum i a) = show (unsafeCoerce a :: a)
 
+-- | Safely inject and project value into an open sum
 class (FindElem a as) => Member (a :: *) (as :: [*]) where
   inj ::  a -> OpenSum as
   prj ::  OpenSum as  -> Maybe a
@@ -58,7 +59,3 @@ instance (FindElem a as) => Member a as where
     where prj' n (UnsafeOpenSum n' x)
             | n == n'   = Just (unsafeCoerce x)
             | otherwise = Nothing
-
-type family Members (as :: [* ]) (tss :: [* ]) = (cs :: Constraint) | cs -> as where
-  Members (a ': as) tss = (Member a tss, Members as tss)
-  Members '[] tss       = ()

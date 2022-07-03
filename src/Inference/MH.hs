@@ -22,7 +22,7 @@ import Effects.Dist
 import Prog
 import Model hiding (runModelFree)
 import Sampler
-import STrace
+import Trace
 import qualified OpenSum as OpenSum
 import OpenSum (OpenSum(..))
 import Effects.ObsReader

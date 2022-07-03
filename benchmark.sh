@@ -6,11 +6,11 @@ if  [[ $# -eq 0 ]] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
     exit
 fi
 if [ $1 == "monad-bayes" ]
-then cd benchmarking-monad-bayes && cabal run
+then cd benchmarking/monad-bayes && cabal run
 elif  [ $1 == "wasabaye" ]
-then cabal run benchmarking-wasabaye
+then cabal run benchmark-wasabaye
 elif  [ $1 == "turing" ];
-then cd benchmarking-turing;
+then cd benchmarking/turing;
      echo "Running LinRegr/Simulation for sample sizes: 2000, 4000, 6000, 8000, 10000";
      julia linregr.jl "vary-sample-size" "sim";
      echo "Running LinRegr/LW for sample sizes: 2000, 4000, 6000, 8000, 10000";
