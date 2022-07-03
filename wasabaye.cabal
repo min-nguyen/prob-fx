@@ -11,42 +11,43 @@ library
   ghc-options:
   -- -fprint-explicit-kinds
   -- Modules exported by the library.
-  exposed-modules:    Util,
-                      Prog,
-                      Examples.DataSets,
-                      Examples.LinRegr,
-                      Examples.SIR,
-                      Examples.SIRModular,
-                      Examples.HMM,
-                      Examples.CoinFlip,
-                      Examples.LogRegr,
-                      Examples.LDA,
-                      Examples.Radon,
-                      Examples.School,
-                      Effects.ObsReader,
-                      Effects.Writer,
-                      Effects.State,
-                      Effects.Lift,
-                      Model,
-                      OpenSum,
-                      Env,
-                      FindElem,
+  exposed-modules:    
                       Effects.Dist,
-                      Sampler,
-                      STrace,
-                      Inference.Simulate,
+                      Effects.Lift,
+                      Effects.ObsReader,
+                      Effects.State,
+                      Effects.Writer,
                       Inference.LW,
                       Inference.MH,
+                      Inference.Simulate,
+                      Examples.CoinFlip,
+                      Examples.DataSets,
+                      Examples.HMM,
+                      Examples.LDA,
+                      Examples.LinRegr,
+                      Examples.LogRegr,
+                      Examples.Radon,
+                      Examples.School,
+                      Examples.SIR,
+                      Examples.SIRModular,
+                      Freer.Effects.Dist,
+                      Freer.Effects.Lift,
+                      Freer.Effects.ObsReader,
+                      Freer.Effects.State,
+                      Freer.Effects.Writer,
                       Freer.Inference.LW,
                       Freer.Inference.MH,
                       Freer.Inference.Simulate,
-                      Freer.Effects.Dist,
                       Freer.Model,
-                      Freer.Effects.Lift,
-                      Freer.Effects.Writer,
-                      Freer.Effects.State,
-                      Freer.Effects.ObsReader,
-                      Freer.STrace
+                      Freer.STrace,
+                      Env,
+                      FindElem,
+                      Model,
+                      OpenSum,
+                      Prog,
+                      Sampler,
+                      STrace,
+                      Util
 
   -- Modules included in this library but not exported.
   -- other-modules:
@@ -55,28 +56,23 @@ library
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base >= 4.11 && <= 4.16,
-                       ghc-prim,
-                       primitive,
+  build-depends:       base >= 4.11 && <= 4.17,
                        containers,
-                       extensible,
-                       vector,
-                       lens,
-                       aeson < 2,
-                       transformers,
-                       freer-simple,
-                       HMap,
-                       mtl,
-                       membership,
-                       profunctors,
-                       statistics,
-                       split,
-                       mwc-random,
-                       mwc-probability,
-                       random,
                        dirichlet,
+                       extensible,
+                       freer-simple,
+                       ghc-prim,
+                       lens,
                        log-domain,
-                       some
+                       membership,
+                       mtl,
+                       mwc-probability,
+                       mwc-random,
+                       primitive,
+                       random,
+                       statistics,
+                       transformers,
+                       vector
 
   -- Directories containing source files.
   hs-source-dirs:      src
@@ -96,12 +92,11 @@ executable wasabaye
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base,
-                       extensible,
-                       wasabaye,
+  build-depends:       base >= 4.11 && <= 4.17,
                        containers,
-                       split
-
+                       extensible,
+                       split,
+                       wasabaye
 
   -- Base language which the package is written in.
   default-language:    Haskell2010

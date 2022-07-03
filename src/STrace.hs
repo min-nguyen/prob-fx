@@ -10,14 +10,14 @@
 
 module STrace where
 
-import qualified Data.Map as Map
 import Data.Map (Map)
 import Data.Maybe
-import GHC.TypeLits
 import Effects.Dist
 import Env
-import qualified OpenSum as OpenSum
+import GHC.TypeLits
 import OpenSum (OpenSum)
+import qualified Data.Map as Map
+import qualified OpenSum as OpenSum
 import Util
 
 -- | Sample trace, mapping addresses of sample/observe operations to their distributions and sampled values
@@ -25,7 +25,7 @@ type STrace = Map Addr (PrimDist, OpenSum PrimVal)
 
 type Trace a = [(a, STrace)]
 
--- For converting sample traces, as used by simulation and inference, to output model environments
+-- | For converting sample traces, as used by simulation and inference, to output model environments
 class FromSTrace a where
   fromSTrace :: STrace -> Env a
 

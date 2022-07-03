@@ -13,15 +13,14 @@
 
 module OpenSum where
 
-import Data.Typeable
+-- import Fcf
 import Data.Kind (Type, Constraint)
 import Data.Proxy
--- import Fcf
-import GHC.Natural
+import Data.Typeable
+import FindElem
 import GHC.TypeLits (Nat, KnownNat, natVal, TypeError, ErrorMessage (Text, (:$$:), (:<>:), ShowType))
 import qualified GHC.TypeLits as TL
 import Unsafe.Coerce
-import FindElem
 
 data OpenSum (as :: [k]) where
   UnsafeOpenSum :: Int -> a -> OpenSum as

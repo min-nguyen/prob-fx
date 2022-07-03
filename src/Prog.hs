@@ -14,8 +14,7 @@ module Prog where
 import Control.Monad
 import Unsafe.Coerce
 import Data.Kind (Constraint)
-import GHC.TypeLits
-    ( TypeError, ErrorMessage(Text, (:<>:), (:$$:), ShowType) )
+import GHC.TypeLits ( TypeError, ErrorMessage(Text, (:<>:), (:$$:), ShowType) )
 import FindElem
 
 -- ||| (Section 4.1) Prog 

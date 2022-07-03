@@ -12,33 +12,30 @@
 {-# LANGUAGE ConstraintKinds #-}
 module Effects.Dist where
 
-import Prog
-    ( Prog(..), Member(..), EffectSum, discharge, call )
-import Sampler
-import qualified OpenSum as OpenSum
-import Util ( boolToInt )
-import Control.Lens hiding ((:>))
-import Control.Monad.State
 import Data.Kind
 import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.Maybe
+import Numeric.Log
+import Prog ( call, discharge, Member, Prog(..) )
+import qualified Data.Map as Map
 import qualified Data.Vector as V
 import qualified Data.Vector.Unboxed as UV
+import qualified OpenSum as OpenSum
+import Sampler
 import Statistics.Distribution
-import Statistics.Distribution.CauchyLorentz
-import Statistics.Distribution.DiscreteUniform
-import Statistics.Distribution.Poisson
-import Statistics.Distribution.Normal
-import Statistics.Distribution.Dirichlet
-import Statistics.Distribution.Gamma
 import Statistics.Distribution.Beta
 import Statistics.Distribution.Binomial
+import Statistics.Distribution.CauchyLorentz
+import Statistics.Distribution.Dirichlet
+import Statistics.Distribution.DiscreteUniform
+import Statistics.Distribution.Gamma
+import Statistics.Distribution.Normal
+import Statistics.Distribution.Poisson
 import Statistics.Distribution.Uniform
-import Numeric.Log
+import Util ( boolToInt )
 
 -- ||| (Section 4.2.1) Effects for distributions
-{- Each constructor of type `Dist a` is parameterised by the standard distribution parameters, an optional observed value of type `Maybe a`, and an optional observable variable name of type `Maybe String` -}
+-- | Each constructor of type `Dist a` is parameterised by the standard distribution parameters, an optional observed value of type `Maybe a`, and an optional observable variable name of type `Maybe String` 
 data Dist a where
   HalfCauchyDist    :: Double -> Maybe Double -> Maybe String -> Dist Double
   CauchyDist        :: Double -> Double -> Maybe Double -> Maybe String -> Dist Double
@@ -63,7 +60,7 @@ data Sample a where
 data Observe a where
   Observe :: Dist a -> a -> Addr -> Observe a
 
--- Interpret Dist to Sample or Observe, and add address
+-- | Interpret Dist to Sample or Observe, and add address
 handleDist :: (Member Sample es, Member Observe es)
         => Prog (Dist : es) a -> Prog es a
 handleDist = loop 0 Map.empty
@@ -168,7 +165,6 @@ instance Show a => Show (Dist a) where
    "DirichletDist(" ++ show xs ++ ", " ++ show y ++ ", " ++ show tag ++ ")"
   show (DeterministicDist x y tag) =
    "DeterministicDist(" ++ show x ++ ", " ++ show y ++ ", " ++ show tag ++ ")"
-
 
 -- | Distribution utility functions
 getObs :: Dist a -> Maybe a

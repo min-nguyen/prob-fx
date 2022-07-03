@@ -17,7 +17,6 @@ import Control.Monad.Freer.Internal
 import Sampler
 import qualified OpenSum as OpenSum
 import Util ( boolToInt )
-import Control.Lens hiding ((:>))
 import Control.Monad.State
 import Data.Kind
 import Data.Map (Map)

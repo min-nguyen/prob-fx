@@ -1,9 +1,7 @@
 module Util where
 
-import Control.Monad
 import qualified Data.Map as Map
 import Data.Map (Map)
-import Data.List
 
 data Proxy p = Proxy
 

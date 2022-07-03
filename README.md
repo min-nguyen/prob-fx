@@ -2,9 +2,7 @@
 
 Name:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/wasabaye/blob/master/paper.pdf)
 
-## Artifact Instructions
-
-**Dependencies (for source only)**
+**Dependencies**
 
 — _Wasabaye_ —
 
@@ -78,6 +76,43 @@ All example models can be found in `src/Examples`, showing variations on how mod
 2. Execute a model using one of the library functions `simulate`, `lw`, or `mh` detailed in `src/Inference`; this produces an output in the monad `Sampler`.
 3. `Sampler` computations can be evaluated with `sampleIO` (found in `src/Sampler.hs`) to produce an `IO` computation. Examples of this are shown in `Main.hs`.
 
+**Paper to artifact overview**
+
+- § 1: Linear regression `(src/Examples/LinRegr.hs)`
+  - Simulating  (Fig 1a) is done via `./wasabaye.sh simLinRegr`.
+  - Likelihood weighting inference (Fig 1b) is done via `./wasabaye.sh lwLinRegr`.
+
+- § 2: Hidden Markov model `(src/Examples/HMM.hs)`
+  - You can find both the loop HMM version (Fig 2) and the modular HMM version (Fig 3) in here.
+
+- § 3: SIR model (`src/Examples/SIR.hs`)
+  - § 3.1 The SIR model is the function `hmmSIR'`; the higher-order HMM function it uses is imported from `HMM.hs`, and the `Writer` effect it uses from §5.5 is already integrated.
+    - Simulating from this (Fig 4a) can be done via `./wasabaye.sh simSIR`.
+    - Metropolis-Hastings inference (Fig 5) is done via `./wasabaye.sh mhSIR`; this takes 1-3 minutes
+  - § 3.2.1: The _resusceptible_ extension is defined as `hmmSIRS`, and the _resusceptible + vaccinated_ version is `hmmSIRSV`.
+
+    - Simulating from `hmmSIRS` (Fig 4b) is done via `./wasabaye.sh simSIRS`
+    - Simulating from `hmmSIRSV` (Fig 4c) is done via `./wasabaye.sh simSIRSV`.
+
+    Note that their implementations are not as modular as we would like (due to having to redefine the data types `Popl` and `TransParams`) -- the program `SIRModular.hs` shows how one could take steps to resolve this by using extensible records.
+
+- § 4: Embedding
+  - § 4.1: The definition of `Prog` is in `src/Prog.hs`, including auxiliary types and functions.
+  - § 4.2: The definition of `Model` and the smart constructors for primitive distributions are in `src/Model.hs`.
+    The effect type `Dist` (§ 4.2.1) is in `src/Effects/Dist.hs`, and `ObsReader` (§ 4.2.2) is in `src/Effects/ObsReader.hs`.
+
+- § 5: Interpreting multimodal models
+  - Intro: Coinflip example: `src/Examples/CoinFlip.hs`
+  - § 5.1: Model environments: `src/Env.hs`.
+  - § 5.2: Handling `ObsReader`: `src/Effects/ObsReader.hs`.
+  - § 5.3: Handling `Dist`: `src/Effects/Dist.hs`.
+  - § 5.4: Specialising multimodal models: `src/Model.hs`.
+  - § 5.5: Extending models with extra effects: `src/Examples/SIR.hs`
+
+- § 6: Simulation and inference as effect handlers
+  - § 6.1: Simulation: `src/Inference/Simulate.hs`. The type of `STrace` is in `src/STrace.hs`.
+  - § 6.2.1: Likelihood Weighting: `src/Inference/LW.hs`.
+  - § 6.2.2: Metropolis Hastings: `src/Inference.MH.hs`.
 
 **Benchmarks**
 
@@ -125,147 +160,3 @@ benchmark "linear regression simulation" simLinRegr
     [(show sample_size ++ "," ++ show data_size, (sample_size, data_size))
     | (samplesize, datasize) <- [(200, 100), (300, 100), (400, 100)]]
 ```
-
-**Paper to artifact overview**
-
-- § 1: Linear regression `(src/Examples/LinRegr.hs)`
-  - Simulating  (Fig 1a) is done via `./wasabaye.sh simLinRegr`.
-  - Likelihood weighting inference (Fig 1b) is done via `./wasabaye.sh lwLinRegr`.
-
-- § 2: Hidden Markov model `(src/Examples/HMM.hs)`
-  - You can find both the loop HMM version (Fig 2) and the modular HMM version (Fig 3) in here.
-
-- § 3: SIR model (`src/Examples/SIR.hs`)
-  - § 3.1 The SIR model is the function `hmmSIR'`; the higher-order HMM function it uses is imported from `HMM.hs`, and the `Writer` effect it uses from §5.5 is already integrated.
-    - Simulating from this (Fig 4a) can be done via `./wasabaye.sh simSIR`.
-    - Metropolis-Hastings inference (Fig 5) is done via `./wasabaye.sh mhSIR`; this takes 1-3 minutes
-  - § 3.2.1: The _resusceptible_ extension is defined as `hmmSIRS`, and the _resusceptible + vaccinated_ version is `hmmSIRSV`.
-
-    - Simulating from `hmmSIRS` (Fig 4b) is done via `./wasabaye.sh simSIRS`
-    - Simulating from `hmmSIRSV` (Fig 4c) is done via `./wasabaye.sh simSIRSV`.
-
-    Note that their implementations are not as modular as we would like (due to having to redefine the data types `Popl` and `TransParams`) -- the program `SIRModular.hs` shows how one could take steps to resolve this by using extensible records.
-
-- § 4: Embedding
-  - § 4.1: The definition of `Prog` is in `src/Prog.hs`, including auxiliary types and functions.
-  - § 4.2: The definition of `Model` and the smart constructors for primitive distributions are in `src/Model.hs`.
-    The effect type `Dist` (§ 4.2.1) is in `src/Effects/Dist.hs`, and `ObsReader` (§ 4.2.2) is in `src/Effects/ObsReader.hs`.
-
-- § 5: Interpreting multimodal models
-  - Intro: Coinflip example: `src/Examples/CoinFlip.hs`
-  - § 5.1: Model environments: `src/Env.hs`.
-  - § 5.2: Handling `ObsReader`: `src/Effects/ObsReader.hs`.
-  - § 5.3: Handling `Dist`: `src/Effects/Dist.hs`.
-  - § 5.4: Specialising multimodal models: `src/Model.hs`.
-  - § 5.5: Extending models with extra effects: `src/Examples/SIR.hs`
-
-- § 6: Simulation and inference as effect handlers
-  - § 6.1: Simulation: `src/Inference/Simulate.hs`. The type of `STrace` is in `src/STrace.hs`.
-  - § 6.2.1: Likelihood Weighting: `src/Inference/LW.hs`.
-  - § 6.2.2: Metropolis Hastings: `src/Inference.MH.hs`.
-
----
-
-## QEMU Instructions
-
-QEMU is a hosted virtual machine monitor that can emulate a host processor
-via dynamic binary translation. On common host platforms QEMU can also use
-a host provided virtualization layer, which is faster than dynamic binary
-translation.
-
-QEMU homepage: https://www.qemu.org/
-
-### Installation
-
-#### OSX
-``brew install qemu``
-
-#### Debian and Ubuntu Linux
-``apt-get install qemu-kvm``
-
-On x86 laptops and server machines you may need to enable the
-"Intel Virtualization Technology" setting in your BIOS, as some manufacturers
-leave this disabled by default. See Debugging.md for details.
-
-
-#### Arch Linux
-
-``pacman -Sy qemu``
-
-See the [Arch wiki](https://wiki.archlinux.org/title/QEMU) for more info.
-
-See Debugging.md if you have problems logging into the artifact via SSH.
-
-
-#### Windows 10
-
-Download and install QEMU via the links at
-
-https://www.qemu.org/download/#windows.
-
-Ensure that `qemu-system-x86_64.exe` is in your path.
-
-Start Bar -> Search -> "Windows Features"
-          -> enable "Hyper-V" and "Windows Hypervisor Platform".
-
-Restart your computer.
-
-#### Windows 8
-
-See Debugging.md for Windows 8 install instructions.
-
-### Startup
-
-The base artifact provides a `start.sh` script to start the VM on unix-like
-systems and `start.bat` for Windows. Running this script will open a graphical
-console on the host machine, and create a virtualized network interface.
-On Linux you may need to run with `sudo` to start the VM. If the VM does not
-start then check `Debugging.md`
-
-Once the VM has started you can login to the guest system from the host.
-Whenever you are asked for a password, the answer is `password`. The default
-username is `artifact`.
-
-```
-$ ssh -p 5555 artifact@localhost
-```
-
-You can also copy files to and from the host using scp.
-
-```
-$ scp -P 5555 artifact@localhost:somefile .
-```
-
-### Shutdown
-
-To shutdown the guest system cleanly, login to it via ssh and use
-
-```
-$ sudo shutdown now
-```
-
-### Artifact Preparation
-
-Authors should install software dependencies into the VM image as needed,
-preferably via the standard Debian package manager. For example, to install
-GHC and cabal-install, login to the host and type:
-
-```
-$ sudo apt update
-$ sudo apt install ghc
-$ sudo apt install cabal-install
-```
-
-If you really need a GUI then you can install X as follows, but we prefer
-console-only artifacts whenever possible.
-
-```
-$ sudo apt install xorg
-$ sudo apt install xfce4   # or some other window manager
-$ startx
-```
-
-See Debugging.md for advice on resolving other potential problems.
-
-If your artifact needs lots of memory you may need to increase the value
-of the `QEMU_MEM_MB` variable in the `start.sh` script.
