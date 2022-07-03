@@ -1,33 +1,33 @@
 # ICFP 2022 Artifact: Source
 
-### Wasabaye:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/wasabaye/blob/master/paper.pdf)
+### ProbFX:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf)
 
 ---
 
 **Dependencies**
 
-Wasabaye uses the most recent Cabal version ` >= 3.6.x` and a GHC version `>= 8.4.x`:
+ProbFX uses the most recent Cabal version ` >= 3.6.x` and a GHC version `>= 8.4.x`:
 1. Install GHCup by following [these instructions](https://www.haskell.org/ghcup/install/)
 2. Both Cabal and GHC versions can be installed and then set by following [this](https://www.haskell.org/ghcup/guide/). 
 
-— _Visualising Wasabaye examples_ —
+— _Visualising ProbFX examples_ —
 
-Visualising the provided examples of Wasabaye requires Python3 with the following Python packages:
+Visualising the provided examples of ProbFX requires Python3 with the following Python packages:
 - `ast`, `matplotlib`, `scipy`, `sklearn`, `numpy`
 
-**Interacting with Wasabaye**
+**Interacting with ProbFX**
 
-— _Directly executing Wasabaye_ —
+— _Directly executing ProbFX_ —
 
-We provide a script below for executing Wasabaye with a set of possible arguments. Alternatively, you can:
-  1. Directly execute a Wasabaye program via `cabal run wasabaye <arg>` (corresponding to `Main.hs`), whose output will be written to `model-output.txt`
+We provide a script below for executing ProbFX with a set of possible arguments. Alternatively, you can:
+  1. Directly execute a ProbFX program via `cabal run prob-fx <arg>` (corresponding to `Main.hs`), whose output will be written to `model-output.txt`
   2. Visualise this output as a graph via `python3 graph.py <arg>`, which will be saved to `model-output.pdf` .
 
-— _Executing Wasabaye with the script_ —
+— _Executing ProbFX with the script_ —
 
-The script **`./wasabaye.sh <arg>`** will execute a Wasabaye program and save the output graph to `model-output.pdf` (the results of simulation and inference will of course vary across different executions).
+The script **`./prob-fx.sh <arg>`** will execute a ProbFX program and save the output graph to `model-output.pdf` (the results of simulation and inference will of course vary across different executions).
 
-The examples in the paper can be run with one of the following arguments (e.g. `./wasabaye.sh simSIR`), where the prefix `sim` denotes simulation, `lw` denotes Likelihood-Weighting inference, and `mh` denotes Metropolis-Hastings inference:
+The examples in the paper can be run with one of the following arguments (e.g. `./prob-fx.sh simSIR`), where the prefix `sim` denotes simulation, `lw` denotes Likelihood-Weighting inference, and `mh` denotes Metropolis-Hastings inference:
 - Linear regression
   - `simLinRegr`: (Fig 1a)
   - `lwLinRegr` : (Fig 1b)
@@ -55,7 +55,7 @@ Extra example models and their corresponding command-line arguments are given be
 
 — _Example models + Creating and executing models_ —
 
-All example models can be found in `src/Examples`, showing variations on how models can be created and executed. [`LogRegr.hs`](https://github.com/min-nguyen/wasabaye/blob/master/src/Examples/LogRegr.hs) documents a particularly representative walk-through. The general process of doing this is as follows:
+All example models can be found in `src/Examples`, showing variations on how models can be created and executed. [`LogRegr.hs`](https://github.com/min-nguyen/prob-fx/blob/master/src/Examples/LogRegr.hs) documents a particularly representative walk-through. The general process of doing this is as follows:
 1. Define an appropriate model of type `Model env es a` and a corresponding model environment of type `Env env`.
 2. Execute a model using one of the library functions `simulate`, `lw`, or `mh` detailed in `src/Inference`; this produces an output in the monad `Sampler`.
 3. `Sampler` computations can be evaluated with `sampleIO` (found in `src/Sampler.hs`) to produce an `IO` computation. Examples of this are shown in `Main.hs`.
@@ -63,27 +63,27 @@ All example models can be found in `src/Examples`, showing variations on how mod
 **Paper to artifact overview**
 
 - § 1: Linear regression `(src/Examples/LinRegr.hs)`
-  - Simulating  (Fig 1a) is done via `./wasabaye.sh simLinRegr`.
-  - Likelihood weighting inference (Fig 1b) is done via `./wasabaye.sh lwLinRegr`.
+  - Simulating  (Fig 1a) is done via `./prob-fx.sh simLinRegr`.
+  - Likelihood weighting inference (Fig 1b) is done via `./prob-fx.sh lwLinRegr`.
 
 - § 2: Hidden Markov model `(src/Examples/HMM.hs)`
   - You can find both the loop HMM version (Fig 2) and the modular HMM version (Fig 3) in here.
 
 - § 3: SIR model (`src/Examples/SIR.hs`)
   - § 3.1 The SIR model is the function `hmmSIR'`; the higher-order HMM function it uses is imported from `HMM.hs`, and the `Writer` effect it uses from §5.5 is already integrated.
-    - Simulating from this (Fig 4a) can be done via `./wasabaye.sh simSIR`.
-    - Metropolis-Hastings inference (Fig 5) is done via `./wasabaye.sh mhSIR`; this takes 1-3 minutes
+    - Simulating from this (Fig 4a) can be done via `./prob-fx.sh simSIR`.
+    - Metropolis-Hastings inference (Fig 5) is done via `./prob-fx.sh mhSIR`; this takes 1-3 minutes
   - § 3.2.1: The _resusceptible_ extension is defined as `hmmSIRS`, and the _resusceptible + vaccinated_ version is `hmmSIRSV`.
 
-    - Simulating from `hmmSIRS` (Fig 4b) is done via `./wasabaye.sh simSIRS`
-    - Simulating from `hmmSIRSV` (Fig 4c) is done via `./wasabaye.sh simSIRSV`.
+    - Simulating from `hmmSIRS` (Fig 4b) is done via `./prob-fx.sh simSIRS`
+    - Simulating from `hmmSIRSV` (Fig 4c) is done via `./prob-fx.sh simSIRSV`.
 
     Note that their implementations are not as modular as we would like (due to having to redefine the data types `Popl` and `TransParams`) -- the program `SIRModular.hs` shows how one could take steps to resolve this by using extensible records.
 
 - § 4: Embedding
   - § 4.1: The definition of `Prog` is in `src/Prog.hs`, including auxiliary types and functions.
   - § 4.2: The definition of `Model` and the smart constructors for primitive distributions are in `src/Model.hs`.
-    The effect type `Dist` (§ 4.2.1) is in `src/Effects/Dist.hs`, and `ObsReader` (§ 4.2.2) is in `src/Effects/ObsReader.hs`.
+    The effect type `Dist` (§ 4.2.1) is split up into `src/Effects/Dist.hs` and `src/PrimDist.hs`. The effect `ObsReader` (§ 4.2.2) is in `src/Effects/ObsReader.hs`.
 
 - § 5: Interpreting multimodal models
   - Intro: Coinflip example: `src/Examples/CoinFlip.hs`
@@ -104,7 +104,7 @@ All example models can be found in `src/Examples`, showing variations on how mod
 
 To compare benchmarks with MonadBayes and Turing:
 
-- _MonadBayes_ uses the most recent Cabal version `3.6.x`, and requires a GHC version of `>= 8.4.x` and `< 8.10.x`. To execute both Wasabaye and MonadBayes in the same environment, we suggest GHC version `8.6.5`.
+- _MonadBayes_ uses the most recent Cabal version `3.6.x`, and requires a GHC version of `>= 8.4.x` and `< 8.10.x`. To execute both ProbFX and MonadBayes in the same environment, we suggest GHC version `8.6.5`.
 - _Turing_ requires the language [Julia](https://julialang.org/downloads/) to be installed. After doing so, the necessary packages can be installed via:
     ```
     julia
@@ -116,14 +116,14 @@ To compare benchmarks with MonadBayes and Turing:
     Pkg.add("Statistics")
     ```
 
-— _Directly benchmarking Wasabaye_ —
+— _Directly benchmarking ProbFX_ —
 
-Benchmarking is done with a version of Wasabaye that uses the `freer-simple` library as an algebraic effect encoding; this is found in `src/Freer`. We provide a script for benchmarking below, but Wasabaye can also be directly benchmarked with `cabal run benchmarking-wasabaye` (corresponding to `benchmarking/wasabaye/Main.hs`). The examples programs used for benchmarking are found in `benchmarking/wasabaye/BenchmarkPrograms.hs`, and they are benchmarked in `benchmarking/wasabaye/BenchmarkTests.hs`.
+Benchmarking is done with a version of ProbFX that uses the `freer-simple` library as an algebraic effect encoding; this is found in `src/Freer`. We provide a script for benchmarking below, but ProbFX can also be directly benchmarked with `cabal run benchmarking-prob-fx` (corresponding to `benchmarking/prob-fx/Main.hs`). The examples programs used for benchmarking are found in `benchmarking/prob-fx/BenchmarkPrograms.hs`, and they are benchmarked in `benchmarking/prob-fx/BenchmarkTests.hs`.
 
 — _Benchmarking with the script_ —
 
 The benchmarks in Appendix A can be reproduced by running the script **`./benchmark.sh <arg>`** with one the following arguments:
-- `wasabaye`    : This writes to `benchmarking/wasabaye/wasabaye-benchmarks.csv`
+- `prob-fx`    : This writes to `benchmarking/prob-fx/prob-fx-benchmarks.csv`
 - `monad-bayes` : This writes to `benchmarking/monad-bayes/monad-bayes-benchmarks.csv`
 - `turing`      : This writes to `benchmarking/turing/turing-benchmarks.csv`
 
@@ -137,11 +137,11 @@ Each benchmark is given a name of the format `<model>/<algorithm>/<independent-v
 
 For example, `lda/MH/data-size/80` means a latent-dirichlet model is executed under Metropolis-Hastings for a dataset size of 80.
 
-— _Creating new Wasabaye benchmarks_ —
+— _Creating new ProbFX benchmarks_ —
 
-We use Criterion to benchmark Wasabaye; a tutorial can be found [here](http://www.serpentine.com/criterion/tutorial.html).
+We use Criterion to benchmark ProbFX; a tutorial can be found [here](http://www.serpentine.com/criterion/tutorial.html).
 
-A helper function for benchmarking Wasabaye programs is provided in `benchmarking-wasabaye/BenchmarkTests.hs`,
+A helper function for benchmarking ProbFX programs is provided in `benchmarking-prob-fx/BenchmarkTests.hs`,
 ```
 benchmark :: forall a. NFData a
   => String                     -- benchmark group name

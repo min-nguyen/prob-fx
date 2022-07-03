@@ -14,6 +14,7 @@ import Effects.ObsReader
 import Control.Monad
 import Effects.Dist
 import Prog
+import PrimDist
 import Model hiding (runModelFree)
 import Sampler
 import Effects.State ( modify, handleState, State )
@@ -22,10 +23,15 @@ import Inference.Simulate (traceSamples, handleSamp)
 
 -- ||| (Section 6.2.1) Likelihood Weighting (LW)
 lw :: forall env es a b. (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])
-   => Int                          -- Number of LW iterations
-   -> (b -> Model env es a)        -- A model awaiting an input
-   -> (b, Env env)                 -- A model input and model environment (containing observed values to condition on)
-   -> Sampler [(Env env, Double)]  -- Trace of weighted output environments containing values sampled for each LW iteration
+    => 
+    -- | Number of LW iterations
+       Int                          
+    -- | A model awaiting an input
+    -> (b -> Model env es a)        
+    -- | A model input and model environment (containing observed values to condition on)
+    -> (b, Env env)                 
+    -- | Trace of weighted output environments containing values sampled for each LW iteration
+    -> Sampler [(Env env, Double)]  
 lw n model xs_envs = do
   let runN (x, env) = replicateM n (runLW env (model x))
   lwTrace <- runN xs_envs

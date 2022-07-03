@@ -22,6 +22,7 @@ import Effects.Dist
 import Prog
 import Model hiding (runModelFree)
 import Sampler
+import PrimDist
 import Trace
 import qualified OpenSum as OpenSum
 import OpenSum (OpenSum(..))
@@ -32,11 +33,17 @@ import Inference.Simulate (handleObs, traceSamples)
 
 -- ||| (Section 6.2.2) Metropolis-Hastings
 mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-   => Int                    -- Number of MH iterations
-   -> (b -> Model env es a)  -- A model awaiting an input
-   -> (b, Env env)           -- A model input and model environment (containing observed values to condition on)
-   -> [Tag]                  -- An optional list of observable variable names (strings) to specify sample sites of interest (e.g. for interest in sampling #mu, provide "mu"). This causes other variables to not be resampled unless necessary.
-   -> Sampler [Env env]      -- Trace of output environments, containing values sampled for each MH iteration
+  => 
+  -- | Number of MH iterations
+     Int                    
+  -- | A model awaiting an input
+  -> (b -> Model env es a)  
+  -- | A model input and model environment (containing observed values to condition on)
+  -> (b, Env env)           
+  -- | An optional list of observable variable names (strings) to specify sample sites of interest (e.g. for interest in sampling #mu, provide "mu"). This causes other variables to not be resampled unless necessary.
+  -> [Tag]                  
+  -- | Trace of output environments, containing values sampled for each MH iteration
+  -> Sampler [Env env]     
 mh n model  (x_0, env_0) tags = do
   -- Perform initial run of MH with no proposal sample site
   y0 <- runMH env_0 Map.empty ("", 0) (model x_0)
@@ -47,10 +54,16 @@ mh n model  (x_0, env_0) tags = do
 
 -- | Perform one step of MH
 mhStep :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  => Env env                   -- Model environment
-  -> Model env es a            -- Model
-  -> [Tag]                     -- Tags indicating sample sites of interest
-  -> [((a, STrace), LPTrace)]  -- Trace of previous mh outputs
+  => 
+  -- | Model environment
+     Env env                  
+  -- | Model
+  -> Model env es a            
+  -- | Tags indicating sample sites of interest
+  -> [Tag]                     
+  -- | Trace of previous MH outputs
+  -> [((a, STrace), LPTrace)]  
+  -- | Updated trace of MH outputs
   -> Sampler [((a, STrace), LPTrace)]
 mhStep env model tags trace = do
   let -- Get previous mh output
@@ -59,13 +72,13 @@ mhStep env model tags trace = do
       sampleSites = if null tags then samples
                     else  Map.filterWithKey (\(tag, i) _ -> tag `elem` tags) samples
 
-  α_samp_ind <- sample $ DiscrUniformDist 0 (Map.size sampleSites - 1) Nothing Nothing
+  α_samp_ind <- sample $ DiscrUniformDist 0 (Map.size sampleSites - 1)
   let (α_samp, _) = Map.elemAt α_samp_ind sampleSites
 
   ((x', samples'), logps') <- runMH env samples α_samp model
 
   acceptance_ratio <- liftS $ accept α_samp samples samples' logps logps'
-  u <- sample (UniformDist 0 1 Nothing Nothing)
+  u <- sample (UniformDist 0 1)
 
   if u < acceptance_ratio
     then do return (((x', samples'), logps'):trace)
@@ -73,27 +86,32 @@ mhStep env model tags trace = do
 
 -- | MH handler
 runMH :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  => Env env        -- Model environment
-  -> STrace         -- Sample trace of previous MH iteration
-  -> Addr           -- Sample address of interest
-  -> Model env es a -- Model
+  => 
+  -- | Model environment
+     Env env       
+  -- | Sample trace of previous MH iteration
+  -> STrace         
+  -- | Sample address of interest
+  -> Addr           
+  -- | Model
+  -> Model env es a 
   -> Sampler ((a, STrace), LPTrace)
 runMH env strace α_samp =
      handleSamp strace α_samp  . handleObs
    . handleState Map.empty . handleState Map.empty
    . traceLPs . traceSamples . handleCore env
 
-pattern Samp :: Member Sample es => Dist x -> Addr -> EffectSum es x
+pattern Samp :: Member Sample es => PrimDist x -> Addr -> EffectSum es x
 pattern Samp d α <- (prj  -> Just (Sample d α))
 
-pattern Obs :: Member Observe es => Dist x -> x -> Addr -> EffectSum es x
+pattern Obs :: Member Observe es => PrimDist x -> x -> Addr -> EffectSum es x
 pattern Obs d y α <- (prj -> Just (Observe d y α))
 
 -- | Trace log probabilities for each Sample and Observe operation
 traceLPs :: (Member (State LPTrace) es, Member Sample es, Member Observe es) => Prog es a -> Prog es a
 traceLPs (Val x) = return x
 traceLPs (Op op k) = case op of
-  Samp (DistDict d) α ->
+  Samp (PrimDistDict d) α ->
        Op op (\x -> modify (updateLPTrace α d x) >>
                     traceLPs (k x))
   Obs d y α ->
@@ -104,18 +122,19 @@ traceLPs (Op op k) = case op of
 -- | Selectively sample
 handleSamp :: STrace -> Addr -> Prog '[Sample] a -> Sampler a
 handleSamp strace α_samp (Op op k) = case discharge op of
-  Right (Sample (DistDict d) α) ->
+  Right (Sample (PrimDistDict d) α) ->
         do x <- lookupSample strace d α α_samp
            handleSamp strace α_samp (k x)
   _  -> error "Impossible: Nothing cannot occur"
 handleSamp _ _ (Val x) = return x
 
-lookupSample :: Show a => OpenSum.Member a PrimVal => STrace -> Dist a -> Addr -> Addr -> Sampler a
+-- | Look up the sampled value for an address from the sample trace
+lookupSample :: Show a => OpenSum.Member a PrimVal => STrace -> PrimDist a -> Addr -> Addr -> Sampler a
 lookupSample samples d α α_samp
   | α == α_samp = sample d
   | otherwise   =
       case Map.lookup α samples of
-        Just (PrimDist d', x) -> do
+        Just (ErasedPrimDist d', x) -> do
           if d == unsafeCoerce d'
             then return (fromJust $ OpenSum.prj x)
             else sample d

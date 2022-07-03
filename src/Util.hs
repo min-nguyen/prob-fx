@@ -1,10 +1,5 @@
 module Util where
 
-import qualified Data.Map as Map
-import Data.Map (Map)
-
-data Proxy p = Proxy
-
 boolToInt :: Bool -> Int
 boolToInt True  = 1
 boolToInt False = 0

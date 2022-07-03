@@ -10,14 +10,16 @@
 
 module Freer.Trace where
 
-import qualified Data.Map as Map
+
 import Data.Map (Map)
 import Data.Maybe
-import GHC.TypeLits ( KnownSymbol )
-import Freer.Effects.Dist
+import Data.Proxy
 import Env
-import qualified OpenSum as OpenSum
+import Freer.Effects.Dist
+import GHC.TypeLits ( KnownSymbol )
 import OpenSum (OpenSum)
+import qualified Data.Map as Map
+import qualified OpenSum as OpenSum
 import Util
 
 type STrace = Map Addr (PrimDist, OpenSum PrimVal)

@@ -1,5 +1,5 @@
 cabal-version:       3.6
-name:                wasabaye
+name:                prob-fx
 version:             0.1.0.0
 license:             MIT
 license-file:        LICENSE.md
@@ -58,6 +58,7 @@ library
                       FindElem,
                       Model,
                       OpenSum,
+                      PrimDist,
                       Prog,
                       Sampler,
                       Trace,
@@ -95,7 +96,7 @@ library
   default-language:    Haskell2010
   ghc-options:         -O2 -funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math
 
-executable wasabaye
+executable prob-fx
   -- .hs or .lhs file containing the Main module.
   main-is:             Main.hs
 
@@ -104,13 +105,13 @@ executable wasabaye
                        containers,
                        extensible,
                        split,
-                       wasabaye
+                       prob-fx
 
   -- Base language which the package is written in.
   default-language:    Haskell2010
   ghc-options:         -O2 -rtsopts -funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math
 
-executable benchmark-wasabaye
+executable benchmark
   -- .hs or .lhs file containing the Main module.
   main-is:             Main.hs
 
@@ -125,9 +126,9 @@ executable benchmark-wasabaye
                        criterion,
                        deepseq,
                        extensible,
-                       wasabaye
+                       prob-fx
 
-  hs-source-dirs:      benchmarking/wasabaye
+  hs-source-dirs:      benchmarking/prob-fx
   -- Base language which the package is written in.
   default-language:    Haskell2010
   ghc-options:         -O2 -rtsopts -funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math

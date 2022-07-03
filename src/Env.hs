@@ -15,14 +15,14 @@ module Env where
 
 import Data.Kind ( Constraint )
 import Data.Proxy ( Proxy(Proxy) )
-import qualified Data.Vector as V
+import FindElem ( FindElem(..), P(..) )
 import GHC.OverloadedLabels ( IsLabel(..) )
 import GHC.TypeLits ( KnownSymbol, Symbol, symbolVal )
+import qualified Data.Vector as V
 import qualified GHC.TypeLits as TL
 import Unsafe.Coerce ( unsafeCoerce )
-import FindElem ( FindElem(..), P(..) )
 
--- ||| (Section 5.1) Model Environments
+-- ||| (Section 5.1) Model environments
 data Env (env :: [Assign Symbol *]) where
   ENil  :: Env '[]
   ECons :: forall a x env. [a] -> Env env -> Env (x := a : env)
@@ -36,14 +36,14 @@ infixr 5 <:>
 (<:>) :: UniqueKey x env ~ 'True => Assign (ObsVar x) [a] -> Env env -> Env ((x ':= a) ': env)
 (_ := a) <:> env = ECons a env
 
--- | Observable variables 
+-- | Containers for observable variables 
 data ObsVar (x :: Symbol) where
   ObsVar :: KnownSymbol x => ObsVar x
 
 instance (KnownSymbol x, x ~ x') => IsLabel x (ObsVar x') where
   fromLabel = ObsVar
 
--- | Model environment constraints 
+-- | Constraining model environments
 instance FindElem x ((x := a) : env) where
   findElem = P 0
 instance {-# OVERLAPPABLE #-} FindElem x env => FindElem x ((x' := a) : env) where
