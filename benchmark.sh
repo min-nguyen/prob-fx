@@ -2,13 +2,13 @@
 if  [[ $# -eq 0 ]] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
   then
     echo "Usage: ./`basename $0` <arg>"
-    echo "Arg options: [wasabaye, monad-bayes, turing]"
+    echo "Arg options: [prob-fx, monad-bayes, turing]"
     exit
 fi
 if [ $1 == "monad-bayes" ]
 then cd benchmarking/monad-bayes && cabal run
-elif  [ $1 == "wasabaye" ]
-then cabal run benchmark-wasabaye
+elif  [ $1 == "prob-fx" ]
+then cabal run benchmark
 elif  [ $1 == "turing" ];
 then cd benchmarking/turing;
      echo "Running LinRegr/Simulation for sample sizes: 2000, 4000, 6000, 8000, 10000";
@@ -56,6 +56,6 @@ then cd benchmarking/turing;
 else
   echo "Argument '$1' unrecognized. "
   echo "Usage: ./`basename $0` <arg>"
-  echo "Arg options: [wasabaye, monad-bayes, turing]"
+  echo "Arg options: [prob-fx, monad-bayes, turing]"
   exit
 fi

@@ -41,5 +41,5 @@ parseArgs cmd = case cmd of
 main :: IO ()
 main = do
   args <- getArgs
-  case args of []      -> print $ "no arguments provided to Wasabaye. Available arguments: " ++ availableCommands
+  case args of []      -> print $ "no arguments provided to ProbFX. Available arguments: " ++ availableCommands
                (a:as)  -> parseArgs a
