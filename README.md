@@ -83,7 +83,7 @@ All example models can be found in `src/Examples`, showing variations on how mod
 - § 4: Embedding
   - § 4.1: The definition of `Prog` is in `src/Prog.hs`, including auxiliary types and functions.
   - § 4.2: The definition of `Model` and the smart constructors for primitive distributions are in `src/Model.hs`.
-    The effect type `Dist` (§ 4.2.1) is in `src/Effects/Dist.hs`, and `ObsReader` (§ 4.2.2) is in `src/Effects/ObsReader.hs`.
+    The effect type `Dist` (§ 4.2.1) is split up into `src/Effects/Dist.hs` and `src/PrimDist.hs`. The effect `ObsReader` (§ 4.2.2) is in `src/Effects/ObsReader.hs`.
 
 - § 5: Interpreting multimodal models
   - Intro: Coinflip example: `src/Examples/CoinFlip.hs`

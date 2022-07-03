@@ -58,6 +58,7 @@ library
                       FindElem,
                       Model,
                       OpenSum,
+                      PrimDist,
                       Prog,
                       Sampler,
                       Trace,

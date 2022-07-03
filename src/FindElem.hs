@@ -10,16 +10,17 @@
 module FindElem where
 import GHC.TypeLits ( TypeError, ErrorMessage(Text, (:<>:), (:$$:), ShowType) )
 
-newtype P t rs = P {unP :: Int}
+-- | Auxiliary type-class for proof that t is an element of the type-level list ts.
+class FindElem t ts where
+  findElem :: P t ts
 
-class FindElem x ts where
-  findElem :: P x ts
+newtype P t ts = P {unP :: Int}
 
-instance FindElem t (t ': r) where
+instance FindElem t (t ': ts) where
   findElem = P 0
 
-instance {-# OVERLAPPABLE #-} FindElem t r => FindElem t (t' : r) where
-  findElem = P $ 1 + unP (findElem :: P t r)
+instance {-# OVERLAPPABLE #-} FindElem t ts => FindElem t (t' : ts) where
+  findElem = P $ 1 + unP (findElem :: P t ts)
 
 instance TypeError ('Text "Cannot unify effect types." ':$$:
                     'Text "Unhandled effect: " ':<>: 'ShowType t ':$$:

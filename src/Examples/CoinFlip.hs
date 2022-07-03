@@ -9,6 +9,7 @@ module Examples.CoinFlip where
 import Prog
 import Effects.ObsReader
 import Model
+import PrimDist
 import Effects.Dist
 import Data.Kind (Constraint)
 import Env
@@ -24,7 +25,7 @@ coinFlip = do
 coinFlip' :: forall env es. (Observables env '["p"] Double, Observables env '[ "y"] Bool) => Model env es Bool
 coinFlip' = Model $ do
   maybe_p  <- call (Ask @env #p)
-  p        <- call (UniformDist 0 1 maybe_p (Just "p"))
+  p        <- call (Dist (UniformDist 0 1) maybe_p (Just "p"))
   maybe_y  <- call (Ask @env #y)
-  y        <- call (BernoulliDist p maybe_y (Just "p") )
+  y        <- call (Dist (BernoulliDist p) maybe_y (Just "p") )
   return y

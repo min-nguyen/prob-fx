@@ -12,16 +12,17 @@ module Trace where
 
 import Data.Map (Map)
 import Data.Maybe
+import Data.Proxy
 import Effects.Dist
+import PrimDist
 import Env
 import GHC.TypeLits
 import OpenSum (OpenSum)
 import qualified Data.Map as Map
-import qualified OpenSum as OpenSum
-import Util
+import qualified OpenSum
 
--- | Sample trace, mapping addresses of sample/observe operations to their distributions and sampled values
-type STrace = Map Addr (PrimDist, OpenSum PrimVal)
+-- ||| (Section 6.1) Sample trace, mapping addresses of sample/observe operations to their primitive distributions and sampled values
+type STrace = Map Addr (ErasedPrimDist, OpenSum PrimVal)
 
 type Trace a = [(a, STrace)]
 
@@ -42,11 +43,11 @@ extractSamples (x, typ)  =
   . Map.filterWithKey (\(tag, idx) _ -> tag == varToStr x)
 
 updateSTrace :: (Show x, OpenSum.Member x PrimVal)
-  => Addr -> Dist x -> x -> STrace -> STrace
-updateSTrace α d x = Map.insert α (PrimDist d, OpenSum.inj x)
+  => Addr -> PrimDist x -> x -> STrace -> STrace
+updateSTrace α d x = Map.insert α (ErasedPrimDist d, OpenSum.inj x)
 
--- | Log probability trace, mapping addresses of sample/observe operations to their log probabilities
+-- ||| (Section 6.2.2) Log probability trace, mapping addresses of sample/observe operations to their log probabilities
 type LPTrace = Map Addr Double
 
-updateLPTrace :: Addr -> Dist x -> x -> LPTrace -> LPTrace
+updateLPTrace :: Addr -> PrimDist x -> x -> LPTrace -> LPTrace
 updateLPTrace α d x = Map.insert α (logProb d x)
