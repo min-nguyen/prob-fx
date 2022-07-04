@@ -5,7 +5,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-module Inference.Simulate where
+module Inference.SIM where
 
 import Control.Monad
 import Control.Monad.Trans.Class
@@ -41,7 +41,7 @@ simulate model env x  = do
   outputs_strace <- runSimulate env (model x)
   return (fmap fromSTrace outputs_strace)
 
--- | Simulate handler
+-- | SIM handler
 runSimulate :: (es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])
  => Env env -> Model env es a -> Sampler (a, STrace)
 runSimulate env

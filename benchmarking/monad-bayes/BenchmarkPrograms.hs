@@ -89,7 +89,7 @@ fromParams (Params trans_p obs_p) = (trans_p, obs_p)
 initialParams :: Params
 initialParams = Params 0.5 0.5
 
--- HMM Simulate Model
+-- HMM SIM Model
 simulateHmm1step :: MonadSample m => Params -> Int -> m (Int, Int)
 simulateHmm1step (Params transition_p observation_p) x = do
   dX <- bernoulli transition_p
@@ -164,7 +164,7 @@ data LDAParams = LDAParams {
    } deriving Show
 
 
--- Topic Model Simulate
+-- Topic Model SIM
 documentDistSim :: MonadSample m => LDAParams -> [String] -> Int -> Int -> m [String]
 documentDistSim (LDAParams doc_topic_ps topic_word_ps) vocab n_topics n_words = do
   let sampleWord = do

@@ -30,7 +30,7 @@ import OpenSum (OpenSum(..))
 import Freer.Effects.ObsReader
 import Freer.Effects.State
 import Unsafe.Coerce
-import Freer.Inference.Simulate (handleObs, traceSamples)
+import Freer.Inference.SIM (handleObs, traceSamples)
 
 -- | Compute acceptance probability
 accept :: Addr -> STrace -> STrace -> LPTrace -> LPTrace -> IO Double

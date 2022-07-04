@@ -10,7 +10,7 @@
 module Examples.HMM where
 
 import Model
-import Inference.Simulate as Simulate
+import Inference.SIM as SIM
 import Inference.LW as LW
 import Sampler
 import Control.Monad
@@ -42,7 +42,7 @@ simulateHMM :: Sampler (Int, Env HMMEnv)
 simulateHMM = do
   let x_0 = 0; n = 10
       env = #trans_p := [0.5] <:> #obs_p := [0.8] <:> #y := [] <:> nil
-  Simulate.simulate (hmmFor n) env 0
+  SIM.simulate (hmmFor n) env 0
 
 inferLwHMM :: Sampler  [(Env HMMEnv, Double)]
 inferLwHMM   = do

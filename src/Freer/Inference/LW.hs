@@ -19,7 +19,7 @@ import Freer.Model hiding (runModelFree)
 import Sampler
 import Freer.Effects.State ( modify, handleState, State )
 import Freer.Trace
-import Freer.Inference.Simulate (traceSamples, handleSamp)
+import Freer.Inference.SIM (traceSamples, handleSamp)
 
 -- | Run LW n times for multiple data points
 lw :: forall env es a b. (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])

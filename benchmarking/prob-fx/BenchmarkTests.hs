@@ -19,7 +19,7 @@ module BenchmarkTests where
 
 import qualified Data.Map as Map
 import BenchmarkPrograms
-import qualified Freer.Inference.Simulate as Simulate
+import qualified Freer.Inference.SIM as SIM
 import qualified Freer.Inference.LW as LW
 import qualified Freer.Inference.MH as MH
 import Freer.Effects.State

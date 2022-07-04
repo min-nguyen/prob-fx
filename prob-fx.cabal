@@ -1,7 +1,7 @@
 cabal-version:       3.6
 name:                prob-fx
 version:             0.1.0.0
-license:             The BSD 3-Clause License
+license:             BSD-3-Clause
 license-file:        LICENSE.md
 copyright:           2022 Minh Nguyen
 stability:           experimental
@@ -34,7 +34,7 @@ library
                       Effects.Writer,
                       Inference.LW,
                       Inference.MH,
-                      Inference.Simulate,
+                      Inference.SIM,
                       Examples.CoinFlip,
                       Examples.DataSets,
                       Examples.HMM,
@@ -52,7 +52,7 @@ library
                       Freer.Effects.Writer,
                       Freer.Inference.LW,
                       Freer.Inference.MH,
-                      Freer.Inference.Simulate,
+                      Freer.Inference.SIM,
                       Freer.Model,
                       Freer.Trace,
                       Env,

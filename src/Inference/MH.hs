@@ -29,7 +29,7 @@ import OpenSum (OpenSum(..))
 import Effects.ObsReader
 import Effects.State
 import Unsafe.Coerce
-import Inference.Simulate (handleObs, traceSamples)
+import Inference.SIM (handleObs, traceSamples)
 
 -- ||| (Section 6.2.2) Metropolis-Hastings
 mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])

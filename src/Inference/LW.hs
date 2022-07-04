@@ -19,7 +19,7 @@ import Model hiding (runModelFree)
 import Sampler
 import Effects.State ( modify, handleState, State )
 import Trace
-import Inference.Simulate (traceSamples, handleSamp)
+import Inference.SIM (traceSamples, handleSamp)
 
 -- ||| (Section 6.2.1) Likelihood Weighting (LW)
 lw :: forall env es a b. (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])

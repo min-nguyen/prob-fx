@@ -13,7 +13,7 @@ import Control.Monad
 import Model
 import Env
 import Sampler
-import Inference.Simulate as Simulate
+import Inference.SIM as SIM
 import Inference.MH as MH
 import Inference.LW as LW
 
@@ -43,7 +43,7 @@ logRegr xs = do
                      return (l:ls)) [] xs
   return (reverse ls)
 
--- | Simulate from logistic regression
+-- | SIM from logistic regression
 simulateLogRegr :: Sampler [(Double, Bool)]
 simulateLogRegr = do
   -- First declare the model inputs
@@ -51,7 +51,7 @@ simulateLogRegr = do
   -- Define a model environment to simulate from, providing observed values for the model parameters
       env = (#label := []) <:> (#m := [2]) <:> (#b := [-0.15]) <:> nil
   -- Call simulate on logistic regression
-  (ys, envs) <- Simulate.simulate logRegr env xs
+  (ys, envs) <- SIM.simulate logRegr env xs
   return (zip xs ys)
 
 -- | Likelihood-weighting over logistic regression

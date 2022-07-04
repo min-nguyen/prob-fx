@@ -92,7 +92,7 @@ All example models can be found in `src/Examples`, showing variations on how mod
   - § 5.5: Extending models with extra effects: `src/Examples/SIR.hs`
 
 - § 6: Simulation and inference as effect handlers
-  - § 6.1: Simulation: `src/Inference/Simulate.hs`. The type of `STrace` is in `src/Trace.hs`.
+  - § 6.1: Simulation: `src/Inference/SIM.hs`. The type of `STrace` is in `src/Trace.hs`.
   - § 6.2.1: Likelihood Weighting: `src/Inference/LW.hs`.
   - § 6.2.2: Metropolis Hastings: `src/Inference.MH.hs`.
 

@@ -38,7 +38,7 @@ import Env
 import Util
 import GHC.Show (Show)
 import qualified Data.Map as Map
-import qualified Freer.Inference.Simulate as Simulate
+import qualified Freer.Inference.SIM as SIM
 import qualified Freer.Inference.LW as LW
 import qualified Freer.Inference.MH as MH
 
@@ -72,7 +72,7 @@ mkRecordLinRegrY y_vals =
 simLinRegr :: Int -> Int -> Sampler ()
 simLinRegr n_samples n_datapoints  = do
   let n_datapoints' = fromIntegral n_datapoints
-  Simulate.simulateMany n_samples linRegr [[0 .. n_datapoints']] [mkRecordLinRegr ([], [1.0], [0.0], [1.0])]
+  SIM.simulateMany n_samples linRegr [[0 .. n_datapoints']] [mkRecordLinRegr ([], [1.0], [0.0], [1.0])]
   return ()
 
 lwLinRegr :: Int -> Int -> Sampler ()
@@ -134,7 +134,7 @@ hmm_data = [0,1,1,3,4,5,5,5,6,5,6,8,8,9,7,8,9,8,10,10,7,8,10,9,10,10,14,14,14,15
 
 simHMM :: Int -> Int -> Sampler [Int]
 simHMM n_samples hmm_length  = do
-  map fst <$> Simulate.simulateMany n_samples (hmmNSteps hmm_length) [0] [mkRecordHMM ([], 0.5, 0.9)]
+  map fst <$> SIM.simulateMany n_samples (hmmNSteps hmm_length) [0] [mkRecordHMM ([], 0.5, 0.9)]
 
 lwHMM :: Int -> Int -> Sampler ()
 lwHMM n_samples hmm_length  = do
@@ -204,7 +204,7 @@ simLDA n_samples n_words  = do
                #φ := [[0.12491280814569208,1.9941599739151505e-2,0.5385152817942926,0.3166303103208638],
                       [1.72605174564027e-2,2.9475900240868515e-2,9.906011619752661e-2,0.8542034661052021]] <:>
                #w := [] <:> nil
-  Simulate.simulateMany n_samples (documentDist vocab 2) [n_words] [params]
+  SIM.simulateMany n_samples (documentDist vocab 2) [n_words] [params]
   return ()
 
 lwLDA :: Int -> Int -> Sampler ()

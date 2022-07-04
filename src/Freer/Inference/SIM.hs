@@ -5,7 +5,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-module Freer.Inference.Simulate where
+module Freer.Inference.SIM where
 
 -- import Data.Extensible hiding (Member)
 import qualified Data.Map as Map
