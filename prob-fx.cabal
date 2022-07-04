@@ -1,13 +1,13 @@
 cabal-version:       3.6
 name:                prob-fx
 version:             0.1.0.0
-license:             MIT
+license:             The BSD 3-Clause License
 license-file:        LICENSE.md
-copyright:           2020-2022 Minh Nguyen
+copyright:           2022 Minh Nguyen
 stability:           experimental
-
 author:              Minh Nguyen
 maintainer:          minhnguyen1995@googlemail.com
+homepage:            http://github.com/min-nguyen/prob-fx
 synopsis:            A library for modular probabilistic modelling
 description:         
   A library for probabilistic programming using algebraic effects. The
@@ -23,6 +23,7 @@ tested-with:
   GHC == 8.8.4
   GHC == 8.10.4
   GHC == 9.0.1
+  
 
 library
   exposed-modules:    
