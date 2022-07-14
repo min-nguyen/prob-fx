@@ -33,6 +33,7 @@ schoolModel n_schools σs = do
   let h = ""
   return θs
 
+-- Perform MH inference
 mhSchool :: Sampler ([Double], [[Double]])
 mhSchool = do
   let n_schools = 8
