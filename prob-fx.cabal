@@ -45,16 +45,6 @@ library
                       Examples.School,
                       Examples.SIR,
                       Examples.SIRModular,
-                      Freer.Effects.Dist,
-                      Freer.Effects.Lift,
-                      Freer.Effects.ObsReader,
-                      Freer.Effects.State,
-                      Freer.Effects.Writer,
-                      Freer.Inference.LW,
-                      Freer.Inference.MH,
-                      Freer.Inference.SIM,
-                      Freer.Model,
-                      Freer.Trace,
                       Env,
                       FindElem,
                       Model,
@@ -71,12 +61,12 @@ library
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:
 
+  -- Other library packages from which modules are imported.  
   -- Other library packages from which modules are imported.
-  build-depends:       
-                      base >= 4.11 && <= 4.17,
-                      ghc-prim                      >= 0.7.0 && < 0.8,
-                      deepseq                       >= 1.4.5 && < 1.5,
-                      containers                    >= 0.6.4 && < 0.7,
+  build-depends:      base                          >= 4.11 && <= 4.17,
+                      ghc-prim                      >= 0.5.3 && < 0.8,
+                      deepseq                       >= 1.4.4 && < 1.5,
+                      containers                    >= 0.6.0 && < 0.7,
                       primitive                     >= 0.7.4 && < 0.8,
                       transformers                  >= 0.5.6 && < 0.6,
                       random                        >= 1.2.1 && < 1.3,
@@ -92,7 +82,7 @@ library
                       mwc-probability               >= 2.3.1 && < 2.4,
                       statistics                    >= 0.16.1 && < 0.17,
                       criterion                     >= 1.5.13 && < 1.6,
-                      split                         >= 0.2.3 && < 0.3,
+                      split                         >= 0.2.3 && < 0.3
 
   -- Directories containing source files.
   hs-source-dirs:      src
@@ -106,37 +96,9 @@ executable prob-fx
   main-is:             Main.hs
 
   -- Other library packages from which modules are imported.
-  build-depends:       base >= 4.11 && <= 4.17,
-                       aeson < 2,
-                       containers                    >= 0.6.4 && < 0.7,
-                       extensible                    >= 0.9 && < 0.10,
-                       split                         >= 0.2.3 && < 0.3,
-                       prob-fx                       == 0.1.0.0
+  build-depends:       base,
+                       prob-fx
 
   -- Base language which the package is written in.
   default-language:    Haskell2010
   ghc-options:         -O2 -rtsopts -funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math
-
-executable benchmark
-  -- .hs or .lhs file containing the Main module.
-  main-is:             Main.hs
-
-  -- Modules included in this executable, other than Main.
-  other-modules:       BenchmarkPrograms,
-                       BenchmarkTests
-
-
-  -- Other library packages from which modules are imported.
-  build-depends:       base >= 4.11 && <= 4.17,
-                       aeson < 2,
-                       containers                    >= 0.6.4 && < 0.7,
-                       criterion                     >= 1.5.13 && < 1.6,
-                       deepseq                       >= 1.4.5 && < 1.5,
-                       extensible                    >= 0.9 && < 0.10,
-                       prob-fx                       == 0.1.0.0
-
-  hs-source-dirs:      benchmarking/prob-fx
-  -- Base language which the package is written in.
-  default-language:    Haskell2010
-  ghc-options:         -O2 -rtsopts -funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math
-
