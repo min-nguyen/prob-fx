@@ -42,7 +42,9 @@ import Statistics.Distribution.Poisson
 import Statistics.Distribution.Uniform
 import Util ( boolToInt )
 
--- ||| (Section 4.2.1) Primitive distributions
+-- ** (Section 4.2.1) Primitive distributions 
+
+-- | Primitive distributions
 data PrimDist a where
   HalfCauchyDist    :: Double -> PrimDist Double
   CauchyDist        :: Double -> Double -> PrimDist Double
@@ -144,7 +146,7 @@ data ErasedPrimDist where
 instance Show ErasedPrimDist where
   show (ErasedPrimDist d) = show d
 
--- ||| (Section 6.1) Sampling functions
+-- *** Sampling functions (Section 6.1) 
 sample :: PrimDist a -> Sampler a
 sample (HalfCauchyDist σ )  =
   createSampler (sampleCauchy 0 σ) >>= pure . abs
@@ -176,7 +178,7 @@ sample (DirichletDist xs ) =
   createSampler (sampleDirichlet xs)
 sample (DeterministicDist x) = pure x
 
--- ||| (Section 6.2) Probability density functions
+-- *** Probability density functions (Section 6.2) 
 prob :: PrimDist a -> a -> Double
 prob (DirichletDist xs) ys =
   let xs' = map (/(Prelude.sum xs)) xs

@@ -35,18 +35,26 @@ import Statistics.Distribution.Uniform
 import Util ( boolToInt )
 import PrimDist
 
--- ||| (Section 4.2.1) Effects for distributions
+-- ** (Section 4.2.1) Dist effect 
+
 -- | The Dist effect has a single operation `Dist` that takes as arguments: a primitive distribution of type `PrimDist a`, an optional observed value of type `Maybe a`, and an optional observable variable name of type `Maybe String` .
 data Dist a = Dist { getPrimDist :: PrimDist a, getObs :: Maybe a, getTag :: Maybe String}
 
--- ||| (Section 5.3) Handling Distributions
+-- **  (Section 5.3) Dist handler
+
+-- | Sample effect
 data Sample a where
-  Sample  :: PrimDist a -> Addr -> Sample a
+  Sample  :: PrimDist a     -- ^ Distribution to sample from
+          -> Addr           -- ^ Address of @SAmple@ operation
+          -> Sample a
 
 data Observe a where
-  Observe :: PrimDist a -> a -> Addr -> Observe a
+  Observe :: PrimDist a     -- ^ Distribution to condition with
+          -> a              -- ^ Observed value
+          -> Addr           -- ^ Address of @Observe@ operation
+          -> Observe a
 
--- | Interpret Dist to Sample or Observe, and add address
+-- | Handle the @Dist@ effect to a @Sample@ or @Observe@ effect, and add address
 handleDist :: (Member Sample es, Member Observe es)
         => Prog (Dist : es) a -> Prog es a
 handleDist = loop 0 Map.empty
@@ -69,7 +77,6 @@ type Tag  = String
 type Addr = (Tag, Int)
 type TagMap = Map Tag Int
 
--- | For constraining the output types of distributions
 instance Show a => Show (Dist a) where
   show (Dist d y tag) = "Dist(" ++ show d ++ ", " ++ show y ++ ", " ++ show tag ++ ")"
 

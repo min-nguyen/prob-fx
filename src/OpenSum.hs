@@ -14,12 +14,11 @@
 module OpenSum where
 
 import Data.Kind (Type, Constraint)
-import Data.Proxy
-import Data.Typeable
-import FindElem
+import Data.Typeable ( Typeable )
+import FindElem ( P(unP), FindElem(..) )
 import GHC.TypeLits (Nat, KnownNat, natVal, TypeError, ErrorMessage (Text, (:$$:), (:<>:), ShowType))
 import qualified GHC.TypeLits as TL
-import Unsafe.Coerce
+import Unsafe.Coerce ( unsafeCoerce )
 
 -- | Open sum of value types
 data OpenSum (as :: [*]) where

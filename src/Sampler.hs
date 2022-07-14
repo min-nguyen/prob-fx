@@ -1,13 +1,13 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Sampler where
 
-import Control.Monad
+import Control.Monad ( replicateM )
 import Control.Monad.ST (ST, runST, stToIO)
 import Control.Monad.Trans (MonadIO, MonadTrans, lift)
 import Control.Monad.Trans.Reader (ReaderT, ask, mapReaderT, runReaderT)
 import Data.Map (Map)
 import Data.Set (Set)
-import GHC.Word
+import GHC.Word ( Word32 )
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import qualified Data.Vector as V
@@ -15,8 +15,8 @@ import qualified System.Random.MWC as MWC
 import qualified System.Random.MWC.Distributions as MWC.Dist
 import qualified System.Random.MWC.Probability as MWC.Probability
 import Statistics.Distribution ( ContGen(genContVar) )
-import Statistics.Distribution.CauchyLorentz
-import System.Random.MWC
+import Statistics.Distribution.CauchyLorentz ( cauchyDistribution )
+import System.Random.MWC ( initialize )
 
 -- | Sampler type, for running IO computations alongside a random number generator
 newtype Sampler a = Sampler {runSampler :: ReaderT MWC.GenIO IO a}
@@ -39,6 +39,8 @@ sampleIOFixedSeed n m = initialize (V.singleton (fromIntegral n :: Word32)) >>= 
 -- | Takes a distribution which awaits a generator, and returns a Sampler
 createSampler :: (MWC.GenIO -> IO a) -> Sampler a
 createSampler f = Sampler $ ask >>= lift . f
+
+-- *** IO-based sampling functions
 
 -- | Given distribution parameters, these functions await a generator and then sample a value from a distribution
 sampleRandom :: MWC.GenIO -> IO Double

@@ -20,7 +20,7 @@ import Control.Monad
 import Examples.HMM
 import Data.Extensible (Associated)
 
--- ||| (Section 3.1 + Section 5.5 extension) The SIR model
+-- ** (Section 3.1 + Section 5.5 extension) The SIR model
 
 data Popl = Popl {
     s   :: Int, -- ^ Number of people susceptible to infection
@@ -88,7 +88,7 @@ hmmSIR' n = handleWriterM . hmmSIR n
 
 type SIRenv = '["β" := Double, "γ"  := Double, "ρ"  := Double, "𝜉" := Int]
 
--- ||| (Section 3.1, Fig 4a) SIM from SIR model: ([(s, i, r)], [𝜉])
+-- ** (Section 3.1, Fig 4a) SIM from SIR model: ([(s, i, r)], [𝜉])
 simulateSIR :: Sampler ([(Int, Int, Int)], [Reported])
 simulateSIR = do
   let sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
@@ -98,7 +98,7 @@ simulateSIR = do
       sirs = map (\(Popl s i recov) -> (s, i, recov)) sir_trace
   return (sirs, 𝜉s)
 
--- ||| (Section 3.3, Fig 5) Infer from SIR model: ([ρ], [β])
+-- ** (Section 3.3, Fig 5) Infer from SIR model: ([ρ], [β])
 inferSIR :: Sampler ([Double], [Double])
 inferSIR = do
   𝜉s <- snd <$> simulateSIR
@@ -110,7 +110,7 @@ inferSIR = do
   return (ρs, βs)
 
 
--- ||| (Section 3.2) Modular Extensions to the SIR Model
+-- ** (Section 3.2) Modular Extensions to the SIR Model
 
 {- Note that the implementations below aren't as modular as we would like, due to having to redefine the data types Popl and TransParams when adding new variables to the SIR model. The file "src/Examples/SIRModular.hs" shows how one could take steps to resolve this by using extensible records. -}
 

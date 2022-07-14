@@ -11,14 +11,18 @@ import Prog
 import Env
 import Util
 
--- ||| (Section 4.2.2) Effects for reading observable variables
+-- ** (Section 4.2.2) ObsReader effect 
+
+-- | An effect for reading observable variables from a model environment
 data ObsReader env a where
   Ask :: Observable env x a => ObsVar x -> ObsReader env (Maybe a)
 
 ask :: forall env es x a. Member (ObsReader env) es => Observable env x a => ObsVar x -> Prog es (Maybe a)
 ask x = call (Ask @env x)
 
--- ||| (Section 5.2) Handling Reading of Observable Variables
+-- ** (Section 5.2) ObsReader handler 
+
+-- | Handle @Ask@ requests of observable variables
 handleRead :: forall env es a.
   Env env -> Prog (ObsReader env ': es) a -> Prog es a
 handleRead env (Val x) = return x

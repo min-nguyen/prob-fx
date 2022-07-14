@@ -14,7 +14,7 @@ import Effects.Dist
 import Data.Kind (Constraint)
 import Env
 
--- ||| (Section 5) Coin flip model
+-- ** Coin flip model (Section 5) 
 coinFlip :: (Observables env '["p"] Double, Observables env '[ "y"] Bool) => Model env es Bool
 coinFlip = do
   p <- uniform 0 1 #p

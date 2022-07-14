@@ -8,7 +8,8 @@ module Effects.State where
 
 import Prog
 
--- ||| (Section 6.1) State effect and handler
+-- ** (Section 6.1) State effect 
+
 data State s a where
   GetSt :: State s s
   PutSt :: s -> State s ()
