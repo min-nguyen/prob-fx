@@ -3,7 +3,7 @@
 
 #### Interacting with ProbFX
 
-To interact with the many example models of ProbFX and visualise their results in a plot, please see https://github.com/min-nguyen/prob-fx which provides and documents an executable version of ProbFX with a script!
+To have a more interative and visual play-around with the many example models of ProbFX, please see https://github.com/min-nguyen/prob-fx which provides and documents an executable version of ProbFX as a script!
 
 #### Description
 ProbFX is a library for probabilistic programming using algebraic effects that implements the paper [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf) -- this provides a comprehensive motivation and walkthrough of this library. In short, the emphasis is on being able to define modular and reusable probabilistic models, and secondly, compositional implementation of model execution (inference) in terms of effect handlers. 
@@ -46,9 +46,9 @@ ProbFX is a library for probabilistic programming using algebraic effects that i
   - § 6.2.1: Likelihood Weighting: `src/Inference/LW.hs`.
   - § 6.2.2: Metropolis Hastings: `src/Inference.MH.hs`.
 
-#### Examples
+#### Examples and Building Models
 
-We provide and document a large number of examples of defining and then executing probabilistic models, which can be found in `Examples`. [`LogRegr.hs`](https://github.com/min-nguyen/prob-fx/blob/master/src/Examples/LogRegr.hs) documents a particularly representative walk-through. The general process of doing this is as follows:
+We provide and document a large number of examples of defining and then executing probabilistic models, which can be found in `src/Examples`. [`LogRegr.hs`](https://github.com/min-nguyen/prob-fx/blob/master/src/Examples/LogRegr.hs) documents a particularly representative walk-through. The general process of doing this is as follows:
 1. Define an appropriate model of type `Model env es a` and a corresponding model environment of type `Env env`.
 2. Execute a model using one of the library functions `simulate`, `lw`, or `mh` detailed in `src/Inference`; this produces an output in the monad `Sampler`.
 3. `Sampler` computations can be evaluated with `sampleIO` (found in `src/Sampler.hs`) to produce an `IO` computation. Examples of this are shown in `Main.hs`.
