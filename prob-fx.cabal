@@ -7,7 +7,7 @@ copyright:           2022 Minh Nguyen
 stability:           experimental
 author:              Minh Nguyen
 maintainer:          minhnguyen1995@googlemail.com
-homepage:            http://github.com/min-nguyen/prob-fx
+homepage:            https://github.com/min-nguyen/prob-fx/tree/hackage
 synopsis:            A library for modular probabilistic modelling
 description:         
   A library for probabilistic programming using algebraic effects. The
