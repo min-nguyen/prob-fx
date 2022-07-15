@@ -126,7 +126,7 @@ handleSamp ::
      STrace 
   -- | Address of the proposal sample site for the current MH iteration
   -> Addr 
-  -- |  P                                                                                                                         
+  -- |  Idx                                                                                                                         
   -> Prog '[Sample] a 
   -> Sampler a
 handleSamp strace α_samp (Op op k) = case discharge op of

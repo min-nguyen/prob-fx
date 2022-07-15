@@ -13,7 +13,7 @@ module Prog (Prog(..), EffectSum, call, discharge, Member(..)) where
 
 import Control.Monad ( (>=>) )
 import Data.Kind (Constraint)
-import FindElem ( P(unP), FindElem(..) )
+import FindElem ( Idx(unIdx), FindElem(..) )
 import GHC.TypeLits ( TypeError, ErrorMessage(Text, (:<>:), (:$$:), ShowType) )
 import Unsafe.Coerce ( unsafeCoerce )
 
@@ -59,8 +59,8 @@ instance {-# INCOHERENT #-} (e ~ e') => Member e '[e'] where
    prj (EffectSum _ x) = Just (unsafeCoerce x)
 
 instance (FindElem e es) => Member e es where
-  inj = EffectSum (unP (findElem :: P e es))
-  prj = prj' (unP (findElem :: P e es))
+  inj = EffectSum (unIdx (findElem :: Idx e es))
+  prj = prj' (unIdx (findElem :: Idx e es))
     where prj' n (EffectSum n' x)
             | n == n'   = Just (unsafeCoerce x)
             | otherwise = Nothing

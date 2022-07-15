@@ -11,18 +11,33 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-module Env (ObsVar(..), varToStr, Env(..), (<:>), nil, Observable(..), Observables(..), UniqueKey, Assign(..), LookupType) where
+{- | This implements the model environments that users must provide upon running a model; such environments assign traces of values to the "observable variables" (random variables which can be conditioned against) of a model.
+-}
+
+module Env 
+  ( -- * Observable variable
+    ObsVar(..)
+  , varToStr
+    -- * Model environment
+  , Assign(..)
+  , Env(..)
+  , (<:>)
+  , nil
+  , Observable(..)
+  , Observables(..)
+  , UniqueKey
+  , LookupType) where
 
 import Data.Kind ( Constraint )
 import Data.Proxy ( Proxy(Proxy) )
-import FindElem ( FindElem(..), P(..) )
+import FindElem ( FindElem(..), Idx(..) )
 import GHC.OverloadedLabels ( IsLabel(..) )
 import GHC.TypeLits ( KnownSymbol, Symbol, symbolVal )
 import qualified Data.Vector as V
 import qualified GHC.TypeLits as TL
 import Unsafe.Coerce ( unsafeCoerce )
 
--- ** (Section 5.1) Model Environments 
+
 
 -- | Containers for observable variables 
 data ObsVar (x :: Symbol) where
@@ -36,6 +51,8 @@ instance (KnownSymbol x, x ~ x') => IsLabel x (ObsVar x') where
 varToStr :: forall x. ObsVar x -> String
 varToStr ObsVar = symbolVal (Proxy @x)
 
+-- * Model Environments 
+
 -- | A model environment assigning traces (lists) of observed values to observable variables i.e. the type @Env ((x := a) : env)@ indicates @x@ is assigned a value of type @[a]@
 data Env (env :: [Assign Symbol *]) where
   ENil  :: Env '[]
@@ -44,12 +61,14 @@ data Env (env :: [Assign Symbol *]) where
 -- | Assign or associate a variable @x@ with a value of type @a@
 data Assign x a = x := a
 
+-- | Empty model environment
 nil :: Env '[]
 nil = ENil
 
 infixr 5 <:>
-(<:>) :: UniqueKey x env ~ 'True => Assign (ObsVar x) [a] -> Env env -> Env ((x ':= a) ': env)
-(_ := a) <:> env = ECons a env
+-- | Prepend a variable assignment to a model environment
+(<:>) :: UniqueKey x env ~ True => Assign (ObsVar x) [a] -> Env env -> Env ((x ':= a) ': env)
+(_ := as) <:> env = ECons as env
 
 instance (KnownSymbol x, Show a, Show (Env env)) => Show (Env ((x := a) ': env)) where
   show (ECons a env) = varToStr (ObsVar @x) ++ ":=" ++ show a ++ ", " ++ show env
@@ -57,9 +76,9 @@ instance Show (Env '[]) where
   show ENil = "[]"
 
 instance FindElem x ((x := a) : env) where
-  findElem = P 0
+  findElem = Idx 0
 instance {-# OVERLAPPABLE #-} FindElem x env => FindElem x ((x' := a) : env) where
-  findElem = P $ 1 + unP (findElem :: P x env)
+  findElem = Idx $ 1 + unIdx (findElem :: Idx x env)
 
 -- | Retrieve the type of an observable variable @x@ from an environment @env@
 type family LookupType x env where
@@ -75,14 +94,14 @@ class (FindElem x env, LookupType x env ~ a)
 instance (FindElem x env, LookupType x env ~ a)
   => Observable env x a where
   get _ env =
-    let idx = unP $ findElem @x @env
+    let idx = unIdx $ findElem @x @env
         f :: Int -> Env env' -> [a]
         f n (ECons a env) = if   n == 0
                             then unsafeCoerce a
                             else f (n - 1) env
     in  f idx env
   set _ a' env =
-    let idx = unP $ findElem @x @env
+    let idx = unIdx $ findElem @x @env
         f :: Int -> Env env' -> Env env'
         f n (ECons a env) = if   n == 0
                             then ECons (unsafeCoerce a') env
