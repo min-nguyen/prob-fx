@@ -8,27 +8,60 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MonoLocalBinds #-}
 
-module Model where
+{- An algebraic effect embedding of probabilistic models.
+-}
 
+module Model 
+  ( -- * Model
+    Model(..)
+  , handleCore
+    -- * Distribution smart constructors
+  , bernoulli
+  , bernoulli'
+  , beta
+  , beta'
+  , binomial
+  , binomial'
+  , categorical
+  , categorical'
+  , cauchy
+  , cauchy'
+  , halfCauchy
+  , halfCauchy'
+  , deterministic
+  , deterministic'
+  , dirichlet
+  , dirichlet'
+  , discrete
+  , discrete'
+  , gamma
+  , gamma'
+  , normal
+  , normal'
+  , halfNormal
+  , halfNormal'
+  , poisson
+  , poisson'
+  , uniform
+  , uniform'
+  ) 
+  where
 
 import Control.Monad ( ap )
 import Control.Monad.Trans.Class ( MonadTrans(lift) )
-import Effects.Dist
-import Effects.Lift
-import Effects.ObsReader
+import Effects.Dist ( handleDist, Dist(Dist), Observe, Sample )
+import Effects.Lift ( Lift(..) )
+import Effects.ObsReader ( ask, handleRead, ObsReader )
 import Effects.State ( State, getSt, putSt, modify, handleState )
-import Effects.Writer
-import Env
+import Env ( varToStr, Env, ObsVar, Observable )
 import OpenSum (OpenSum)
 import PrimDist
-import Prog
+import Prog ( call, Member, Prog )
 import qualified OpenSum
 
--- ** (Section 4.2) Model 
-
 -- | A @Model@ is indexed by a model environment @env@ containing random variables that can be provided observed values for, an effect signature @es@ of the possible effects a model can invoke, and an output type @a@ of values that the model generates.
-newtype Model env es v =
-  Model { runModel :: (Member Dist es, Member (ObsReader env) es, Member Sample es) => Prog es v }
+newtype Model env es a =
+  Model { runModel :: (Member Dist es, Member (ObsReader env) es, Member Sample es) => Prog es a }
   deriving Functor
 
 instance Applicative (Model env es) where
@@ -41,29 +74,28 @@ instance Monad (Model env es) where
     f' <- f
     runModel $ x f'
 
--- *** (Section 5.4) Specialising models 
-
 -- | The initial handler for models, specialising a model under a certain environment to produce a probabilistic program consisting of @Sample@ and @Observe@ operations. 
 handleCore :: (Member Observe es, Member Sample es) => Env env -> Model env (ObsReader env : Dist : es) a -> Prog es a
 handleCore env m = (handleDist . handleRead env) (runModel m)
 
--- *** (Section 4.2.2) Distribution smart constructors 
-deterministic' :: (Eq v, Show v, OpenSum.Member v PrimVal)
-  => v -> Model env es v
-deterministic' x = Model $ do
-  call (Dist (DeterministicDist x) Nothing Nothing)
+-- ** Distribution smart constructors
+{- $ hello
 
-deterministic :: forall env es v x. (Eq v, Show v, OpenSum.Member v PrimVal)
-  => Observable env x v
-  => v -> ObsVar x -> Model env es v
+-}
+
+deterministic :: forall env es a x. (Eq a, Show a, OpenSum.Member a PrimVal, Observable env x a)
+  => a 
+  -> ObsVar x 
+  -> Model env es a
 deterministic x field = Model $ do
   let tag = Just $ varToStr field
   maybe_y <- ask @env field
   call (Dist (DeterministicDist x) maybe_y tag)
 
-dirichlet' :: [Double] -> Model env es [Double]
-dirichlet' xs = Model $ do
-  call (Dist (DirichletDist xs) Nothing Nothing)
+deterministic' :: (Eq a, Show a, OpenSum.Member a PrimVal)
+  => a -> Model env es a
+deterministic' x = Model $ do
+  call (Dist (DeterministicDist x) Nothing Nothing)
 
 dirichlet :: forall env es x. Observable env x [Double]
   => [Double] -> ObsVar x
@@ -73,9 +105,9 @@ dirichlet xs field = Model $ do
   maybe_y <- ask @env field
   call (Dist (DirichletDist xs) maybe_y tag)
 
-discrete' :: [Double] -> Model env es Int
-discrete' xs = Model $ do
-  call (Dist (DiscreteDist xs) Nothing Nothing)
+dirichlet' :: [Double] -> Model env es [Double]
+dirichlet' xs = Model $ do
+  call (Dist (DirichletDist xs) Nothing Nothing)
 
 discrete :: forall env es x. Observable env x Int
   => [Double] -> ObsVar x
@@ -85,21 +117,21 @@ discrete xs field = Model $ do
   maybe_y <- ask @env field
   call (Dist (DiscreteDist xs) maybe_y tag)
 
-categorical' :: (Eq v, Show v, OpenSum.Member v PrimVal) => [(v, Double)] -> Model env es v
-categorical' xs = Model $ do
-  call (Dist (CategoricalDist xs) Nothing Nothing)
+discrete' :: [Double] -> Model env es Int
+discrete' xs = Model $ do
+  call (Dist (DiscreteDist xs) Nothing Nothing)
 
-categorical :: forall env es v x. (Eq v, Show v, OpenSum.Member v PrimVal) => Observable env x v
-  => [(v, Double)] -> ObsVar x
-  -> Model env es v
+categorical :: forall env es a x. (Eq a, Show a, OpenSum.Member a PrimVal) => Observable env x a
+  => [(a, Double)] -> ObsVar x
+  -> Model env es a
 categorical xs field = Model $ do
   let tag = Just $ varToStr field
   maybe_y <- ask @env field
   call (Dist (CategoricalDist xs) maybe_y tag)
 
-normal' :: Double -> Double -> Model env es Double
-normal' mu sigma = Model $ do
-  call (Dist (NormalDist mu sigma) Nothing Nothing)
+categorical' :: (Eq a, Show a, OpenSum.Member a PrimVal) => [(a, Double)] -> Model env es a
+categorical' xs = Model $ do
+  call (Dist (CategoricalDist xs) Nothing Nothing)
 
 normal :: forall env es x. Observable env x Double
   => Double -> Double -> ObsVar x
@@ -109,9 +141,9 @@ normal mu sigma field = Model $ do
   maybe_y <- ask @env field
   call (Dist (NormalDist mu sigma) maybe_y tag)
 
-halfNormal' :: Double -> Model env es Double
-halfNormal' sigma = Model $ do
-  call (Dist (HalfNormalDist sigma) Nothing Nothing)
+normal' :: Double -> Double -> Model env es Double
+normal' mu sigma = Model $ do
+  call (Dist (NormalDist mu sigma) Nothing Nothing)
 
 halfNormal :: forall env es x. Observable env x Double
   => Double -> ObsVar x
@@ -121,9 +153,9 @@ halfNormal sigma field = Model $ do
   maybe_y <- ask @env field
   call (Dist (HalfNormalDist sigma) maybe_y tag)
 
-cauchy' :: Double -> Double -> Model env es Double
-cauchy' mu sigma = Model $ do
-  call (Dist (CauchyDist mu sigma) Nothing Nothing)
+halfNormal' :: Double -> Model env es Double
+halfNormal' sigma = Model $ do
+  call (Dist (HalfNormalDist sigma) Nothing Nothing)
 
 cauchy :: forall env es x. Observable env x Double
   => Double -> Double -> ObsVar x
@@ -133,9 +165,9 @@ cauchy mu sigma field = Model $ do
   maybe_y <- ask @env field
   call (Dist (CauchyDist mu sigma) maybe_y tag)
 
-halfCauchy' :: Double -> Model env es Double
-halfCauchy' sigma = Model $ do
-  call (Dist (HalfCauchyDist sigma) Nothing Nothing)
+cauchy' :: Double -> Double -> Model env es Double
+cauchy' mu sigma = Model $ do
+  call (Dist (CauchyDist mu sigma) Nothing Nothing)
 
 halfCauchy :: forall env es x. Observable env x Double
   => Double -> ObsVar x
@@ -145,9 +177,9 @@ halfCauchy sigma field = Model $ do
   maybe_y <- ask @env field
   call (Dist (HalfCauchyDist sigma) maybe_y tag)
 
-bernoulli' :: Double -> Model env es Bool
-bernoulli' p = Model $ do
-  call (Dist (BernoulliDist p) Nothing Nothing)
+halfCauchy' :: Double -> Model env es Double
+halfCauchy' sigma = Model $ do
+  call (Dist (HalfCauchyDist sigma) Nothing Nothing)
 
 bernoulli :: forall env es x. Observable env x Bool
   => Double -> ObsVar x
@@ -157,9 +189,9 @@ bernoulli p field = Model $ do
   maybe_y <- ask @env field
   call (Dist (BernoulliDist p) maybe_y tag)
 
-binomial' :: Int -> Double -> Model env es Int
-binomial' n p = Model $ do
-  call (Dist (BinomialDist n p) Nothing Nothing)
+bernoulli' :: Double -> Model env es Bool
+bernoulli' p = Model $ do
+  call (Dist (BernoulliDist p) Nothing Nothing)
 
 binomial :: forall env es x. Observable env x Int
   => Int -> Double -> ObsVar x
@@ -169,9 +201,9 @@ binomial n p field = Model $ do
   maybe_y <- ask @env field
   call (Dist (BinomialDist n p) maybe_y tag)
 
-gamma' :: Double -> Double -> Model env es Double
-gamma' x θ = Model $ do
-  call (Dist (GammaDist x θ) Nothing Nothing)
+binomial' :: Int -> Double -> Model env es Int
+binomial' n p = Model $ do
+  call (Dist (BinomialDist n p) Nothing Nothing)
 
 gamma :: forall env es x. Observable env x Double
   => Double -> Double -> ObsVar x
@@ -181,9 +213,9 @@ gamma x θ field = Model $ do
   maybe_y <- ask @env field
   call (Dist (GammaDist x θ) maybe_y tag)
 
-beta' :: Double -> Double -> Model env es Double
-beta' α β = Model $ do
-  call (Dist (BetaDist α β) Nothing Nothing)
+gamma' :: Double -> Double -> Model env es Double
+gamma' x θ = Model $ do
+  call (Dist (GammaDist x θ) Nothing Nothing)
 
 beta :: forall env es x. Observable env x Double
   => Double -> Double -> ObsVar x
@@ -193,9 +225,9 @@ beta α β field = Model $ do
   maybe_y <- ask @env field
   call (Dist (BetaDist α β) maybe_y tag)
 
-uniform' :: Double -> Double -> Model env es Double
-uniform' min max = Model $ do
-  call (Dist (UniformDist min max) Nothing Nothing)
+beta' :: Double -> Double -> Model env es Double
+beta' α β = Model $ do
+  call (Dist (BetaDist α β) Nothing Nothing)
 
 uniform :: forall env es x. Observable env x Double
   => Double -> Double -> ObsVar x
@@ -205,9 +237,9 @@ uniform min max field = Model $ do
   maybe_y <- ask @env field
   call (Dist (UniformDist min max) maybe_y tag)
 
-poisson' :: Double -> Model env es Int
-poisson' λ = Model $ do
-  call (Dist (PoissonDist λ) Nothing Nothing)
+uniform' :: Double -> Double -> Model env es Double
+uniform' min max = Model $ do
+  call (Dist (UniformDist min max) Nothing Nothing)
 
 poisson :: forall env es x. Observable env x Int
   => Double -> ObsVar x
@@ -217,25 +249,7 @@ poisson λ field = Model $ do
   maybe_y <- ask @env field
   call (Dist (PoissonDist λ) maybe_y tag)
 
+poisson' :: Double -> Model env es Int
+poisson' λ = Model $ do
+  call (Dist (PoissonDist λ) Nothing Nothing)
 
--- | Other effects and handlers as the Model type 
--- | State
-getStM :: (Member (State s) es) => Model env es s
-getStM = Model getSt
-
-putStM :: (Member (State s) es) => s -> Model env es ()
-putStM s = Model (putSt s)
-
-handleStateM :: s -> Model env (State s : es) a -> Model env es (a, s)
-handleStateM s m = Model $ handleState s $ runModel m
-
--- | Writer
-tellM :: Member (Writer w) es => w -> Model env es ()
-tellM w = Model $ tell w
-
-handleWriterM :: Monoid w => Model env (Writer w : es) v -> Model env es (v, w)
-handleWriterM m = Model $ handleWriter $ runModel m
-
--- | Lift
-liftM :: (Member (Lift m) es) => m a -> Model env es a
-liftM op = Model (call (Lift op))

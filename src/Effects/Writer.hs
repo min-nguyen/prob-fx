@@ -5,7 +5,9 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Effects.Writer where
-import Prog
+import Prog ( discharge, Member(inj), Prog(..) )
+
+import Model
 
 -- ** (Section 5.5) Writer effect 
 data Writer w a where
@@ -21,3 +23,9 @@ handleWriter = loop mempty where
   loop w (Op u k) = case discharge u of
     Right (Tell w') -> loop (w `mappend` w') (k ())
     Left u'         -> Op u' (loop w . k)
+    
+tellM :: Member (Writer w) es => w -> Model env es ()
+tellM w = Model $ tell w
+
+handleWriterM :: Monoid w => Model env (Writer w : es) v -> Model env es (v, w)
+handleWriterM m = Model $ handleWriter $ runModel m
