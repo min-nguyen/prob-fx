@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant return" #-}
-module Examples.CoinFlip where
+module CoinFlip where
 
 import Prog
 import Effects.ObsReader

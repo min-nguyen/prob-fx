@@ -1,12 +1,10 @@
-### ProbFX:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf)
+### ProbFX
 
-
-#### Interacting with ProbFX
-
-To have a more interative and visual play-around with the many example models of ProbFX, please see https://github.com/min-nguyen/prob-fx which provides and documents an executable version of ProbFX as a script!
+#### Prelude
+ProbFX is a library for probabilistic programming using algebraic effects that implements the paper [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf) -- this provides a comprehensive motivation and walkthrough of this library. To have a more interative and visual play-around with ProbFX, please see https://github.com/min-nguyen/prob-fx: this corresponds parts of the paper to the implementation, and also provides an executable version of ProbFX as a script!
 
 #### Description
-ProbFX is a library for probabilistic programming using algebraic effects that implements the paper [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf) -- this provides a comprehensive motivation and walkthrough of this library. In short, the emphasis is on being able to define modular and reusable probabilistic models, and secondly, compositional implementation of model execution (inference) in terms of effect handlers. 
+ProbFx as a PPL places emphasis on being able to define modular and reusable probabilistic models, and also the compositional implementation of model execution (inference) in terms of effect handlers. 
 
 **Paper to artifact overview**
 

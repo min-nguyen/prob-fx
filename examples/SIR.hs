@@ -6,7 +6,8 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant return" #-}
-module Examples.SIR where
+
+module SIR where
 
 import Prog
 import Effects.Writer
@@ -17,8 +18,7 @@ import Sampler
 import Env
 import Control.Monad
 
-import Examples.HMM
-import Data.Extensible (Associated)
+import HMM
 
 -- ** (Section 3.1 + Section 5.5 extension) The SIR model
 

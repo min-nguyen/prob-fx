@@ -1,4 +1,4 @@
-module Examples.DataSets where
+module DataSets where
 
 n_counties :: Int
 n_counties = 85

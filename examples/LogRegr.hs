@@ -7,7 +7,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE MonoLocalBinds #-}
 
-module Examples.LogRegr where
+module LogRegr where
 
 import Control.Monad
 import Model

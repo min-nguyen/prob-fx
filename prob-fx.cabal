@@ -17,6 +17,9 @@ description:
 
 category:            Statistics
 build-type:          Simple
+extra-source-files:
+  README.md
+  CHANGELOG.md
 
 tested-with:
   GHC == 8.6.5
@@ -34,16 +37,6 @@ library
                       Inference.LW,
                       Inference.MH,
                       Inference.SIM,
-                      Examples.CoinFlip,
-                      Examples.DataSets,
-                      Examples.HMM,
-                      Examples.LDA,
-                      Examples.LinRegr,
-                      Examples.LogRegr,
-                      Examples.Radon,
-                      Examples.School,
-                      Examples.SIR,
-                      Examples.SIRModular,
                       Env,
                       FindElem,
                       Model,
@@ -89,14 +82,21 @@ library
   default-language:    Haskell2010
   ghc-options:         -funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math
 
-executable prob-fx
-  -- .hs or .lhs file containing the Main module.
-  main-is:             Main.hs
-
-  -- Other library packages from which modules are imported.
-  build-depends:       base,
-                       prob-fx
-
-  -- Base language which the package is written in.
-  default-language:    Haskell2010
-  ghc-options:         -rtsopts -funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math
+executable examples
+  default-language: Haskell2010
+  hs-source-dirs: examples
+  main-is:        Main.hs
+  other-modules:  CoinFlip,
+                  DataSets,
+                  HMM,
+                  LDA,
+                  LinRegr,
+                  LogRegr,
+                  Radon,
+                  School,
+                  SIR,
+                  SIRModular,
+  build-depends:  base, 
+                  prob-fx,
+                  lens,
+                  extensible

@@ -17,7 +17,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant return" #-}
-module Examples.SIRModular where
+
+module SIRModular where
 
 import qualified Data.Extensible as Extensible
 import Data.Extensible hiding (Member)
@@ -27,7 +28,7 @@ import Effects.Writer
 import Model
 import Control.Monad
 import Env
-import Examples.HMM
+import HMM
 import Data.Extensible (Associated)
 import GHC.TypeLits
 import Data.Kind (Constraint)

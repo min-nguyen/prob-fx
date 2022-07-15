@@ -3,12 +3,12 @@
 
 module Main where
 
-import Examples.LinRegr
-import Examples.LogRegr
-import Examples.SIR
-import Examples.LDA
-import Examples.Radon
-import Examples.School
+import LinRegr
+import LogRegr
+import SIR
+import LDA
+import Radon
+import School
 import Sampler
 import System.Environment (getArgs)
 

@@ -11,7 +11,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-module Env (ObsVar(..), varToStr, Env(..), (<:>), nil, Observable(..), Observables(..), UniqueKey, Assign(..)) where
+module Env (ObsVar(..), varToStr, Env(..), (<:>), nil, Observable(..), Observables(..), UniqueKey, Assign(..), LookupType) where
 
 import Data.Kind ( Constraint )
 import Data.Proxy ( Proxy(Proxy) )

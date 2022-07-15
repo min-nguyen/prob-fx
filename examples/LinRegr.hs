@@ -7,7 +7,8 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant return" #-}
 {-# LANGUAGE MonoLocalBinds #-}
-module Examples.LinRegr where
+
+module LinRegr where
 
 import Prog
 import Effects.ObsReader
