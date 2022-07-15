@@ -25,3 +25,4 @@ runLift (Val x) = return x
 runLift (Op u q) = case prj u of
      Just (Lift m) -> m >>= runLift . q
      Nothing -> error "Impossible: Nothing cannot occur"
+

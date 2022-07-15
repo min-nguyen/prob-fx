@@ -7,11 +7,14 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+{- | Auxiliary definitions for finding a type in a type-level list. 
+-}
+
 module FindElem (FindElem(..), Idx(..)) where
 
 import GHC.TypeLits ( TypeError, ErrorMessage(Text, (:<>:), (:$$:), ShowType) )
 
--- | Auxiliary type-class for proof that @x@ is an element of the type-level list @xs@
+-- | Proof that @x@ is an element of the type-level list @xs@
 class FindElem x xs where
   findElem :: Idx x xs
 
