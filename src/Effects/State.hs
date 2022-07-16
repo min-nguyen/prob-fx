@@ -8,13 +8,15 @@
 -}
 
 module Effects.State (
-    State
+    State(..)
+  , get 
+  , put
   , modify
   , handleState) where
 
 import Prog ( discharge, Member(inj), Prog(..) )
 
--- | State
+-- | The state effect
 data State s a where
   Get :: State s s
   Put :: s -> State s ()

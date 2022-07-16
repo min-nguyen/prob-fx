@@ -9,7 +9,10 @@
 {- | Likelihood-Weighting inference
 -}
 
-module Inference.LW (lw, runLW, handleObs) where
+module Inference.LW (
+    lw
+  , runLW
+  , handleObs) where
 
 import qualified Data.Map as Map
 import Env ( Env )

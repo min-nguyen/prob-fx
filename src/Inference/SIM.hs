@@ -6,7 +6,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-module Inference.SIM (simulate, runSimulate, traceSamples, handleSamp, handleObs) where
+{- | Simulation 
+-}
+
+module Inference.SIM (
+    simulate
+  , runSimulate
+  , traceSamples
+  , handleSamp
+  , handleObs) where
 
 import Data.Map (Map)
 import Effects.Dist ( Observe(..), Sample(..), Dist )
@@ -23,9 +31,7 @@ import Sampler ( Sampler )
 import Trace ( FromSTrace(..), STrace, updateSTrace )
 import Unsafe.Coerce (unsafeCoerce)
 
--- ** Simulation (Section 6.1) 
-
--- | Simulation
+-- | Top-level wrapper for simulating from a model
 simulate :: (FromSTrace env, es ~ '[ObsReader env, Dist,State STrace, Observe, Sample])
   => 
   -- | A model awaiting an input

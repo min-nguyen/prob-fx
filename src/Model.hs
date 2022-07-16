@@ -11,8 +11,8 @@
 {- | An algebraic effect embedding of probabilistic models.
 -}
 
-module Model 
-  ( Model(..)
+module Model ( 
+    Model(..)
   , handleCore
     -- * Distribution smart constructors
     -- $Smart-Constructors

@@ -10,57 +10,71 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE ConstraintKinds #-}
-module Effects.Dist where
 
-import Data.Kind
+{- | The effect for primitive distributions 
+-}
+
+module Effects.Dist (
+  -- ** Address
+    Tag
+  , Addr
+  -- ** Dist effect
+  , Dist(..)
+  , handleDist
+  -- ** Sample effect
+  , Sample(..)
+  -- ** Observe effect
+  , Observe(..)
+  ) where
+
 import Data.Map (Map)
-import Data.Maybe
-import Numeric.Log
+import Data.Maybe ( fromMaybe )
 import Prog ( call, discharge, Member, Prog(..) )
 import qualified Data.Map as Map
 import qualified Data.Vector as V
 import qualified Data.Vector.Unboxed as UV
-import qualified OpenSum as OpenSum
-import Sampler
-import Statistics.Distribution
-import Statistics.Distribution.Beta
-import Statistics.Distribution.Binomial
-import Statistics.Distribution.CauchyLorentz
-import Statistics.Distribution.Dirichlet
-import Statistics.Distribution.DiscreteUniform
-import Statistics.Distribution.Gamma
-import Statistics.Distribution.Normal
-import Statistics.Distribution.Poisson
-import Statistics.Distribution.Uniform
+import qualified OpenSum
 import Util ( boolToInt )
-import PrimDist
+import PrimDist ( PrimDist )
 
--- ** (Section 4.2.1) Dist effect 
+-- | An observable variable name assigned to a primitive distribution
+type Tag  = String
+-- | An observable variable name and the index of its run-time occurrence
+type Addr = (Tag, Int)
 
--- | The Dist effect has a single operation `Dist` that takes as arguments: a primitive distribution of type `PrimDist a`, an optional observed value of type `Maybe a`, and an optional observable variable name of type `Maybe String` .
-data Dist a = Dist { getPrimDist :: PrimDist a, getObs :: Maybe a, getTag :: Maybe String}
+-- | The Dist effect
+data Dist a = Dist 
+  { getPrimDist :: PrimDist a  -- ^ primitive distribution
+  , getObs :: Maybe a          -- ^ optional observed value
+  , getTag :: Maybe Tag        -- ^ optional observable variable name
+  }
 
--- **  (Section 5.3) Dist handler
+instance Show a => Show (Dist a) where
+  show (Dist d y tag) = "Dist(" ++ show d ++ ", " ++ show y ++ ", " ++ show tag ++ ")"
 
--- | Sample effect
+instance Eq (Dist a) where
+  (==) (Dist d1 _ _) (Dist d2 _ _) = d1 == d2 
+
+-- | An effect for sampling from distirbutions
 data Sample a where
   Sample  :: PrimDist a     -- ^ Distribution to sample from
-          -> Addr           -- ^ Address of @SAmple@ operation
+          -> Addr           -- ^ Address of @Sample@ operation
           -> Sample a
 
+-- | An effect for conditioning against observed values
 data Observe a where
   Observe :: PrimDist a     -- ^ Distribution to condition with
           -> a              -- ^ Observed value
           -> Addr           -- ^ Address of @Observe@ operation
           -> Observe a
 
--- | Handle the @Dist@ effect to a @Sample@ or @Observe@ effect, and add address
+-- | Handle the @Dist@ effect to a @Sample@ or @Observe@ effect and assign address
 handleDist :: (Member Sample es, Member Observe es)
         => Prog (Dist : es) a -> Prog es a
 handleDist = loop 0 Map.empty
   where
   loop :: (Member Sample es, Member Observe es)
-       => Int -> TagMap -> Prog (Dist : es) a -> Prog es a
+       => Int -> Map Tag Int -> Prog (Dist : es) a -> Prog es a
   loop _ _ (Val x) = return x
   loop counter tagMap (Op u k) = case discharge u of
     Right (Dist d maybe_y maybe_tag) ->
@@ -73,12 +87,3 @@ handleDist = loop 0 Map.empty
                 k'      = loop (counter + 1) tagMap' . k
     Left  u'  -> Op u' (loop counter tagMap . k)
 
-type Tag  = String
-type Addr = (Tag, Int)
-type TagMap = Map Tag Int
-
-instance Show a => Show (Dist a) where
-  show (Dist d y tag) = "Dist(" ++ show d ++ ", " ++ show y ++ ", " ++ show tag ++ ")"
-
-instance Eq (Dist a) where
-  (==) (Dist d1 _ _) (Dist d2 _ _) = d1 == d2 

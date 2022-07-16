@@ -10,7 +10,9 @@
 {- | Auxiliary definitions for finding a type in a type-level list. 
 -}
 
-module FindElem (FindElem(..), Idx(..)) where
+module FindElem (
+    FindElem(..)
+  , Idx(..)) where
 
 import GHC.TypeLits ( TypeError, ErrorMessage(Text, (:<>:), (:$$:), ShowType) )
 
