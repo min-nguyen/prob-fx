@@ -79,9 +79,9 @@ In general, the process is:
     ```
     One may have noticed by now that *lists* of values are always provided to the observable variables in a model environment; each run-time occurrence of that variable will then result in the head value being consumed, and running out of values will default to sampling. 
 
-    Running the function `mh` returns a trace of output model environments, from which we can retrieve the trace of sampled model parameters via `get #m` and `get 'b`. These represent the posterior distribution over `m` and `b`. (Note the argument `["m", "b"]` to `mh` is optional for indicating interest in learning `#m` and `#b` in particular).
+    Running the function `mh` returns a trace of output model environments, from which we can retrieve the trace of sampled model parameters via `get #m` and `get #b`. These represent the posterior distribution over `m` and `b`. (The argument `["m", "b"]` to `mh` is optional for indicating interest in learning `#m` and `#b` in particular).
 
-3. `Sampler` computations can be evaluated with `sampleIO` to produce an `IO` computation.
+3. `Sampler` computations can be evaluated with `sampleIO :: Sampler a -> IO a` to produce an `IO` computation.
 
     ```haskell
     sampleIO simulateLogRegr :: [(Double, Bool)] 
