@@ -6,7 +6,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-module Inference.SIM (simulate, runSimulate, traceSamples, handleSamp, handleObs) where
+{- | Simulation 
+-}
+
+module Inference.SIM (
+    simulate
+  , runSimulate
+  , traceSamples
+  , handleSamp
+  , handleObs) where
 
 import Data.Map (Map)
 import Effects.Dist ( Observe(..), Sample(..), Dist )
@@ -23,18 +31,15 @@ import Sampler ( Sampler )
 import Trace ( FromSTrace(..), STrace, updateSTrace )
 import Unsafe.Coerce (unsafeCoerce)
 
--- ** Simulation (Section 6.1) 
-
--- | Simulation
+-- | Top-level wrapper for simulating from a model
 simulate :: (FromSTrace env, es ~ '[ObsReader env, Dist,State STrace, Observe, Sample])
-  => 
   -- | A model awaiting an input
-  (b -> Model env es a)  
+  => (b -> Model env es a)  
   -- | A model environment
   -> Env env               
   -- | Model input 
   -> b                    
-  -- | Model output and output environment  
+  -- | Sampler generating: (model output, output environment)  
   -> Sampler (a, Env env)   
 simulate model env x  = do
   outputs_strace <- runSimulate env (model x)
@@ -42,11 +47,16 @@ simulate model env x  = do
 
 -- | Handler for simulating once from a probabilistic program
 runSimulate :: (es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])
- => Env env -> Model env es a -> Sampler (a, STrace)
+ -- | Model environment
+ => Env env 
+ -- | Model
+ -> Model env es a 
+ -- | Sampler generating: (model output, sample trace)  
+ -> Sampler (a, STrace)
 runSimulate env
   = handleSamp . handleObs . handleState Map.empty . traceSamples . handleCore env
 
--- | Trace sampled values for each Sample operation
+-- | Trace sampled values for each @Sample@ operation
 traceSamples :: (Member (State STrace) es, Member Sample es) => Prog es a -> Prog es a
 traceSamples (Val x) = return x
 traceSamples (Op op k) = case prj op of 

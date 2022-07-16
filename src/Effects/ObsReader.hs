@@ -5,26 +5,36 @@
 {-# LANGUAGE TypeOperators, TypeApplications #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module Effects.ObsReader where
+{- | An effect for reading observable variables from a model environment -}
 
-import Prog
-import Env
-import Util
+module Effects.ObsReader (
+    ObsReader(..)
+  , ask
+  , handleRead) where
 
--- ** (Section 4.2.2) ObsReader effect 
+import Prog ( call, discharge, Member, Prog(..) )
+import Env ( Env, ObsVar, Observable(..) )
+import Util ( safeHead, safeTail )
 
--- | An effect for reading observable variables from a model environment
+-- | The effect for reading observed values from a model environment @env@
 data ObsReader env a where
-  Ask :: Observable env x a => ObsVar x -> ObsReader env (Maybe a)
+  -- | Given the observable variable @x@ is assigned a list of type @[a]@ in @env@, attempt to retrieve its head value.
+  Ask :: Observable env x a
+    => ObsVar x                 -- ^ Variable @x@ to read from
+    -> ObsReader env (Maybe a)  -- ^ The head value from @x@'s list
 
-ask :: forall env es x a. Member (ObsReader env) es => Observable env x a => ObsVar x -> Prog es (Maybe a)
+-- | Wrapper function for calling @Ask@
+ask :: forall env es x a. (Member (ObsReader env) es, Observable env x a)
+  => ObsVar x
+  -> Prog es (Maybe a)
 ask x = call (Ask @env x)
 
--- ** (Section 5.2) ObsReader handler 
-
--- | Handle @Ask@ requests of observable variables
-handleRead :: forall env es a.
-  Env env -> Prog (ObsReader env ': es) a -> Prog es a
+-- | Handle the @Ask@ requests of observable variables
+handleRead ::
+  -- | Initial model environment
+     Env env
+  -> Prog (ObsReader env ': es) a
+  -> Prog es a
 handleRead env (Val x) = return x
 handleRead env (Op op k) = case discharge op of
   Right (Ask x) ->

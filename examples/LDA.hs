@@ -26,8 +26,7 @@ import Inference.SIM as SIM ( simulate )
 import Inference.MH as MH
 
 
-{- Latent dirichlet allocation (topic model) -}
-
+-- ** Latent dirichlet allocation (topic model) 
 type TopicEnv =
   '[ "θ" ':= [Double],
      "φ" ':= [Double],
@@ -43,13 +42,13 @@ docTopicPrior :: Observable env "θ" [Double]
   => Int -> Model env ts [Double]
 docTopicPrior n_topics = dirichlet (replicate n_topics 1) #θ
 
--- Distribution over likely words
+-- | Distribution over likely words
 wordDist :: Observable env "w" String =>
   [String] -> [Double] -> Model env ts String
 wordDist vocab ps =
   categorical (zip vocab ps) #w
 
--- Distribution over the topics in a document, over the distribution of words in a topic
+-- | Distribution over the topics in a document, over the distribution of words in a topic
 topicModel :: (Observables env '["φ", "θ"] [Double],
                  Observable env "w" String)
   => [String]
@@ -65,7 +64,7 @@ topicModel vocab n_topics n_words = do
                           let word_ps = topic_word_ps !! z
                           wordDist vocab word_ps)
 
--- Topic distribution over many topics
+-- | Topic distribution over many topics
 topicModels :: (Observables env '["φ", "θ"] [Double],
                Observable env "w" String)
   => [String]  -- Possible vocabulary in a document
@@ -76,7 +75,7 @@ topicModels vocab n_topics doc_words = do
   mapM (topicModel vocab n_topics) doc_words
 
 -- | Simulating from topic model
--- Possible vocabulary
+-- | Possible vocabulary
 vocab :: [String]
 vocab = ["DNA", "evolution", "parsing", "phonology"]
 
@@ -90,8 +89,8 @@ simLDA = do
   (words, env_out) <- SIM.simulate (topicModel vocab 2) env_in n_words
   return words
 
--- | Inference from topic model
--- Document of words to perform inference over
+-- | MH Inference from topic model
+-- | Document of words to perform inference over
 topic_data :: [String]
 topic_data     = ["DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution", "parsing", "phonology", "DNA","evolution", "DNA", "parsing", "evolution","phonology", "evolution", "DNA","DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution", "parsing", "phonology", "DNA","evolution", "DNA", "parsing", "evolution","phonology", "evolution", "DNA","DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution", "parsing", "phonology", "DNA","evolution", "DNA", "parsing", "evolution","phonology", "evolution", "DNA","DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution", "parsing", "phonology", "DNA","evolution", "DNA", "parsing", "evolution","phonology", "evolution", "DNA","DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution","DNA","evolution", "parsing", "phonology", "DNA","evolution", "DNA", "parsing", "evolution","phonology", "evolution", "DNA"]
 

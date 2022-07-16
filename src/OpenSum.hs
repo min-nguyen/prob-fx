@@ -13,7 +13,9 @@
 
 {- | An open sum implementation for value types.
 -}
-module OpenSum (OpenSum(..), Member(..)) where
+module OpenSum (
+    OpenSum(..)
+  , Member(..)) where
 
 import Data.Kind (Type, Constraint)
 import Data.Typeable ( Typeable )

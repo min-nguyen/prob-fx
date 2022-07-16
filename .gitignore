@@ -1,4 +1,5 @@
 dist/
+upload-doc.sh
 *.png
 *.pdf
 dist-newstyle/

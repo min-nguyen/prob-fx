@@ -20,7 +20,7 @@ import Control.Monad
 
 import HMM
 
--- ** (Section 3.1 + Section 5.5 extension) The SIR model
+-- ** The SIR model
 
 data Popl = Popl {
     s   :: Int, -- ^ Number of people susceptible to infection
@@ -88,7 +88,7 @@ hmmSIR' n = handleWriterM . hmmSIR n
 
 type SIRenv = '["β" := Double, "γ"  := Double, "ρ"  := Double, "𝜉" := Int]
 
--- ** (Section 3.1, Fig 4a) SIM from SIR model: ([(s, i, r)], [𝜉])
+-- ** Simulating from SIR model: ([(s, i, r)], [𝜉])
 simulateSIR :: Sampler ([(Int, Int, Int)], [Reported])
 simulateSIR = do
   let sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
@@ -98,7 +98,7 @@ simulateSIR = do
       sirs = map (\(Popl s i recov) -> (s, i, recov)) sir_trace
   return (sirs, 𝜉s)
 
--- ** (Section 3.3, Fig 5) Infer from SIR model: ([ρ], [β])
+-- ** MH inference from SIR model: ([ρ], [β])
 inferSIR :: Sampler ([Double], [Double])
 inferSIR = do
   𝜉s <- snd <$> simulateSIR
@@ -110,12 +110,11 @@ inferSIR = do
   return (ρs, βs)
 
 
--- ** (Section 3.2) Modular Extensions to the SIR Model
+-- ** Modular Extensions to the SIR Model
 
-{- Note that the implementations below aren't as modular as we would like, due to having to redefine the data types Popl and TransParams when adding new variables to the SIR model. The file "src/Examples/SIRModular.hs" shows how one could take steps to resolve this by using extensible records. -}
+{- Note that the implementations below aren't as modular as we would like, due to having to redefine the data types Popl and TransParams when adding new variables to the SIR model. The file "SIRModular.hs" shows how one could take steps to resolve this by using extensible records. -}
 
-
--- || (Section 3.2)  SIRS (resusceptible) model
+-- || SIRS (resusceptible) model
 data TransParamsSIRS = TransParamsSIRS {
     betaP_SIRS  :: Double, -- ^ Mean contact rate between susceptible and infected people
     gammaP_SIRS :: Double, -- ^ Mean recovery rate
@@ -158,8 +157,7 @@ simulateSIRS = do
   return (sirs, 𝜉s)
 
 
-
--- || (Section 3.2) SIRSV (resusceptible + vacc) model
+-- || SIRSV (resusceptible + vacc) model
 data TransParamsSIRSV = TransParamsSIRSV {
     betaP_SIRSV  :: Double, -- ^ Mean contact rate between susceptible and infected people
     gammaP_SIRSV :: Double, -- ^ Mean recovery rate
@@ -224,7 +222,7 @@ obsSIRSV rho (PoplV _ i _ v)  = do
 hmmSIRSV ::  (Observables env '["𝜉"] Int, Observables env '["β", "γ", "η", "ω", "ρ"] Double) => Int -> PoplV -> Model env ts (PoplV, [PoplV])
 hmmSIRSV n = handleWriterM . hmmGen transPriorSIRSV obsPriorSIR transSIRSV obsSIRSV n
 
--- || (Section 3.2, Fig 4c) SIM from SIRSV model : ([(s, i, r, v)], [𝜉])
+-- || Simulate from SIRSV model : ([(s, i, r, v)], [𝜉])
 simulateSIRSV :: Sampler ([(Int, Int, Int, Int)], [Reported])
 simulateSIRSV = do
   let sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #η := [0.05] <:> #ω := [0.02] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil

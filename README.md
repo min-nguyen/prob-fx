@@ -1,52 +1,91 @@
-### ProbFX
+## ProbFX
 
 #### Prelude
-ProbFX is a library for probabilistic programming using algebraic effects that implements the paper [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf) -- this provides a comprehensive motivation and walkthrough of this library. To have a more interative and visual play-around with ProbFX, please see https://github.com/min-nguyen/prob-fx: this corresponds parts of the paper to the implementation, and also provides an executable version of ProbFX as a script!
+ProbFX is a library for probabilistic programming using algebraic effects that implements the paper [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf) -- this paper provides a comprehensive motivation and walkthrough of this library. To have a more interactive and visual play-around with ProbFX, please see https://github.com/min-nguyen/prob-fx: this corresponds parts of the paper to the implementation, and also provides an executable version of ProbFX as a script!
 
 #### Description
-ProbFx as a PPL places emphasis on being able to define modular and reusable probabilistic models, and also the compositional implementation of model execution (inference) in terms of effect handlers. 
+ProbFx is a PPL that places emphasis on being able to define modular and reusable probabilistic models, where the decision to `sample` or `observe` against a random variable or distribution of a model is delayed until the point of execution; this allows a model to be defined just *once* and then reused for a variety of applications. We also implement a compositional approach towards model execution (inference) by using effect handlers. 
 
-**Paper to artifact overview**
+#### Building and executing models
 
-- § 1: Linear regression `(src/Examples/LinRegr.hs)`
-  - Simulating  (Fig 1a) is done via `./prob-fx.sh simLinRegr`.
-  - Likelihood weighting inference (Fig 1b) is done via `./prob-fx.sh lwLinRegr`.
+A large number of example ProbFX programs are documented [here](https://github.com/min-nguyen/prob-fx/tree/hackage/examples), showing how to define and then execute a probabilistic model. 
 
-- § 2: Hidden Markov model `(src/Examples/HMM.hs)`
-  - You can find both the loop HMM version (Fig 2) and the modular HMM version (Fig 3) in here.
+In general, the process is:
 
-- § 3: SIR model (`src/Examples/SIR.hs`)
-  - § 3.1 The SIR model is the function `hmmSIR'`; the higher-order HMM function it uses is imported from `HMM.hs`, and the `Writer` effect it uses from §5.5 is already integrated.
-    - Simulating from this (Fig 4a) can be done via `./prob-fx.sh simSIR`.
-    - Metropolis-Hastings inference (Fig 5) is done via `./prob-fx.sh mhSIR`; this takes 1-3 minutes
-  - § 3.2.1: The _resusceptible_ extension is defined as `hmmSIRS`, and the _resusceptible + vaccinated_ version is `hmmSIRSV`.
+1. Define an appropriate model of type `Model env es a`, and (optionally) a corresponding model environment type `env`.
 
-    - Simulating from `hmmSIRS` (Fig 4b) is done via `./prob-fx.sh simSIRS`
-    - Simulating from `hmmSIRSV` (Fig 4c) is done via `./prob-fx.sh simSIRSV`.
+    For example, a logistic regression model that takes a list of `Double`s as inputs and generates a list of `Bool`s:
+    ```haskell 
+    type LogRegrEnv =
+      '[  "y" ':= Bool,   -- ^ output
+          "m" ':= Double, -- ^ mean
+          "b" ':= Double  -- ^ intercept
+      ]
 
-    Note that their implementations are not as modular as we would like (due to having to redefine the data types `Popl` and `TransParams`) -- the program `SIRModular.hs` shows how one could take steps to resolve this by using extensible records.
+    logRegr 
+      :: (Observable env "y" Bool
+       , Observables env '["m", "b"] Double)
+      => [Double]           
+      -> Model env rs [Bool]  
+    logRegr xs = do
+      -- | Specify distribution of model parameters 
+      m     <- normal 0 5 #m   
+      b     <- normal 0 1 #b     
+      sigma <- gamma' 1 1      
+      -- | Specify distribution of model output 
+      let sigmoid x = 1.0 / (1.0 + exp((-1.0) * x))
+      ys    <- foldM (\ys x -> do
+                        p <- normal' (m * x + b) sigma
+                        y <- bernoulli (sigmoid p) #y
+                        return (y:ys)) [] xs
+      return (reverse ys)
+    ```
+    The `Observables` constraint says that, for example, `"m"` and `"b"` are observable variables in the model environment `env` that may later be provided a trace of observed values of type `Double`. 
+    
+    Calling a primitive distribution such as `normal 0 5 #m` lets us later provide observed values for "m" when executing the model. 
+    
+    Calling a primed variant of primitive distribution such as `gamma' 1 1` will disable observed values from being provided to that distribution.
 
-- § 4: Embedding
-  - § 4.1: The definition of `Prog` is in `src/Prog.hs`, including auxiliary types and functions.
-  - § 4.2: The definition of `Model` and the smart constructors for primitive distributions are in `src/Model.hs`.
-    The effect type `Dist` (§ 4.2.1) is split up into `src/Effects/Dist.hs` and `src/PrimDist.hs`. The effect `ObsReader` (§ 4.2.2) is in `src/Effects/ObsReader.hs`.
+2. Execute a model under a model environment, using one of the `Inference` library functions.
 
-- § 5: Interpreting multimodal models
-  - Intro: Coinflip example: `src/Examples/CoinFlip.hs`
-  - § 5.1: Model environments: `src/Env.hs`.
-  - § 5.2: Handling `ObsReader`: `src/Effects/ObsReader.hs`.
-  - § 5.3: Handling `Dist`: `src/Effects/Dist.hs`.
-  - § 5.4: Specialising multimodal models: `src/Model.hs`.
-  - § 5.5: Extending models with extra effects: `src/Examples/SIR.hs`
+   Below simulates from a logistic regression model using model parameters `m = 2` and `b = -0.15` but provides no values for `y`: this will result in `m` and `b` being *observed*  but `y` being *sampled*.
+    ```haskell
+    simulateLogRegr :: Sampler [(Double, Bool)]
+    simulateLogRegr = do
+      -- | Specify the model inputs
+      let xs  = map (/50) [(-50) .. 50]
+      -- | Specify the model environment 
+          env = (#y := []) <:> (#m := [2]) <:> (#b := [-0.15]) <:> nil
+      -- | Simulate from logistic regression
+      (ys, envs) <- SIM.simulate logRegr env xs
+      return (zip xs ys)
+    ```
+    
+    Below performs Metropolis-Hastings inference on the same model, by providing values for the model output `y` and hence *observing* (conditioning against) them, but providing none for the model parameters `m` and `b` and hence *sampling* them.
+    ```haskell
+    -- | Metropolis-Hastings inference 
+    inferMHLogRegr :: Sampler [(Double, Double)]
+    inferMHLogRegr = do
+      -- | Simulate data from log regression
+      (xs, ys) <- unzip <$> simulateLogRegr
+      -- | Specify the model environment 
+      let env = (#y := ys) <:> (#m := []) <:> (#b := []) <:> nil
+      -- | Run MH inference for 20000 iterations
+      mhTrace :: [Env LogRegrEnv] <- MH.mh 20000 logRegr (xs, env) ["m", "b"]
+      -- | Retrieve values sampled for #m and #b during MH
+      let m_samples = concatMap (get #m) mhTrace
+          b_samples = concatMap (get #b) mhTrace
+      return (zip m_samples b_samples)
+    ```
+    One may have noticed by now that *lists* of values are always provided to observable variables in a model environment; each run-time occurrence of that variable will then result in the head value being observed and consumed, and running out of values will default to sampling. 
 
-- § 6: Simulation and inference as effect handlers
-  - § 6.1: Simulation: `src/Inference/SIM.hs`. The type of `STrace` is in `src/Trace.hs`.
-  - § 6.2.1: Likelihood Weighting: `src/Inference/LW.hs`.
-  - § 6.2.2: Metropolis Hastings: `src/Inference.MH.hs`.
+    Running the function `mh` returns a trace of output model environments, from which we can retrieve the trace of sampled model parameters via `get #m` and `get #b`. These represent the posterior distribution over `m` and `b`. (The argument `["m", "b"]` to `mh` is optional for indicating interest in learning `#m` and `#b` in particular).
 
-#### Examples and Building Models
+3. `Sampler` computations can be evaluated with `sampleIO :: Sampler a -> IO a` to produce an `IO` computation.
 
-We provide and document a large number of examples of defining and then executing probabilistic models, which can be found in `src/Examples`. [`LogRegr.hs`](https://github.com/min-nguyen/prob-fx/blob/master/src/Examples/LogRegr.hs) documents a particularly representative walk-through. The general process of doing this is as follows:
-1. Define an appropriate model of type `Model env es a` and a corresponding model environment of type `Env env`.
-2. Execute a model using one of the library functions `simulate`, `lw`, or `mh` detailed in `src/Inference`; this produces an output in the monad `Sampler`.
-3. `Sampler` computations can be evaluated with `sampleIO` (found in `src/Sampler.hs`) to produce an `IO` computation. Examples of this are shown in `Main.hs`.
+    ```haskell
+    sampleIO simulateLogRegr :: [(Double, Bool)] 
+    ```
+
+    
+

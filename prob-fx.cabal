@@ -1,6 +1,6 @@
 cabal-version:       3.0
 name:                prob-fx
-version:             0.1.0.0
+version:             0.1.0.1
 license:             BSD-3-Clause
 license-file:        LICENSE.md
 copyright:           2022 Minh Nguyen
@@ -9,10 +9,10 @@ author:              Minh Nguyen
 maintainer:          minhnguyen1995@googlemail.com
 homepage:            https://github.com/min-nguyen/prob-fx/tree/hackage
 synopsis:            A library for modular probabilistic modelling
-description:         
+description:
   A library for probabilistic programming using algebraic effects. The
   emphasis is on modular definitions of probabilistic models, and also
-  compositional implementation of model execution (inference) in terms 
+  compositional implementation of model execution (inference) in terms
   of effect handlers.
 
 category:            Statistics
@@ -28,7 +28,7 @@ tested-with:
   GHC == 9.0.1
 
 library
-  exposed-modules:    
+  exposed-modules:
                       Effects.Dist,
                       Effects.Lift,
                       Effects.ObsReader,
@@ -81,7 +81,7 @@ library
   default-language:    Haskell2010
   ghc-options:         -funfolding-use-threshold=16 -fexcess-precision -optc-O3 -optc-ffast-math
 
-executable examples
+executable prob-fx
   default-language: Haskell2010
   hs-source-dirs: examples
   main-is:        Main.hs
@@ -95,7 +95,7 @@ executable examples
                   School,
                   SIR,
                   SIRModular,
-  build-depends:  base, 
+  build-depends:  base,
                   prob-fx,
                   lens,
                   extensible

@@ -8,36 +8,39 @@
 -}
 
 module Effects.State (
-    State
+    State(..)
+  , get
+  , put
   , modify
   , handleState) where
 
 import Prog ( discharge, Member(inj), Prog(..) )
 
--- | State
+-- | The state effect
 data State s a where
+  -- | Get the current state
   Get :: State s s
+  -- | Set the current state
   Put :: s -> State s ()
 
--- | Get the state
-get :: (Member (State s) es) => Prog es s
+-- | Wrapper function for @Get@
+get :: Member (State s) es => Prog es s
 get = Op (inj Get) Val
 
--- | Set the state
+-- | Wrapper function for @Set@
 put :: (Member (State s) es) => s -> Prog es ()
 put s = Op (inj $ Put s) Val
 
--- | Apply a function to the state
+-- | Wrapper function for apply a function to the state
 modify :: Member (State s) es => (s -> s) -> Prog es ()
 modify f = get >>= put . f
 
 -- | Handle the @State s@ effect
-handleState :: 
+handleState
   -- | Initial state
-     s 
-  -- | Initial program
-  -> Prog (State s ': es) a 
-  -- | Pure value and final state
+  :: s
+  -> Prog (State s ': es) a
+  -- | (Output, final state)
   -> Prog es (a, s)
 handleState s m = loop s m where
   loop :: s -> Prog (State s ': es) a -> Prog es (a, s)

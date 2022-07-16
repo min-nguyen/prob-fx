@@ -12,15 +12,18 @@
 {- | For lifting arbitrary monadic computations into an algebraic effect setting
 -}
 
-module Effects.Lift (Lift(..), lift, handleLift) where
+module Effects.Lift (
+    Lift(..)
+  , lift
+  , handleLift) where
 
 import Prog ( call, Member(prj), Prog(..) )
 import Data.Function (fix)
 
--- | Lift effect
+-- | Lift a monadic computation @m a@ into the effect @Lift m@
 newtype Lift m a = Lift (m a)
 
--- | Lift a monadic computation @m a@ into the effect @Lift m@
+-- | Wrapper function for calling @Lift@
 lift :: (Member (Lift m) es) => m a -> Prog es a
 lift = call . Lift
 
