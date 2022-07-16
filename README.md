@@ -23,7 +23,7 @@ We provide a script below for executing ProbFX with a set of possible arguments.
   1. Directly execute a ProbFX program via `cabal run prob-fx <arg>` (corresponding to `Main.hs`), whose output will be written to `model-output.txt`
   2. Visualise this output as a graph via `python3 graph.py <arg>`, which will be saved to `model-output.pdf` .
 
-— _Executing ProbFX with the script_ —
+#### Executing ProbFX with the script
 
 The script **`./prob-fx.sh <arg>`** will execute a ProbFX program and save the output graph to `model-output.pdf` (the results of simulation and inference will of course vary across different executions).
 
