@@ -1,4 +1,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
+{- | An IO-based sampling monad
+-}
+
 module Sampler where
 
 import Control.Monad ( replicateM )
