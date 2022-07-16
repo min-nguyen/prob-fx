@@ -99,7 +99,7 @@ data PrimDist a where
     :: Double           -- ^ Shape k
     -> Double           -- ^ Scale θ
     -> PrimDist Double
-  Normal      
+  NormalDist      
     :: Double           -- ^ Mean
     -> Double           -- ^ Standard deviation
     -> PrimDist Double
@@ -115,7 +115,7 @@ data PrimDist a where
     -> PrimDist Double  
 
 instance Eq (PrimDist a) where
-  (==) (Normal m s) (Normal m' s') = m == m' && s == s'
+  (==) (NormalDist m s) (NormalDist m' s') = m == m' && s == s'
   (==) (CauchyDist m s) (CauchyDist m' s') = m == m' && s == s'
   (==) (HalfCauchyDist s) (HalfCauchyDist s') = s == s'
   (==) (HalfNormalDist s) (HalfNormalDist s') = s == s'
@@ -137,8 +137,8 @@ instance Show a => Show (PrimDist a) where
    "CauchyDist(" ++ show mu ++ ", " ++ show sigma ++ ", " ++ ")"
   show (HalfCauchyDist sigma) =
    "HalfCauchyDist(" ++ show sigma ++ ", " ++ ")"
-  show (Normal mu sigma) =
-   "Normal(" ++ show mu ++ ", " ++ show sigma ++ ", " ++ ")"
+  show (NormalDist mu sigma) =
+   "NormalDist(" ++ show mu ++ ", " ++ show sigma ++ ", " ++ ")"
   show (HalfNormalDist sigma) =
    "HalfNormalDist(" ++ show sigma ++ ", " ++ ")"
   show (BernoulliDist p) =
@@ -180,7 +180,7 @@ primDistPrf :: PrimDist x -> IsPrimVal x
 primDistPrf d = case d of
   HalfCauchyDist {} -> IsPrimVal
   CauchyDist {} -> IsPrimVal
-  Normal {} -> IsPrimVal
+  NormalDist {} -> IsPrimVal
   HalfNormalDist  {} -> IsPrimVal
   UniformDist  {} -> IsPrimVal
   DiscrUniformDist {} -> IsPrimVal
@@ -211,7 +211,7 @@ sample (CauchyDist μ σ )  =
   createSampler (sampleCauchy μ σ)
 sample (HalfNormalDist σ )  =
   createSampler (sampleNormal 0 σ) >>= pure . abs
-sample (Normal μ σ )  =
+sample (NormalDist μ σ )  =
   createSampler (sampleNormal μ σ)
 sample (UniformDist min max )  =
   createSampler (sampleUniform min max)
@@ -258,7 +258,7 @@ prob (CauchyDist μ σ) y
 prob (HalfNormalDist σ) y
   = if y < 0 then 0 else
             2 * density (normalDistr 0 σ) y
-prob (Normal μ σ) y
+prob (NormalDist μ σ) y
   = density (normalDistr μ σ) y
 prob (UniformDist min max) y
   = density (uniformDistr min max) y

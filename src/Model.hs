@@ -183,7 +183,7 @@ normal :: forall env es x. Observable env x Double =>
 normal mu sigma field = Model $ do
   let tag = Just $ varToStr field
   maybe_y <- ask @env field
-  call (Dist (Normal mu sigma) maybe_y tag)
+  call (Dist (NormalDist mu sigma) maybe_y tag)
 
 normal' :: 
   -- | Mean
@@ -192,7 +192,7 @@ normal' ::
   -> Double 
   -> Model env es Double
 normal' mu sigma = Model $ do
-  call (Dist (Normal mu sigma) Nothing Nothing)
+  call (Dist (NormalDist mu sigma) Nothing Nothing)
 
 halfNormal :: forall env es x. Observable env x Double => 
      Double 
