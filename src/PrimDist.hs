@@ -17,11 +17,26 @@
 {-# LANGUAGE ImplicitParams #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-module PrimDist where
+{- | A GADT encoding of (a selection of) primitive distributions 
+    along with their corresponding sampling and density functions.
+-}
 
-import Data.Kind
+module PrimDist (
+  -- * Primitive distribution
+    PrimDist(..)
+  , PrimVal
+  , IsPrimVal(..)
+  , pattern PrimDistPrf
+  , ErasedPrimDist(..)
+  -- * Sampling
+  , sample
+  -- * Density
+  , prob
+  , logProb) where
+
+import Data.Kind ( Constraint )
 import Data.Map (Map)
-import Numeric.Log
+import Numeric.Log ( Log(Exp) )
 import OpenSum (OpenSum)
 import qualified Data.Map as Map
 import qualified Data.Vector as V
@@ -29,41 +44,78 @@ import qualified Data.Vector as Vec
 import qualified Data.Vector.Unboxed as UV
 import qualified OpenSum
 import qualified System.Random.MWC.Distributions as MWC
+import Statistics.Distribution ( ContDistr(density), DiscreteDistr(probability) )
+import Statistics.Distribution.Beta ( betaDistr )
+import Statistics.Distribution.Binomial ( binomial )
+import Statistics.Distribution.CauchyLorentz ( cauchyDistribution )
+import Statistics.Distribution.Dirichlet ( dirichletDensity, dirichletDistribution )
+import Statistics.Distribution.DiscreteUniform ( discreteUniformAB )
+import Statistics.Distribution.Gamma ( gammaDistr )
+import Statistics.Distribution.Normal ( normalDistr )
+import Statistics.Distribution.Poisson ( poisson )
+import Statistics.Distribution.Uniform ( uniformDistr )
 import Sampler
-import Statistics.Distribution
-import Statistics.Distribution.Beta
-import Statistics.Distribution.Binomial
-import Statistics.Distribution.CauchyLorentz
-import Statistics.Distribution.Dirichlet
-import Statistics.Distribution.DiscreteUniform
-import Statistics.Distribution.Gamma
-import Statistics.Distribution.Normal
-import Statistics.Distribution.Poisson
-import Statistics.Distribution.Uniform
 import Util ( boolToInt )
 
--- ** (Section 4.2.1) Primitive distributions 
-
--- | Primitive distributions
+-- | Primitive distribution
 data PrimDist a where
-  HalfCauchyDist    :: Double -> PrimDist Double
-  CauchyDist        :: Double -> Double -> PrimDist Double
-  NormalDist        :: Double -> Double -> PrimDist Double
-  HalfNormalDist    :: Double -> PrimDist Double
-  UniformDist       :: Double -> Double -> PrimDist Double
-  DiscrUniformDist  :: Int    -> Int    -> PrimDist Int
-  GammaDist         :: Double -> Double -> PrimDist Double
-  BetaDist          :: Double -> Double -> PrimDist Double
-  BinomialDist      :: Int    -> Double -> PrimDist Int
-  BernoulliDist     :: Double -> PrimDist Bool
-  CategoricalDist   :: (Eq a, Show a, OpenSum.Member a PrimVal) => [(a, Double)] -> PrimDist a
-  DiscreteDist      :: [Double] -> PrimDist Int
-  PoissonDist       :: Double -> PrimDist Int
-  DirichletDist     :: [Double] -> PrimDist [Double]
-  DeterministicDist :: (Eq a, Show a, OpenSum.Member a PrimVal) => a -> PrimDist a
+  BernoulliDist     
+    :: Double           -- ^ Probability of @True@
+    -> PrimDist Bool  
+  BetaDist          
+    :: Double           -- ^ Shape α
+    -> Double           -- ^ Shape β
+    -> PrimDist Double
+  BinomialDist      
+    :: Int              -- ^ Number of trials
+    -> Double           -- ^ Probability of successful trial
+    -> PrimDist Int     
+  CategoricalDist   
+    :: (Eq a, Show a, OpenSum.Member a PrimVal) 
+    => [(a, Double)]    -- ^ Values and associated probabilities
+    -> PrimDist a       
+  CauchyDist        
+    :: Double           -- ^ Location
+    -> Double           -- ^ Scale
+    -> PrimDist Double
+  HalfCauchyDist      
+    :: Double           -- ^ Scale
+    -> PrimDist Double
+  DeterministicDist 
+    :: (Eq a, Show a, OpenSum.Member a PrimVal) 
+    => a                -- ^ Value of probability @1@
+    -> PrimDist a
+  DirichletDist     
+    :: [Double]         -- ^ Concentrations
+    -> PrimDist [Double]
+  DiscreteDist      
+    :: [Double]         -- ^ List of @n@ probabilities
+    -> PrimDist Int     -- ^ An index from @0@ to @n - 1@
+  DiscrUniformDist      
+    :: Int              -- ^ Lower-bound @a@
+    -> Int              -- ^ Upper-bound @b@
+    -> PrimDist Int     
+  GammaDist         
+    :: Double           -- ^ Shape k
+    -> Double           -- ^ Scale θ
+    -> PrimDist Double
+  Normal        
+    :: Double           -- ^ Mean
+    -> Double           -- ^ Standard deviation
+    -> PrimDist Double
+  HalfNormalDist    
+    :: Double           -- ^ Standard deviation
+    -> PrimDist Double
+  PoissonDist       
+    :: Double           -- ^ Rate λ
+    -> PrimDist Int
+  UniformDist       
+    :: Double           -- ^ Lower-bound @a@
+    -> Double           -- ^ Upper-bound @b@
+    -> PrimDist Double  
 
 instance Eq (PrimDist a) where
-  (==) (NormalDist m s) (NormalDist m' s') = m == m' && s == s'
+  (==) (Normal m s) (Normal m' s') = m == m' && s == s'
   (==) (CauchyDist m s) (CauchyDist m' s') = m == m' && s == s'
   (==) (HalfCauchyDist s) (HalfCauchyDist s') = s == s'
   (==) (HalfNormalDist s) (HalfNormalDist s') = s == s'
@@ -85,8 +137,8 @@ instance Show a => Show (PrimDist a) where
    "CauchyDist(" ++ show mu ++ ", " ++ show sigma ++ ", " ++ ")"
   show (HalfCauchyDist sigma) =
    "HalfCauchyDist(" ++ show sigma ++ ", " ++ ")"
-  show (NormalDist mu sigma) =
-   "NormalDist(" ++ show mu ++ ", " ++ show sigma ++ ", " ++ ")"
+  show (Normal mu sigma) =
+   "Normal(" ++ show mu ++ ", " ++ show sigma ++ ", " ++ ")"
   show (HalfNormalDist sigma) =
    "HalfNormalDist(" ++ show sigma ++ ", " ++ ")"
   show (BernoulliDist p) =
@@ -112,32 +164,35 @@ instance Show a => Show (PrimDist a) where
   show (DeterministicDist x) =
    "DeterministicDist(" ++ show x ++ ", " ++ ")"
   
--- | For constraining the output types of distributions
+-- | An ad-hoc specification of primitive value types, for constraining the outputs of distributions
 type PrimVal = '[Int, Double, [Double], Bool, String]
 
-data Dict (a :: Constraint) where
-  Dict :: a => Dict a
+-- | Proof that @x@ is a primitive value
+data IsPrimVal x where
+  IsPrimVal :: (Show x, OpenSum.Member x PrimVal) => IsPrimVal x
 
-primDistDict :: PrimDist x -> Dict (Show x, OpenSum.Member x PrimVal)
-primDistDict d = case d of
-  HalfCauchyDist {} -> Dict
-  CauchyDist {} -> Dict
-  NormalDist {} -> Dict
-  HalfNormalDist  {} -> Dict
-  UniformDist  {} -> Dict
-  DiscrUniformDist {} -> Dict
-  GammaDist {} -> Dict
-  BetaDist {} -> Dict
-  BinomialDist {} -> Dict
-  BernoulliDist {} -> Dict
-  CategoricalDist {} -> Dict
-  DiscreteDist {} -> Dict
-  PoissonDist {} -> Dict
-  DirichletDist {} -> Dict
-  DeterministicDist {} -> Dict
+-- | For pattern-matching on an arbitrary @PrimDist@ with proof that it generates a primitive value 
+pattern PrimDistPrf :: () => (Show x, OpenSum.Member x PrimVal) => PrimDist x -> PrimDist x
+pattern PrimDistPrf d <- d@(primDistPrf -> IsPrimVal)
 
-pattern PrimDistDict :: () => (Show x, OpenSum.Member x PrimVal) => PrimDist x -> PrimDist x
-pattern PrimDistDict d <- d@(primDistDict -> Dict)
+-- | Proof that all primitive distributions generate a primitive value
+primDistPrf :: PrimDist x -> IsPrimVal x 
+primDistPrf d = case d of
+  HalfCauchyDist {} -> IsPrimVal
+  CauchyDist {} -> IsPrimVal
+  Normal {} -> IsPrimVal
+  HalfNormalDist  {} -> IsPrimVal
+  UniformDist  {} -> IsPrimVal
+  DiscrUniformDist {} -> IsPrimVal
+  GammaDist {} -> IsPrimVal
+  BetaDist {} -> IsPrimVal
+  BinomialDist {} -> IsPrimVal
+  BernoulliDist {} -> IsPrimVal
+  CategoricalDist {} -> IsPrimVal
+  DiscreteDist {} -> IsPrimVal
+  PoissonDist {} -> IsPrimVal
+  DirichletDist {} -> IsPrimVal
+  DeterministicDist {} -> IsPrimVal
 
 -- | For erasing the types of primitive distributions
 data ErasedPrimDist where
@@ -146,15 +201,17 @@ data ErasedPrimDist where
 instance Show ErasedPrimDist where
   show (ErasedPrimDist d) = show d
 
--- *** Sampling functions (Section 6.1) 
-sample :: PrimDist a -> Sampler a
+-- | Draw a value from a primitive distribution in the @Sampler@ monad
+sample :: 
+     PrimDist a 
+  -> Sampler a
 sample (HalfCauchyDist σ )  =
   createSampler (sampleCauchy 0 σ) >>= pure . abs
 sample (CauchyDist μ σ )  =
   createSampler (sampleCauchy μ σ)
 sample (HalfNormalDist σ )  =
   createSampler (sampleNormal 0 σ) >>= pure . abs
-sample (NormalDist μ σ )  =
+sample (Normal μ σ )  =
   createSampler (sampleNormal μ σ)
 sample (UniformDist min max )  =
   createSampler (sampleUniform min max)
@@ -178,8 +235,14 @@ sample (DirichletDist xs ) =
   createSampler (sampleDirichlet xs)
 sample (DeterministicDist x) = pure x
 
--- *** Probability density functions (Section 6.2) 
-prob :: PrimDist a -> a -> Double
+-- | Compute the density of a primitive distribution generating an observed value
+prob :: 
+  -- | Distribution
+     PrimDist a 
+  -- | Observed value
+  -> a 
+  -- | Density
+  -> Double
 prob (DirichletDist xs) ys =
   let xs' = map (/(Prelude.sum xs)) xs
   in  if Prelude.sum xs' /= 1 then error "dirichlet can't normalize" else
@@ -195,7 +258,7 @@ prob (CauchyDist μ σ) y
 prob (HalfNormalDist σ) y
   = if y < 0 then 0 else
             2 * density (normalDistr 0 σ) y
-prob (NormalDist μ σ) y
+prob (Normal μ σ) y
   = density (normalDistr μ σ) y
 prob (UniformDist min max) y
   = density (uniformDistr min max) y
@@ -220,5 +283,12 @@ prob (PoissonDist λ) y
 prob (DeterministicDist x) y
   = 1
 
-logProb :: PrimDist a -> a -> Double
+-- | Compute the log density of a primitive distribution generating an observed value
+logProb :: 
+  -- | Distribution
+     PrimDist a 
+  -- | Observed value
+  -> a 
+  -- | Log density
+  -> Double
 logProb d = log . prob d

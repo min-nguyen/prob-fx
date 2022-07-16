@@ -83,15 +83,19 @@ instance Monad (Model env es) where
     f' <- f
     runModel $ x f'
 
--- | The initial handler for models, specialising a model under a certain environment to produce a probabilistic program consisting of @Sample@ and @Observe@ operations. 
+{- | The initial handler for models, specialising a model under a certain 
+environment to produce a probabilistic program consisting of @Sample@ and @Observe@ operations. -}
 handleCore :: (Member Observe es, Member Sample es) => Env env -> Model env (ObsReader env : Dist : es) a -> Prog es a
 handleCore env m = (handleDist . handleRead env) (runModel m)
 
 {- $Smart-Constructors
 
-Smart constructors for calling primitive distribution operations inside models, where each distribution comes with a primed and an unprimed variant.
+Smart constructors for calling primitive distribution operations inside models, 
+where each distribution comes with a primed and an unprimed variant.
 
-An unprimed distribution takes the standard distribution parameters as well as an observable variable. This lets one later provide observed values for that variable to be conditioned against:
+An unprimed distribution takes the standard distribution parameters as well as 
+an observable variable. This lets one later provide observed values for that 
+variable to be conditioned against:
 
 @
 exampleModel :: Observable env "b" Bool => Model env es Bool
@@ -105,9 +109,7 @@ exampleModel' :: Model env es Bool
 exampleModel' = bernoulli' 0.5
 @
 
-
 -}
-
 
 deterministic :: forall env es a x. (Eq a, Show a, OpenSum.Member a PrimVal, Observable env x a) => a    
   -> ObsVar x 
@@ -150,9 +152,9 @@ discrete ps field = Model $ do
   call (Dist (DiscreteDist ps) maybe_y tag)
 
 discrete' :: 
-  -- | List of probabilities @ps@
+  -- | List of @n@ probabilities
      [Double] 
-  -- | Integer index drawn using @ps@
+  -- | Integer index from @0@ to @n - 1@
   -> Model env es Int
 discrete' ps = Model $ do
   call (Dist (DiscreteDist ps) Nothing Nothing)
@@ -181,7 +183,7 @@ normal :: forall env es x. Observable env x Double =>
 normal mu sigma field = Model $ do
   let tag = Just $ varToStr field
   maybe_y <- ask @env field
-  call (Dist (NormalDist mu sigma) maybe_y tag)
+  call (Dist (Normal mu sigma) maybe_y tag)
 
 normal' :: 
   -- | Mean
@@ -190,7 +192,7 @@ normal' ::
   -> Double 
   -> Model env es Double
 normal' mu sigma = Model $ do
-  call (Dist (NormalDist mu sigma) Nothing Nothing)
+  call (Dist (Normal mu sigma) Nothing Nothing)
 
 halfNormal :: forall env es x. Observable env x Double => 
      Double 

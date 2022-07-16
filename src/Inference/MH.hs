@@ -6,7 +6,17 @@
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE ViewPatterns #-}
 
-module Inference.MH (mh, mhStep, runMH, traceLPs, lookupSample, handleSamp, accept) where
+{- | Metropolis-Hastings inference 
+-}
+
+module Inference.MH ( 
+    mh
+  , mhStep
+  , runMH
+  , traceLPs
+  , handleSamp
+  , lookupSample
+  , accept) where
 
 import Control.Monad ( (>=>) )
 import Data.Kind (Type)
@@ -29,9 +39,7 @@ import Sampler ( Sampler, liftS )
 import Trace ( LPTrace, FromSTrace(..), STrace, updateLPTrace )
 import Unsafe.Coerce ( unsafeCoerce )
 
--- ** Metropolis-Hastings (Section 6.2.2)
-
--- | Metropolis-Hastings inference
+-- | Top-level wrapper for Metropolis-Hastings (MH) inference 
 mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
   => 
   -- | Number of MH iterations
@@ -112,7 +120,7 @@ pattern Obs d y α <- (prj -> Just (Observe d y α))
 traceLPs :: (Member (State LPTrace) es, Member Sample es, Member Observe es) => Prog es a -> Prog es a
 traceLPs (Val x) = return x
 traceLPs (Op op k) = case op of
-  Samp (PrimDistDict d) α ->
+  Samp (PrimDistPrf d) α ->
        Op op (\x -> modify (updateLPTrace α d x) >>
                     traceLPs (k x))
   Obs d y α ->
@@ -130,7 +138,7 @@ handleSamp ::
   -> Prog '[Sample] a 
   -> Sampler a
 handleSamp strace α_samp (Op op k) = case discharge op of
-  Right (Sample (PrimDistDict d) α) ->
+  Right (Sample (PrimDistPrf d) α) ->
         do x <- lookupSample strace d α α_samp
            handleSamp strace α_samp (k x)
   _  -> error "Impossible: Nothing cannot occur"

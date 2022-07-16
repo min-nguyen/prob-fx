@@ -9,6 +9,9 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
+{- | An encoding for algebraic effects, based on the @freer@ monad. 
+-}
+
 module Prog (Prog(..), EffectSum, call, discharge, Member(..)) where
 
 import Control.Monad ( (>=>) )
@@ -17,12 +20,15 @@ import FindElem ( Idx(unIdx), FindElem(..) )
 import GHC.TypeLits ( TypeError, ErrorMessage(Text, (:<>:), (:$$:), ShowType) )
 import Unsafe.Coerce ( unsafeCoerce )
 
--- **  (Section 4.1) Prog: Algebraic effect embedding
-
--- | An encoding for algebraic effects, based on the 'freer' monad. 
+-- | A program represented as a syntax tree, whose nodes are operations and leaves are pure values
 data Prog es a where
-  Val :: a -> Prog es a
-  Op :: EffectSum es x -> (x -> Prog es a) -> Prog es a
+  Val 
+    :: a                -- ^ pure value 
+    -> Prog es a
+  Op 
+    :: EffectSum es x   -- ^ operation
+    -> (x -> Prog es a) -- ^ continuation
+    -> Prog es a
 
 instance Functor (Prog es) where
   fmap f (Val a) = Val (f a)
@@ -38,10 +44,12 @@ instance Monad (Prog es) where
   Val a >>= f      = f a
   Op fx k >>= f = Op fx (k >=> f)
 
+-- | Run a pure computation
 run :: Prog '[] a -> a
 run (Val x) = x
 run _ = error "'run' isn't defined for non-pure computations"
 
+-- | Call an operation of type @e x@ in a computation
 call :: (Member e es) => e x -> Prog es x
 call e = Op (inj e) Val
 
@@ -65,15 +73,17 @@ instance (FindElem e es) => Member e es where
             | n == n'   = Just (unsafeCoerce x)
             | otherwise = Nothing
 
-type family Members (es :: [* -> *]) (tss :: [* -> *]) = (cs :: Constraint) | cs -> es where
-  Members (e ': es) tss = (Member e tss, Members es tss)
-  Members '[] tss       = ()
+-- | Membership of many effects @es@ in @ess@
+type family Members (es :: [* -> *]) (ess :: [* -> *]) = (cs :: Constraint) | cs -> es where
+  Members (e ': es) ess = (Member e ess, Members es ess)
+  Members '[] ess       = ()
 
-pattern Other :: EffectSum es x -> EffectSum  (e ': es) x
-pattern Other u <- (discharge -> Left u)
 
--- *** (Section 5.2) Discharge 
 -- | Discharges an effect @e@ from the front of an effect signature @es@
 discharge :: EffectSum (e ': es) x -> Either (EffectSum es x) (e x)
 discharge (EffectSum 0 tv) = Right $ unsafeCoerce tv
 discharge (EffectSum n rv) = Left  $ EffectSum (n-1) rv
+
+-- | For pattern-matching against operations that belong in the tail of an effect signature
+pattern Other :: EffectSum es x -> EffectSum  (e ': es) x
+pattern Other u <- (discharge -> Left u)

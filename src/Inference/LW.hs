@@ -4,8 +4,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE GADTs #-}
-
 {-# LANGUAGE TypeOperators #-}
+
+{- | Likelihood-Weighting inference
+-}
 
 module Inference.LW (lw, runLW, handleObs) where
 
@@ -22,9 +24,7 @@ import Effects.State ( modify, handleState, State )
 import Trace ( FromSTrace(..), STrace )
 import Inference.SIM (traceSamples, handleSamp)
 
--- ** Likelihood-Weighting (Section 6.2.1)
-
--- | Likelihood-Weighting (LW) inference
+-- | Top-level wrapper for Likelihood-Weighting (LW) inference
 lw :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])
     => 
     -- | Number of LW iterations
