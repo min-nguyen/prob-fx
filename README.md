@@ -4,11 +4,13 @@
 
 ### Dependencies
 
+_Running ProbFX_
+
 ProbFX uses the most recent Cabal version ` >= 3.6.x` and a GHC version `>= 8.4.x`:
 1. Install GHCup by following [these instructions](https://www.haskell.org/ghcup/install/)
 2. Both Cabal and GHC versions can be installed and then set by following [this](https://www.haskell.org/ghcup/guide/). 
 
-— _Visualising ProbFX examples_ —
+_Visualising ProbFX_
 
 Visualising the provided examples of ProbFX requires Python3 with the following Python packages:
 - `ast`, `matplotlib`, `scipy`, `sklearn`, `numpy`
