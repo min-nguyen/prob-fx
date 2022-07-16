@@ -12,7 +12,10 @@
 {- | For lifting arbitrary monadic computations into an algebraic effect setting
 -}
 
-module Effects.Lift (Lift(..), lift, handleLift) where
+module Effects.Lift (
+    Lift(..)
+  , lift
+  , handleLift) where
 
 import Prog ( call, Member(prj), Prog(..) )
 import Data.Function (fix)

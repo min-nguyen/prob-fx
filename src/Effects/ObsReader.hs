@@ -7,12 +7,14 @@
 
 {- | An effect for reading observable variables from a model environment -}
 
-module Effects.ObsReader (ObsReader(..), ask, handleRead) where
+module Effects.ObsReader (
+    ObsReader(..)
+  , ask
+  , handleRead) where
 
 import Prog ( call, discharge, Member, Prog(..) )
 import Env ( Env, ObsVar, Observable(..) )
 import Util ( safeHead, safeTail )
-
 
 -- | The effect for reading observed values from a model environment @env@
 data ObsReader env a where
