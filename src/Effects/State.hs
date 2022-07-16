@@ -4,30 +4,45 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Effects.State where
+{- | The state effect
+-}
 
-import Prog
+module Effects.State (
+    State
+  , modify
+  , handleState) where
 
--- ** (Section 6.1) State effect 
+import Prog ( discharge, Member(inj), Prog(..) )
 
+-- | State
 data State s a where
-  GetSt :: State s s
-  PutSt :: s -> State s ()
+  Get :: State s s
+  Put :: s -> State s ()
 
-getSt :: (Member (State s) es) => Prog es s
-getSt = Op (inj GetSt) Val
+-- | Get the state
+get :: (Member (State s) es) => Prog es s
+get = Op (inj Get) Val
 
-putSt :: (Member (State s) es) => s -> Prog es ()
-putSt s = Op (inj $ PutSt s) Val
+-- | Set the state
+put :: (Member (State s) es) => s -> Prog es ()
+put s = Op (inj $ Put s) Val
 
+-- | Apply a function to the state
 modify :: Member (State s) es => (s -> s) -> Prog es ()
-modify f = getSt >>= putSt . f
+modify f = get >>= put . f
 
-handleState :: forall s es a. s -> Prog (State s ': es) a -> Prog es (a, s)
+-- | Handle the @State s@ effect
+handleState :: 
+  -- | Initial state
+     s 
+  -- | Initial program
+  -> Prog (State s ': es) a 
+  -- | Pure value and final state
+  -> Prog es (a, s)
 handleState s m = loop s m where
   loop :: s -> Prog (State s ': es) a -> Prog es (a, s)
   loop s (Val x) = return (x, s)
   loop s (Op u k) = case discharge u of
-    Right GetSt      -> loop s (k s)
-    Right (PutSt s') -> loop s' (k ())
+    Right Get      -> loop s (k s)
+    Right (Put s') -> loop s' (k ())
     Left  u'         -> Op u' (loop s . k)

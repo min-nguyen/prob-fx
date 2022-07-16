@@ -9,20 +9,25 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module Effects.Lift where
+{- | For lifting arbitrary monadic computations into an algebraic effect setting
+-}
 
-import Prog
+module Effects.Lift (Lift(..), lift, handleLift) where
+
+import Prog ( call, Member(prj), Prog(..) )
 import Data.Function (fix)
 
--- | Lift effect for lifting an arbitrary monad `m` into the effect `Lift m`
+-- | Lift effect
 newtype Lift m a = Lift (m a)
 
+-- | Lift a monadic computation @m a@ into the effect @Lift m@
 lift :: (Member (Lift m) es) => m a -> Prog es a
 lift = call . Lift
 
-runLift :: forall m w. Monad m => Prog '[Lift m] w -> m w
-runLift (Val x) = return x
-runLift (Op u q) = case prj u of
-     Just (Lift m) -> m >>= runLift . q
+-- | Handle @Lift m@ as the last effect
+handleLift :: forall m w. Monad m => Prog '[Lift m] w -> m w
+handleLift (Val x) = return x
+handleLift (Op u q) = case prj u of
+     Just (Lift m) -> m >>= handleLift . q
      Nothing -> error "Impossible: Nothing cannot occur"
 

@@ -52,7 +52,7 @@ import Control.Monad.Trans.Class ( MonadTrans(lift) )
 import Effects.Dist ( handleDist, Dist(Dist), Observe, Sample )
 import Effects.Lift ( Lift(..) )
 import Effects.ObsReader ( ask, handleRead, ObsReader )
-import Effects.State ( State, getSt, putSt, modify, handleState )
+import Effects.State ( State, modify, handleState )
 import Env ( varToStr, Env, ObsVar, Observable )
 import OpenSum (OpenSum)
 import PrimDist

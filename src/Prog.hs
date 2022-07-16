@@ -52,7 +52,7 @@ instance Monad (Prog es) where
   Val a >>= f      = f a
   Op fx k >>= f = Op fx (k >=> f)
 
--- | An open sum for an effect signature 'es', containing an operation @e x@ where @e@ is in @es@
+-- | An open sum for an effect signature @es@, containing an operation @e x@ where @e@ is in @es@
 data EffectSum (es :: [* -> *]) (x :: *) :: * where
   EffectSum :: Int -> e x -> EffectSum es x
 
