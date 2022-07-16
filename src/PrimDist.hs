@@ -99,7 +99,7 @@ data PrimDist a where
     :: Double           -- ^ Shape k
     -> Double           -- ^ Scale θ
     -> PrimDist Double
-  Normal        
+  Normal      
     :: Double           -- ^ Mean
     -> Double           -- ^ Standard deviation
     -> PrimDist Double
