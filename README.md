@@ -1,8 +1,8 @@
-### ProbFX:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf)
+## ProbFX:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf)
 
 ---
 
-**Dependencies**
+### Dependencies
 
 ProbFX uses the most recent Cabal version ` >= 3.6.x` and a GHC version `>= 8.4.x`:
 1. Install GHCup by following [these instructions](https://www.haskell.org/ghcup/install/)
@@ -13,9 +13,11 @@ ProbFX uses the most recent Cabal version ` >= 3.6.x` and a GHC version `>= 8.4.
 Visualising the provided examples of ProbFX requires Python3 with the following Python packages:
 - `ast`, `matplotlib`, `scipy`, `sklearn`, `numpy`
 
-**Interacting with ProbFX**
+---
 
-— _Directly executing ProbFX_ —
+### Interacting with ProbFX
+
+#### Directly executing ProbFX
 
 We provide a script below for executing ProbFX with a set of possible arguments. Alternatively, you can:
   1. Directly execute a ProbFX program via `cabal run prob-fx <arg>` (corresponding to `Main.hs`), whose output will be written to `model-output.txt`
@@ -51,14 +53,16 @@ Extra example models and their corresponding command-line arguments are given be
 - Another Gelman and Hill [case study](https://cran.r-project.org/web/packages/rstan/vignettes/rstan.html) as a hierarchical model, which quantifies the effect of coaching programs from 8 different schools on students' SAT-V scores:
   - `mhSchool` : This generates a posterior distribution over model parameter `mu`, being the effect of general coaching programs on SAT scores, and each school's posterior distribution on model parameter `theta`, being the variation of their effect on SAT scores.
 
-— _Example models + Creating and executing models_ —
+#### Example models + Creating and executing models
 
 All example models can be found in `src/Examples`, showing variations on how models can be created and executed. [`LogRegr.hs`](https://github.com/min-nguyen/prob-fx/blob/master/src/Examples/LogRegr.hs) documents a particularly representative walk-through. The general process of doing this is as follows:
 1. Define an appropriate model of type `Model env es a` and a corresponding model environment of type `Env env`.
 2. Execute a model using one of the library functions `simulate`, `lw`, or `mh` detailed in `src/Inference`; this produces an output in the monad `Sampler`.
 3. `Sampler` computations can be evaluated with `sampleIO` (found in `src/Sampler.hs`) to produce an `IO` computation. Examples of this are shown in `Main.hs`.
 
-**Paper to artifact overview**
+---
+
+### Paper to artifact overview
 
 - § 1: Linear regression `(src/Examples/LinRegr.hs)`
   - Simulating  (Fig 1a) is done via `./prob-fx.sh simLinRegr`.
@@ -96,9 +100,9 @@ All example models can be found in `src/Examples`, showing variations on how mod
   - § 6.2.1: Likelihood Weighting: `src/Inference/LW.hs`.
   - § 6.2.2: Metropolis Hastings: `src/Inference.MH.hs`.
 
-**Benchmarks**
+---
 
-— _Benchmarking_ —
+## Benchmarks
 
 To compare benchmarks with MonadBayes and Turing:
 
@@ -114,11 +118,11 @@ To compare benchmarks with MonadBayes and Turing:
     Pkg.add("Statistics")
     ```
 
-— _Directly benchmarking ProbFX_ —
+### Directly benchmarking ProbFX
 
 Benchmarking is done with a version of ProbFX that uses the `freer-simple` library as an algebraic effect encoding; this is found in `src/Freer`. We provide a script for benchmarking below, but ProbFX can also be directly benchmarked with `cabal run benchmarking-prob-fx` (corresponding to `benchmarking/prob-fx/Main.hs`). The examples programs used for benchmarking are found in `benchmarking/prob-fx/BenchmarkPrograms.hs`, and they are benchmarked in `benchmarking/prob-fx/BenchmarkTests.hs`.
 
-— _Benchmarking with the script_ —
+### Benchmarking with the script
 
 The benchmarks in Appendix A can be reproduced by running the script **`./benchmark.sh <arg>`** with one the following arguments:
 - `prob-fx`    : This writes to `benchmarking/prob-fx/prob-fx-benchmarks.csv`
@@ -135,7 +139,7 @@ Each benchmark is given a name of the format `<model>/<algorithm>/<independent-v
 
 For example, `lda/MH/data-size/80` means a latent-dirichlet model is executed under Metropolis-Hastings for a dataset size of 80.
 
-— _Creating new ProbFX benchmarks_ —
+### Creating new ProbFX benchmarks
 
 We use Criterion to benchmark ProbFX; a tutorial can be found [here](http://www.serpentine.com/criterion/tutorial.html).
 
