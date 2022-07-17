@@ -11,8 +11,8 @@
      This demonstrates:
       - The [SIR](https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology) model for modelling
         the transition between Susceptible (S), Infected (I), and Recovered (R) individuals during an epidemic.
-        We model this as a Hidden Markov Model, where the latent states are the true values of S, I, and R,
-        and the observations are the reported number of infections (𝜉).
+        We model this as a Hidden Markov Model, where the _latent states_ are the true values of S, I, and R,
+        and the _observations_ are the reported number of infections (𝜉).
       - Extending the SIR to the SIRS model where recovered individuals (R) can become susceptible (S) again.
       - Extending the SIRS to the SIRSV model where susceptible individuals (S) can become vaccinated (V).
 
@@ -34,7 +34,7 @@ import Env ( Observables, Observable(get), Assign((:=)), nil, (<:>) )
 import Control.Monad ( (>=>) )
 import HMM ( ObsModel, TransModel, hmmGen )
 
--- ||| SIR model
+{- | SIR model-}
 
 -- | SIR model environment
 type SIRenv =
@@ -44,26 +44,26 @@ type SIRenv =
   , "𝜉"  := Int     -- ^ number of reported infections
  ]
 
--- | SIR HMM latent state
+-- | Latent state
 data Popl = Popl {
     s   :: Int, -- ^ number of people susceptible to infection
     i   :: Int, -- ^ number of people currently infected
     r   :: Int  -- ^ number of people recovered from infection
 } deriving Show
 
--- | SIR HMM transition model parameters
+-- | Transition model parameters
 data TransParamsSIR = TransParamsSIR {
     betaP  :: Double, -- ^ mean contact rate between susceptible and infected people
     gammaP :: Double  -- ^ mean recovery rate
 }
 
--- | SIR HMM observation 𝜉
+-- | Observation 𝜉
 type Reported = Int
 
--- | SIR HMM observation model parameters
+-- | Observation model parameters
 type ObsParams = Double
 
--- | SIR transition model prior
+-- | Transition model prior
 transPriorSIR :: Observables env '["β",  "γ"] Double
   => Model env ts TransParamsSIR
 transPriorSIR = do
@@ -147,16 +147,15 @@ inferSIR = do
   return (ρs, βs)
 
 
--- ||| SIRS model, where we allow recovered individuals (R) to become susceptible again (S).
-
--- | SIRS transition model parameters
+{- | SIRSS model -}
+-- | Transition model parameters
 data TransParamsSIRS = TransParamsSIRS {
     betaP_SIRS  :: Double, -- ^ mean contact rate between susceptible and infected people
     gammaP_SIRS :: Double, -- ^ mean recovery rate
     etaP_SIRS   :: Double  -- ^ rate of resusceptible
 }
 
--- | SIRS transition model prior
+-- | Transition model prior
 transPriorSIRS :: Observables env '["β", "η", "γ"] Double
   => Model env ts TransParamsSIRS
 transPriorSIRS = do
@@ -198,9 +197,8 @@ simulateSIRS = do
   return (sirs, 𝜉s)
 
 
--- ||| SIRSV model, where we also allow susceptible individuals (S) to become vaccinated (V).
-
--- | SIRSV transition model parameters
+{- | SIRSV model -}
+-- | Transition model parameters
 data TransParamsSIRSV = TransParamsSIRSV {
     betaP_SIRSV  :: Double, -- ^ mean contact rate between susceptible and infected people
     gammaP_SIRSV :: Double, -- ^ mean recovery rate
@@ -208,7 +206,7 @@ data TransParamsSIRSV = TransParamsSIRSV {
     omegaP_SIRSV :: Double  -- ^ vaccination rate
 }
 
--- | SIRSV latent state
+-- | Latent state
 data PoplV = PoplV {
     s' :: Int,  -- ^ susceptible individuals
     i' :: Int,  -- ^ infected individuals
@@ -251,7 +249,7 @@ transSIRSV (TransParamsSIRSV beta gamma omega eta) sirv = do
   tellM [sirv']
   return sirv'
 
--- | SIRSV transition model prior
+-- | Transition model prior
 transPriorSIRSV :: Observables env '["β", "γ", "ω", "η"] Double
   => Model env ts TransParamsSIRSV
 transPriorSIRSV  = do
@@ -259,7 +257,7 @@ transPriorSIRSV  = do
   pOmega <- gamma 1 (1/16) #ω
   return (TransParamsSIRSV pBeta pGamma pEta pOmega)
 
--- | SIRSV observation model
+-- | Observation model
 obsSIRSV :: Observable env "𝜉" Int
   => ObsModel env ts Double PoplV Reported
 obsSIRSV rho (PoplV _ i _ v)  = do

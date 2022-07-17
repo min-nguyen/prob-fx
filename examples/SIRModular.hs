@@ -14,8 +14,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant return" #-}
 
-{- |
-     This demonstrates:
+{- | This demonstrates:
       - The [SIR](https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology) model for modelling
         the transition between Susceptible (S), Infected (I), and Recovered (R) individuals during an epidemic.
         We model this as a Hidden Markov Model, where the latent states are the true values of S, I, and R,
@@ -23,7 +22,9 @@
       - Extending the SIR to the SIRS model where recovered individuals (R) can become susceptible (S) again.
       - Extending the SIRS to the SIRSV model where susceptible individuals (S) can become vaccinated (V).
 
-    For convenience, this makes use of 'Control.Lens' accessors and the 'Data.Extensible' library.
+    For convenience, this makes use of the 'Data.Extensible' library for extensible records, and the 'Control.Lens'
+    library to record accessors. If the lens notation is unfamiliar, the code below can be corresponded to a less modular
+    version [here](https://github.com/min-nguyen/prob-fx/blob/hackage/examples/SIR.hs).
  -}
 
 module SIRModular where
@@ -34,14 +35,15 @@ import Control.Lens ( (&), (^.), (.~) )
 import Effects.Writer ( Writer, tellM, handleWriterM )
 import Model ( Model, beta, binomial', gamma, poisson )
 import Control.Monad ( (>=>) )
-import Env ( Observables, Observable, Assign ((:=)), (<:>), nil)
+import Env ( Observables, Observable, Assign ((:=)), (<:>), nil, get)
 import HMM ( ObsModel, TransModel, hmmGen )
 import GHC.TypeLits ( Symbol )
 import Data.Kind (Constraint)
-import Sampler
-import Inference.SIM as SIM
+import Sampler ( Sampler )
+import Inference.SIM as SIM ( simulate )
+import Inference.MH as MH ( mh )
 
--- | A type family for conveniently specifying multiple fields of the same type
+-- | A type family for conveniently specifying multiple @Record@ fields of the same type
 type family Lookups env (ks :: [Symbol]) a :: Constraint where
   Lookups env (x ': xs) a = (Lookup env x a, Lookups env xs a)
   Lookups env '[] a = ()
@@ -52,17 +54,13 @@ mkField "i" -- ^ infected individuals
 mkField "r" -- ^ recovered individuals
 mkField "v" -- ^ vaccinated individuals
 
-type Popl  = Record '[
-    "s" >: Int
-  , "i" >: Int
-  , "r" >: Int
-  , "v" >: Int]
-
--- | HMM observations (𝜉)
+-- | HMM observations (𝜉) i.e. reported infections
 type Reported = Int
 
 
-{- | SIR model -}
+{- | SIR model
+-}
+
 -- | SIR transition prior
 transPriorSIR :: Observables env '["β",  "γ"] Double
   => Model env ts (Double, Double)
@@ -109,27 +107,45 @@ obsSIR rho popl  = do
   poisson (rho * fromIntegral i_0) #𝜉
 
 -- | SIR as HMM
-hmmSIR :: forall popl es env. (Member (Writer [Record popl]) es,
-           Lookups popl '["s", "i", "r"] Int, Observable env "𝜉" Int, Observables env '["ρ", "β", "γ"] Double)
-  => Record popl -> Int -> Model env es (Record popl, [Record popl])
-hmmSIR p n  = handleWriterM @([Record popl]) $ hmmGen transPriorSIR obsPriorSIR transSIR obsSIR n p
+hmmSIR :: forall popl es env.
+           (Lookups popl '["s", "i", "r"] Int, Observable env "𝜉" Int, Observables env '["ρ", "β", "γ"] Double)
+  => Int -> Record popl -> Model env es (Record popl, [Record popl])
+hmmSIR n = handleWriterM . hmmGen transPriorSIR obsPriorSIR transSIR obsSIR n
 
--- simulateSIR :: Sampler ([(Int, Int, Int)], [Reported])
--- simulateSIR = do
---   -- Specify model input of 762 susceptible and 1 infected
---   let sir_0  :: Record  '[ "s" ':> Int, "i" ':> Int, "r" ':> Int]    = #s @= 762 <: #i @= 1 <: #r @= 0 <: emptyRecord
---   -- Specify model environment
---       sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
---   -- Simulate an epidemic over 100 days
---   ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIR @( [ "s" ':> Int, "i" ':> Int, "r" ':> Int]) sir_0 ) sim_env_in  100
---   -- Get the observed infections over 100 days
---   -- let 𝜉s :: [Reported] = get #𝜉 sim_env_out
---   -- -- Get the true SIR values over 100 days
---   --     sirs = map (\sir -> (sir ^. s, sir ^. i, sir ^. r)) sir_trace
---   -- return (sirs, 𝜉s)
---   undefined
+-- | Simulate from the SIR model
+simulateSIR :: Sampler ([(Int, Int, Int)], [Reported])
+simulateSIR = do
+  -- Specify model input of 762 susceptible and 1 infected
+  let sir_0      = #s @= 762 <: #i @= 1 <: #r @= 0 <: emptyRecord
+  -- Specify model environment
+      sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
+  -- Simulate an epidemic over 100 days
+  ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIR 100) sim_env_in sir_0
+  -- Get the observed infections over 100 days
+  let 𝜉s :: [Reported] = get #𝜉 sim_env_out
+  -- Get the true SIR values over 100 days
+      sirs = map (\sir -> (sir ^. s, sir ^. i, sir ^. r)) sir_trace
+  return (sirs, 𝜉s)
 
-{- | SIRS model -}
+-- | MH inference from SIR model: ([ρ], [β])
+inferSIR :: Sampler ([Double], [Double])
+inferSIR = do
+  -- Simulate some observed infections
+  𝜉s <- snd <$> simulateSIR
+  -- Specify model input of 762 susceptible and 1 infected
+  let sir_0      = #s @= 762 <: #i @= 1 <: #r @= 0 <: emptyRecord
+  -- Specify model environment
+      mh_env_in = #β := [] <:> #γ := [0.0085] <:> #ρ := [] <:> #𝜉 := 𝜉s <:> nil
+  -- Run MH inference over 50000 iterations
+  mhTrace <- MH.mh 50000 (hmmSIR 100) (sir_0, mh_env_in) ["β", "ρ"]
+  -- Get the sampled values for model parameters ρ and β
+  let ρs = concatMap (get #ρ) mhTrace
+      βs = concatMap (get #β) mhTrace
+  return (ρs, βs)
+
+{- | SIRS model
+-}
+
 -- | SIRS transition prior
 transPriorSIRS :: Observables env '["β", "η", "γ"] Double
   => Model env ts (Double, Double, Double)
@@ -151,14 +167,30 @@ transSIRS :: Lookups popl '["s", "i", "r"] Int => TransModel env es (Double, Dou
 transSIRS (beta, gamma, eta) = transSI beta >=> transIR gamma >=> transRS eta
 
 -- | SIRS as HMM
-hmmSIRS :: (Member (Writer [Record popl]) es,
-            Lookups popl '["s", "i", "r"] Int,
+hmmSIRS :: (Lookups popl '["s", "i", "r"] Int,
             Observables env '["𝜉"] Int, Observables env '["β", "η", "γ", "ρ"] Double)
   => Int -> Record popl -> Model env es (Record popl, [Record popl])
 hmmSIRS n = handleWriterM . hmmGen transPriorSIRS obsPriorSIR transSIRS obsSIR n
 
+-- | Simulate from SIRS model: ([(s, i, r)], [𝜉])
+simulateSIRS :: Sampler ([(Int, Int, Int)], [Reported])
+simulateSIRS = do
+  -- Specify model input of 762 susceptible and 1 infected
+  let sir_0      = #s @= 762 <: #i @= 1 <: #r @= 0 <: emptyRecord
+  -- Specify model environment
+      sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #η := [0.05] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
+  -- Simulate an epidemic over 100 days
+  ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIRS 100) sim_env_in sir_0
+  -- Get the observed infections over 100 days
+  let 𝜉s :: [Reported] = get #𝜉 sim_env_out
+  -- Get the true SIRS values over 100 days
+      sirs = map (\sir -> (sir ^. s, sir ^. i, sir ^. r)) sir_trace
+  return (sirs, 𝜉s)
 
-{- | SIRSV model -}
+
+{- | SIRSV model
+-}
+
 -- | SIRSV transition prior
 transPriorSIRSV :: Observables env '["β", "γ", "ω", "η"] Double
   => Model env ts (Double, Double, Double, Double)
@@ -181,8 +213,22 @@ transSIRSV (beta, gamma, eta, omega) =
   transSI beta >=> transIR gamma >=> transRS eta  >=> transSV omega
 
 -- | SIRSV as HMM
-hmmSIRSV :: (Member (Writer [Record popl]) es,
-             Lookups popl '["s", "i", "r", "v"] Int,
+hmmSIRSV :: (Lookups popl '["s", "i", "r", "v"] Int,
              Observables env '["𝜉"] Int, Observables env '["β", "η", "γ", "ω", "ρ"] Double)
   => Int -> Record popl -> Model env es (Record popl, [Record popl])
 hmmSIRSV n = handleWriterM . hmmGen transPriorSIRSV obsPriorSIR transSIRSV obsSIR n
+
+-- | Simulate from SIRSV model : ([(s, i, r, v)], [𝜉])
+simulateSIRSV :: Sampler ([(Int, Int, Int, Int)], [Reported])
+simulateSIRSV = do
+  -- Specify model input of 762 susceptible and 1 infected
+  let sir_0      = #s @= 762 <: #i @= 1 <: #r @= 0 <: #v @= 0 <: emptyRecord
+  -- Specify model environment
+      sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #η := [0.05] <:> #ω := [0.02] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
+  -- Simulate an epidemic over 100 days
+  ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIRSV 100) sim_env_in sir_0
+  -- Get the observed infections over 100 days
+  let 𝜉s :: [Reported] = get #𝜉 sim_env_out
+  -- Get the true SIRSV values over 100 days
+      sirvs = map (\sirv -> (sirv ^. s, sirv ^. i, sirv ^. r, sirv ^. v)) sir_trace
+  return (sirvs, 𝜉s)
