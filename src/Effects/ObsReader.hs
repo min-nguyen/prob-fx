@@ -20,8 +20,8 @@ import Util ( safeHead, safeTail )
 data ObsReader env a where
   -- | Given the observable variable @x@ is assigned a list of type @[a]@ in @env@, attempt to retrieve its head value.
   Ask :: Observable env x a
-    => ObsVar x                 -- ^ Variable @x@ to read from
-    -> ObsReader env (Maybe a)  -- ^ The head value from @x@'s list
+    => ObsVar x                 -- ^ variable @x@ to read from
+    -> ObsReader env (Maybe a)  -- ^ the head value from @x@'s list
 
 -- | Wrapper function for calling @Ask@
 ask :: forall env es x a. (Member (ObsReader env) es, Observable env x a)
@@ -31,7 +31,7 @@ ask x = call (Ask @env x)
 
 -- | Handle the @Ask@ requests of observable variables
 handleRead ::
-  -- | Initial model environment
+  -- | initial model environment
      Env env
   -> Prog (ObsReader env ': es) a
   -> Prog es a

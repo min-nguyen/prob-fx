@@ -7,7 +7,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-{- | Auxiliary definitions for finding a type in a type-level list. 
+{- | Auxiliary definitions for finding a type in a type-level list.
 -}
 
 module FindElem (

@@ -9,7 +9,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-{- | An encoding for algebraic effects, based on the @freer@ monad. 
+{- | An encoding for algebraic effects, based on the @freer@ monad.
 -}
 
 module Prog (
@@ -30,12 +30,12 @@ import Unsafe.Coerce ( unsafeCoerce )
 
 -- | A program that returns a value of type @a@ and can call operations that belong to some effect @e@ in signature @es@; this represents a syntax tree whose nodes are operations and leaves are pure values.
 data Prog es a where
-  Val 
-    :: a                -- ^ pure value 
+  Val
+    :: a                -- ^ pure value
     -> Prog es a
-  Op 
-    :: EffectSum es x   -- ^ an operation belonging to some effect in @es@
-    -> (x -> Prog es a) -- ^ a continuation from the result of the operation
+  Op
+    :: EffectSum es x   -- ^ operation belonging to some effect in @es@
+    -> (x -> Prog es a) -- ^ continuation from the result of the operation
     -> Prog es a
 
 instance Functor (Prog es) where
@@ -59,9 +59,9 @@ data EffectSum (es :: [* -> *]) (x :: *) :: * where
 -- | Membership of an effect @e@ in @es@
 class (FindElem e es) => Member (e :: * -> *) (es :: [* -> *]) where
   -- | Inject an operation of type @e x@ into an effect sum
-  inj ::  e x -> EffectSum es x
+  inj :: e x -> EffectSum es x
   -- | Attempt to project an operation of type @e x@ out from an effect sum
-  prj ::  EffectSum es x -> Maybe (e x)
+  prj :: EffectSum es x -> Maybe (e x)
 
 instance {-# INCOHERENT #-} (e ~ e') => Member e '[e'] where
    inj x  = EffectSum 0 x

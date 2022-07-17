@@ -14,7 +14,7 @@
 {- | This implements the model environments that users must provide upon running a model; such environments assign traces of values to the "observable variables" (random variables which can be conditioned against) of a model.
 -}
 
-module Env 
+module Env
   ( -- * Observable variable
     ObsVar(..)
   , varToStr
@@ -33,25 +33,21 @@ import Data.Proxy ( Proxy(Proxy) )
 import FindElem ( FindElem(..), Idx(..) )
 import GHC.OverloadedLabels ( IsLabel(..) )
 import GHC.TypeLits ( KnownSymbol, Symbol, symbolVal )
-import qualified Data.Vector as V
-import qualified GHC.TypeLits as TL
 import Unsafe.Coerce ( unsafeCoerce )
 
-
-
--- | Containers for observable variables 
+-- | Containers for observable variables
 data ObsVar (x :: Symbol) where
   ObsVar :: KnownSymbol x => ObsVar x
 
 -- | Allows the syntax @#x@ to be automatically lifted to the type @ObsVar "x"@.
 instance (KnownSymbol x, x ~ x') => IsLabel x (ObsVar x') where
   fromLabel = ObsVar
-  
+
 -- | Convert an observable variable from a type-level string to a value-level string
 varToStr :: forall x. ObsVar x -> String
 varToStr ObsVar = symbolVal (Proxy @x)
 
--- * Model Environments 
+-- * Model Environments
 
 -- | A model environment assigning traces (lists) of observed values to observable variables i.e. the type @Env ((x := a) : env)@ indicates @x@ is assigned a value of type @[a]@
 data Env (env :: [Assign Symbol *]) where

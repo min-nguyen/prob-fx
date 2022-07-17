@@ -46,16 +46,16 @@ import Unsafe.Coerce ( unsafeCoerce )
 
 -- | Top-level wrapper for Metropolis-Hastings (MH) inference
 mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- | Number of MH iterations
+  -- | number of MH iterations
   => Int
-  -- | Model awaiting an input
+  -- | model awaiting an input
   -> (b -> Model env es a)
-  -- | (Model input, input model environment)
+  -- | (model input, input model environment)
   -> (b, Env env)
-  -- | An optional list of observable variable names (strings) to specify sample sites of interest.
+  -- | optional list of observable variable names (strings) to specify sample sites of interest
   {- For example, provide "mu" to specify interest in sampling #mu. This causes other variables to not be resampled unless necessary. -}
   -> [Tag]
-  -- | [Output model environment]
+  -- | [output model environment]
   -> Sampler [Env env]
 mh n model  (x_0, env_0) tags = do
   -- Perform initial run of MH with no proposal sample site
@@ -67,15 +67,15 @@ mh n model  (x_0, env_0) tags = do
 
 -- | Perform one step of MH
 mhStep :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- | Model environment
+  -- | model environment
   => Env env
-  -- | Model
+  -- | model
   -> Model env es a
-  -- | Tags indicating sample sites of interest
+  -- | tags indicating sample sites of interest
   -> [Tag]
-  -- | Trace of previous MH outputs
+  -- | trace of previous MH outputs
   -> [((a, STrace), LPTrace)]
-  -- | Updated trace of MH outputs
+  -- | updated trace of MH outputs
   -> Sampler [((a, STrace), LPTrace)]
 mhStep env model tags trace = do
   -- Get previous mh output
@@ -97,15 +97,15 @@ mhStep env model tags trace = do
 
 -- | Handler for one iteration of MH
 runMH :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- | Model environment
+  -- | model environment
   => Env env
-  -- | Sample trace of previous MH iteration
+  -- | sample trace of previous MH iteration
   -> STrace
-  -- | Sample address of interest
+  -- | sample address of interest
   -> Addr
-  -- | Model
+  -- | model
   -> Model env es a
-  -- | Sampler generating: (model output, sample trace, log-probability trace)
+  -- | (model output, sample trace, log-probability trace)
   -> Sampler ((a, STrace), LPTrace)
 runMH env strace α_samp =
      handleSamp strace α_samp  . handleObs
@@ -134,11 +134,10 @@ traceLPs (Op op k) = case op of
 
 -- | Handler for @Sample@ that selectively reuses old samples or draws new ones
 handleSamp ::
-  -- | Sample trace
+  -- | sample trace
      STrace
-  -- | Address of the proposal sample site for the current MH iteration
+  -- | address of the proposal sample site for the current MH iteration
   -> Addr
-  -- | Probabilistic program with just @Sample@ left
   -> Prog '[Sample] a
   -> Sampler a
 handleSamp strace α_samp (Op op k) = case discharge op of
@@ -152,13 +151,13 @@ handleSamp _ _ (Val x) = return x
 --   it only if the primitive distribution it was sampled from matches the current one.
 lookupSample :: OpenSum.Member a PrimVal
   =>
-  -- | Sample trace
+  -- | sample trace
      STrace
-  -- | Distribution to sample from
+  -- | distribution to sample from
   -> PrimDist a
-  -- | Address of current sample site
+  -- | address of current sample site
   -> Addr
-  -- | Address of proposal sample site
+  -- | address of proposal sample site
   -> Addr
   -> Sampler a
 lookupSample samples d α α_samp
@@ -173,15 +172,15 @@ lookupSample samples d α α_samp
 
 -- | Compute acceptance probability
 accept ::
-  -- | Address of new sampled value
+  -- | address of new sampled value
      Addr
-  -- | Previous MH sample trace
+  -- | previous MH sample trace
   -> STrace
-  -- | New MH sample trace
+  -- | new MH sample trace
   -> STrace
-  -- | Previous MH log-probability trace
+  -- | previous MH log-probability trace
   -> LPTrace
-  -- | Current MH log-probability trace
+  -- | current MH log-probability trace
   -> LPTrace
   -> IO Double
 accept x0 _Ⲭ _Ⲭ' logℙ logℙ' = do

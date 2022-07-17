@@ -11,11 +11,12 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE ConstraintKinds #-}
 
-{- | The effect @Dist@ for primitive distributions
+{- | The effects for primitive distributions, sampling, and observing
 -}
 
 module Effects.Dist (
   -- ** Address
+  -- $Address
     Tag
   , Addr
   -- ** Dist effect
@@ -31,18 +32,18 @@ import Data.Map (Map)
 import Data.Maybe ( fromMaybe )
 import Prog ( call, discharge, Member, Prog(..) )
 import qualified Data.Map as Map
-import qualified Data.Vector as V
-import qualified Data.Vector.Unboxed as UV
-import qualified OpenSum
-import Util ( boolToInt )
 import PrimDist ( PrimDist )
 
--- | An observable variable name assigned to a primitive distribution
+{- $Address
+   Run-time identifiers for probabilistic operations
+-}
+
+-- | An observable variable name assigned to a primitive distribution, representing a compile-time identifier
 type Tag  = String
--- | An observable variable name and the index of its run-time occurrence
+-- | An observable variable name and the index of its run-time occurrence, representing a run-time identifier
 type Addr = (Tag, Int)
 
--- | Distribution effect
+-- | The effect @Dist@ for primitive distributions
 data Dist a = Dist
   { getPrimDist :: PrimDist a  -- ^ primitive distribution
   , getObs :: Maybe a          -- ^ optional observed value
@@ -55,17 +56,17 @@ instance Show a => Show (Dist a) where
 instance Eq (Dist a) where
   (==) (Dist d1 _ _) (Dist d2 _ _) = d1 == d2
 
--- | The effect for sampling from distirbutions
+-- | The effect @Sample@ for sampling from distirbutions
 data Sample a where
-  Sample  :: PrimDist a     -- ^ Distribution to sample from
-          -> Addr           -- ^ Address of @Sample@ operation
+  Sample  :: PrimDist a     -- ^ distribution to sample from
+          -> Addr           -- ^ address of @Sample@ operation
           -> Sample a
 
--- | The effect for conditioning against observed values
+-- | The effect @Observe@ for conditioning against observed values
 data Observe a where
-  Observe :: PrimDist a     -- ^ Distribution to condition with
-          -> a              -- ^ Observed value
-          -> Addr           -- ^ Address of @Observe@ operation
+  Observe :: PrimDist a     -- ^ distribution to condition with
+          -> a              -- ^ observed value
+          -> Addr           -- ^ address of @Observe@ operation
           -> Observe a
 
 -- | Handle the @Dist@ effect to a @Sample@ or @Observe@ effect and assign an address

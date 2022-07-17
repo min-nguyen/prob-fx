@@ -37,10 +37,10 @@ modify f = get >>= put . f
 
 -- | Handle the @State s@ effect
 handleState
-  -- | Initial state
+  -- | initial state
   :: s
   -> Prog (State s ': es) a
-  -- | (Output, final state)
+  -- | (output, final state)
   -> Prog es (a, s)
 handleState s m = loop s m where
   loop :: s -> Prog (State s ': es) a -> Prog es (a, s)

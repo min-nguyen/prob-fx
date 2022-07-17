@@ -20,7 +20,7 @@ import Model ( Model(..) )
 -- | Writer effect for writing to a strean @w@
 data Writer w a where
   -- | Write to a stream @w@
-  Tell :: w             -- ^ Value to write
+  Tell :: w             -- ^ value to write
        -> Writer w ()
 
 -- | Wrapper for @Tell@
@@ -34,7 +34,7 @@ tellM w = Model $ tell w
 -- | Handle the @Writer@ effect for a stream @w@
 handleWriter :: forall w es a. Monoid w
   => Prog (Writer w ': es) a
-  -- | (Output, final stream)
+  -- | (output, final stream)
   -> Prog es (a, w)
 handleWriter = loop mempty where
   loop ::  w -> Prog (Writer w ': es) a -> Prog es (a, w)
@@ -46,6 +46,6 @@ handleWriter = loop mempty where
 -- | Handle the @Writer@ effect inside a @Model@
 handleWriterM :: Monoid w
   => Model env (Writer w : es) a
-  -- | (Output, final stream)
+  -- | (output, final stream)
   -> Model env es (a, w)
 handleWriterM m = Model $ handleWriter $ runModel m

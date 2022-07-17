@@ -8,7 +8,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-{- | For recording samples and log-probabilities during model execution 
+{- | For recording samples and log-probabilities during model execution
 -}
 
 module Trace (
@@ -35,13 +35,13 @@ import qualified OpenSum
 type STrace = Map Addr (ErasedPrimDist, OpenSum PrimVal)
 
 -- | For converting sample traces, as used by simulation and inference, to output model environments
-class FromSTrace env where 
+class FromSTrace env where
   -- | Convert a sample trace to a model environment
   fromSTrace :: STrace -> Env env
 
 instance FromSTrace '[] where
   fromSTrace _ = nil
- 
+
 instance (UniqueKey x env ~ 'True, KnownSymbol x, Eq a, OpenSum.Member a PrimVal, FromSTrace env) => FromSTrace ((x := a) : env) where
   fromSTrace sMap = ECons (extractSamples (ObsVar @x, Proxy @a) sMap) (fromSTrace sMap)
 
@@ -53,15 +53,15 @@ extractSamples (x, typ)  =
 
 -- | Update a sample trace at an address
 updateSTrace :: (Show x, OpenSum.Member x PrimVal) =>
-  -- | Address of sample site
-     Addr       
-  -- | Primitive distribution at address
-  -> PrimDist x 
-  -- | Sampled value
-  -> x 
-  -- | Previous sample trace
-  -> STrace 
-  -- | Updated sample trace
+  -- | address of sample site
+     Addr
+  -- | primitive distribution at address
+  -> PrimDist x
+  -- | sampled value
+  -> x
+  -- | previous sample trace
+  -> STrace
+  -- | updated sample trace
   -> STrace
 updateSTrace α d x = Map.insert α (ErasedPrimDist d, OpenSum.inj x)
 
@@ -69,15 +69,15 @@ updateSTrace α d x = Map.insert α (ErasedPrimDist d, OpenSum.inj x)
 type LPTrace = Map Addr Double
 
 -- | Compute and update a log-probability trace at an address
-updateLPTrace :: 
-  -- | Address of sample/observe site
-     Addr 
-  -- | Primitive distribution at address
-  -> PrimDist x 
-  -- | Sampled or observed value
-  -> x 
-  -- | Prevous log-prob trace
-  -> LPTrace 
-  -- | Updated log-prob trace
+updateLPTrace ::
+  -- | address of sample/observe site
+     Addr
+  -- | primitive distribution at address
+  -> PrimDist x
+  -- | sampled or observed value
+  -> x
+  -- | previous log-prob trace
+  -> LPTrace
+  -- | updated log-prob trace
   -> LPTrace
 updateLPTrace α d x = Map.insert α (logProb d x)

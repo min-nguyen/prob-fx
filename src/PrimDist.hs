@@ -17,7 +17,7 @@
 {-# LANGUAGE ImplicitParams #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-{- | A GADT encoding of (a selection of) primitive distributions 
+{- | A GADT encoding of (a selection of) primitive distributions
     along with their corresponding sampling and density functions.
 -}
 
@@ -59,60 +59,60 @@ import Util ( boolToInt )
 
 -- | Primitive distribution
 data PrimDist a where
-  BernoulliDist     
-    :: Double           -- ^ Probability of @True@
-    -> PrimDist Bool  
-  BetaDist          
-    :: Double           -- ^ Shape α
-    -> Double           -- ^ Shape β
+  BernoulliDist
+    :: Double           -- ^ probability of @True@
+    -> PrimDist Bool
+  BetaDist
+    :: Double           -- ^ shape α
+    -> Double           -- ^ shape β
     -> PrimDist Double
-  BinomialDist      
-    :: Int              -- ^ Number of trials
-    -> Double           -- ^ Probability of successful trial
-    -> PrimDist Int     
-  CategoricalDist   
-    :: (Eq a, Show a, OpenSum.Member a PrimVal) 
-    => [(a, Double)]    -- ^ Values and associated probabilities
-    -> PrimDist a       
-  CauchyDist        
-    :: Double           -- ^ Location
-    -> Double           -- ^ Scale
-    -> PrimDist Double
-  HalfCauchyDist      
-    :: Double           -- ^ Scale
-    -> PrimDist Double
-  DeterministicDist 
-    :: (Eq a, Show a, OpenSum.Member a PrimVal) 
-    => a                -- ^ Value of probability @1@
-    -> PrimDist a
-  DirichletDist     
-    :: [Double]         -- ^ Concentrations
-    -> PrimDist [Double]
-  DiscreteDist      
-    :: [Double]         -- ^ List of @n@ probabilities
-    -> PrimDist Int     -- ^ An index from @0@ to @n - 1@
-  DiscrUniformDist      
-    :: Int              -- ^ Lower-bound @a@
-    -> Int              -- ^ Upper-bound @b@
-    -> PrimDist Int     
-  GammaDist         
-    :: Double           -- ^ Shape k
-    -> Double           -- ^ Scale θ
-    -> PrimDist Double
-  NormalDist      
-    :: Double           -- ^ Mean
-    -> Double           -- ^ Standard deviation
-    -> PrimDist Double
-  HalfNormalDist    
-    :: Double           -- ^ Standard deviation
-    -> PrimDist Double
-  PoissonDist       
-    :: Double           -- ^ Rate λ
+  BinomialDist
+    :: Int              -- ^ number of trials
+    -> Double           -- ^ probability of successful trial
     -> PrimDist Int
-  UniformDist       
-    :: Double           -- ^ Lower-bound @a@
-    -> Double           -- ^ Upper-bound @b@
-    -> PrimDist Double  
+  CategoricalDist
+    :: (Eq a, Show a, OpenSum.Member a PrimVal)
+    => [(a, Double)]    -- ^ values and associated probabilities
+    -> PrimDist a
+  CauchyDist
+    :: Double           -- ^ location
+    -> Double           -- ^ scale
+    -> PrimDist Double
+  HalfCauchyDist
+    :: Double           -- ^ scale
+    -> PrimDist Double
+  DeterministicDist
+    :: (Eq a, Show a, OpenSum.Member a PrimVal)
+    => a                -- ^ value of probability @1@
+    -> PrimDist a
+  DirichletDist
+    :: [Double]         -- ^ concentrations
+    -> PrimDist [Double]
+  DiscreteDist
+    :: [Double]         -- ^ list of @n@ probabilities
+    -> PrimDist Int     -- ^ an index from @0@ to @n - 1@
+  DiscrUniformDist
+    :: Int              -- ^ lower-bound @a@
+    -> Int              -- ^ upper-bound @b@
+    -> PrimDist Int
+  GammaDist
+    :: Double           -- ^ shape k
+    -> Double           -- ^ scale θ
+    -> PrimDist Double
+  NormalDist
+    :: Double           -- ^ mean
+    -> Double           -- ^ standard deviation
+    -> PrimDist Double
+  HalfNormalDist
+    :: Double           -- ^ standard deviation
+    -> PrimDist Double
+  PoissonDist
+    :: Double           -- ^ rate λ
+    -> PrimDist Int
+  UniformDist
+    :: Double           -- ^ lower-bound @a@
+    -> Double           -- ^ upper-bound @b@
+    -> PrimDist Double
 
 instance Eq (PrimDist a) where
   (==) (NormalDist m s) (NormalDist m' s') = m == m' && s == s'
@@ -163,7 +163,7 @@ instance Show a => Show (PrimDist a) where
    "DirichletDist(" ++ show xs ++ ", " ++ ")"
   show (DeterministicDist x) =
    "DeterministicDist(" ++ show x ++ ", " ++ ")"
-  
+
 -- | An ad-hoc specification of primitive value types, for constraining the outputs of distributions
 type PrimVal = '[Int, Double, [Double], Bool, String]
 
@@ -171,12 +171,12 @@ type PrimVal = '[Int, Double, [Double], Bool, String]
 data IsPrimVal x where
   IsPrimVal :: (Show x, OpenSum.Member x PrimVal) => IsPrimVal x
 
--- | For pattern-matching on an arbitrary @PrimDist@ with proof that it generates a primitive value 
+-- | For pattern-matching on an arbitrary @PrimDist@ with proof that it generates a primitive value
 pattern PrimDistPrf :: () => (Show x, OpenSum.Member x PrimVal) => PrimDist x -> PrimDist x
 pattern PrimDistPrf d <- d@(primDistPrf -> IsPrimVal)
 
 -- | Proof that all primitive distributions generate a primitive value
-primDistPrf :: PrimDist x -> IsPrimVal x 
+primDistPrf :: PrimDist x -> IsPrimVal x
 primDistPrf d = case d of
   HalfCauchyDist {} -> IsPrimVal
   CauchyDist {} -> IsPrimVal
@@ -202,8 +202,8 @@ instance Show ErasedPrimDist where
   show (ErasedPrimDist d) = show d
 
 -- | Draw a value from a primitive distribution in the @Sampler@ monad
-sample :: 
-     PrimDist a 
+sample ::
+     PrimDist a
   -> Sampler a
 sample (HalfCauchyDist σ )  =
   createSampler (sampleCauchy 0 σ) >>= pure . abs
@@ -236,12 +236,12 @@ sample (DirichletDist xs ) =
 sample (DeterministicDist x) = pure x
 
 -- | Compute the density of a primitive distribution generating an observed value
-prob :: 
-  -- | Distribution
-     PrimDist a 
-  -- | Observed value
-  -> a 
-  -- | Density
+prob ::
+  -- | distribution
+     PrimDist a
+  -- | observed value
+  -> a
+  -- | density
   -> Double
 prob (DirichletDist xs) ys =
   let xs' = map (/(Prelude.sum xs)) xs
@@ -284,11 +284,11 @@ prob (DeterministicDist x) y
   = 1
 
 -- | Compute the log density of a primitive distribution generating an observed value
-logProb :: 
-  -- | Distribution
-     PrimDist a 
-  -- | Observed value
-  -> a 
-  -- | Log density
+logProb ::
+  -- | distribution
+     PrimDist a
+  -- | observed value
+  -> a
+  -- | log density
   -> Double
 logProb d = log . prob d
