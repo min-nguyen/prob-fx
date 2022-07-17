@@ -17,33 +17,46 @@ import Inference.SIM as SIM
 import Inference.MH as MH
 import Inference.LW as LW
 
--- | Logistic regression model
+{- | Logistic regression environment.
+     This type definition is for readability purposes and is not used anywhere.
+-}
 type LogRegrEnv =
-    '[  "label" ':= Bool,   -- output
-        "m"     ':= Double, -- mean
-        "b"     ':= Double  -- intercept
+    '[  "label" ':= Bool,   -- ^ output
+        "m" ':= Double,     -- ^ mean
+        "b" ':= Double      -- ^ intercept
      ]
+
+-- | Logistic regression model
+logRegr
+ -- Specify the "observable variables" that may later be provided observed values
+ :: (Observable env "label" Bool, Observables env '["m", "b"] Double)
+ -- | Model inputs
+ => [Double]
+ -- | Event occurrences
+ -> Model env rs [Bool]
+logRegr xs = do
+  -- Specify model parameter distributions
+  {- Annotating with the observable variable #m lets us later provide observed
+     values for m. -}
+  m     <- normal 0 5 #m
+  b     <- normal 0 1 #b
+  {- One can use primed variants of distributions which don't require observable
+     variables to be provided. This disables being able to later provide
+     observed values to that variable. -}
+  sigma <- gamma' 1 1
+  -- Specify model output distributions
+  ys    <- foldM (\ys x -> do
+                    -- probability of event occurring
+                    p <- normal' (m * x + b) sigma
+                    -- generate as output whether the event occurs
+                    y <- bernoulli (sigmoid p) #label
+                    return (ys ++ [y])) [] xs
+  return ys
 
 sigmoid :: Double -> Double
 sigmoid x = 1 / (1 + exp((-1) * x))
 
-logRegr :: forall rs env.
- -- Specify the "observable variables" that may later be provided observed values
- (Observable env "label" Bool, Observables env '["m", "b"] Double) =>
- [Double] -> Model env rs [Bool]
-logRegr xs = do
-  -- Specify model parameter distributions
-  m     <- normal 0 5 #m    -- Annotating with the observable variable #m lets us later provide observed values for m
-  b     <- normal 0 1 #b
-  sigma <- gamma' 1 1       -- One can use primed variants of distributions to disable later providing observed values to that variable
-  -- Specify model output distributions
-  ls    <- foldM (\ls x -> do
-                     y <- normal' (m * x + b) sigma
-                     l <- bernoulli (sigmoid y) #label
-                     return (l:ls)) [] xs
-  return (reverse ls)
-
--- | SIM from logistic regression
+-- | Simulate from logistic regression
 simulateLogRegr :: Sampler [(Double, Bool)]
 simulateLogRegr = do
   -- First declare the model inputs
