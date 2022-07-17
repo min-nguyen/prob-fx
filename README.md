@@ -1,14 +1,14 @@
 ## ProbFX
 
 #### Prelude
-ProbFX is a library for probabilistic programming using algebraic effects that implements the paper [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/main/paper.pdf) -- this paper provides a comprehensive motivation and walkthrough of this library. To have a more interactive and visual play-around with ProbFX, please see the [artifact](https://github.com/min-nguyen/prob-fx/tree/artifact) branch: this corresponds parts of the paper to the implementation, and also provides an executable version of ProbFX as a script!
+ProbFX is a library for probabilistic programming using algebraic effects that implements the paper [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/main/paper.pdf) -- this paper provides a comprehensive motivation and walkthrough of this library. To have a more interactive and visual play-around with ProbFX, please see the [**artifact**](https://github.com/min-nguyen/prob-fx/tree/artifact) branch: this corresponds parts of the paper to the implementation, and also provides an executable version of ProbFX as a script.
 
 #### Description
 ProbFx is a PPL that places emphasis on being able to define modular and reusable probabilistic models, where the decision to `sample` or `observe` against a random variable or distribution of a model is delayed until the point of execution; this allows a model to be defined just *once* and then reused for a variety of applications. We also implement a compositional approach towards model execution (inference) by using effect handlers.
 
 #### Building and executing models
 
-A large number of example ProbFX programs are documented [here](https://github.com/min-nguyen/prob-fx/tree/main/examples), showing how to define and then execute a probabilistic model.
+A large number of example ProbFX programs are documented in the [**examples**](https://github.com/min-nguyen/prob-fx/tree/main/examples) directory, showing how to define and then execute a probabilistic model.
 
 In general, the process is:
 
