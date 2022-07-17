@@ -1,12 +1,11 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MonoLocalBinds #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeOperators #-}
 
 {- | An algebraic effect embedding of probabilistic models.
 -}
@@ -54,8 +53,7 @@ import Effects.Lift ( Lift(..) )
 import Effects.ObsReader ( ask, handleRead, ObsReader )
 import Effects.State ( State, modify, handleState )
 import Env ( varToStr, Env, ObsVar, Observable )
-import OpenSum (OpenSum)
-import PrimDist
+import PrimDist ( PrimVal, PrimDist(..) )
 import Prog ( call, Member, Prog )
 import qualified OpenSum
 

@@ -1,21 +1,9 @@
-{-# LANGUAGE PatternSynonyms #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE GADTs, TypeOperators #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE ViewPatterns #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE EmptyCase #-}
-{-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE ImplicitParams #-}
-{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+{-# LANGUAGE ViewPatterns #-}
 
 {- | A GADT encoding of (a selection of) primitive distributions
     along with their corresponding sampling and density functions.
@@ -35,12 +23,9 @@ module PrimDist (
   , logProb) where
 
 import Data.Kind ( Constraint )
-import Data.Map (Map)
-import Numeric.Log ( Log(Exp) )
-import OpenSum (OpenSum)
+import Numeric.Log ( Log(..) )
 import qualified Data.Map as Map
 import qualified Data.Vector as V
-import qualified Data.Vector as Vec
 import qualified Data.Vector.Unboxed as UV
 import qualified OpenSum
 import qualified System.Random.MWC.Distributions as MWC

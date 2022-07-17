@@ -28,14 +28,10 @@ module Sampler (
   ) where
 
 import Control.Monad ( replicateM )
-import Control.Monad.ST (ST, runST, stToIO)
 import Control.Monad.Trans (MonadIO, MonadTrans, lift)
 import Control.Monad.Trans.Reader (ReaderT, ask, mapReaderT, runReaderT)
 import Data.Map (Map)
-import Data.Set (Set)
 import GHC.Word ( Word32 )
-import qualified Data.Map as Map
-import qualified Data.Set as Set
 import qualified Data.Vector as V
 import qualified System.Random.MWC as MWC
 import qualified System.Random.MWC.Distributions as MWC.Dist

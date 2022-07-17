@@ -1,9 +1,9 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
 {- | Simulation
@@ -23,7 +23,7 @@ import Effects.State ( State, modify, handleState )
 import Env ( Env )
 import Model ( Model, handleCore )
 import OpenSum (OpenSum)
-import PrimDist
+import PrimDist ( pattern PrimDistPrf, sample )
 import Prog ( Member(prj), Prog(..), discharge )
 import qualified Data.Map as Map
 import qualified OpenSum
