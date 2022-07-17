@@ -7,11 +7,11 @@ copyright:           2022 Minh Nguyen
 stability:           experimental
 author:              Minh Nguyen
 maintainer:          minhnguyen1995@googlemail.com
-homepage:            https://github.com/min-nguyen/prob-fx/tree/hackage
+homepage:            https://github.com/min-nguyen/prob-fx/
 synopsis:            A library for modular probabilistic modelling
 description:
   A library for probabilistic programming using algebraic effects. The
-  emphasis is on modular definitions of probabilistic models, and also
+  emphasis is on modular and reusable definitions of probabilistic models, and also
   compositional implementation of model execution (inference) in terms
   of effect handlers.
 
