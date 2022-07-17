@@ -36,7 +36,7 @@ infixr 5 <:>
 (<:>) :: UniqueKey x env ~ 'True => Assign (ObsVar x) [a] -> Env env -> Env ((x ':= a) ': env)
 (_ := a) <:> env = ECons a env
 
--- | Containers for observable variables 
+-- | Containers for observable variables
 data ObsVar (x :: Symbol) where
   ObsVar :: KnownSymbol x => ObsVar x
 

@@ -51,7 +51,7 @@ transSIR :: Member (Writer [Popl]) es -- || Writer effect from Section 5.5
   => TransModel env es TransParamsSIR Popl
 transSIR (TransParamsSIR beta gamma) sir = do
   sir' <- (transSI beta >=> transIR gamma) sir
-  tellM [sir'] 
+  tellM [sir']
   return sir'
 
 -- | SIR observation model

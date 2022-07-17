@@ -17,7 +17,7 @@ import FindElem
 import GHC.TypeLits ( TypeError, ErrorMessage(Text, (:<>:), (:$$:), ShowType) )
 import Unsafe.Coerce
 
--- ||| (Section 4.1) Prog: an encoding for algebraic effects, based on the 'freer' monad. 
+-- ||| (Section 4.1) Prog: an encoding for algebraic effects, based on the 'freer' monad.
 data Prog es a where
   Val :: a -> Prog es a
   Op :: EffectSum es x -> (x -> Prog es a) -> Prog es a

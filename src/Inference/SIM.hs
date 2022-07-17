@@ -28,15 +28,15 @@ import Unsafe.Coerce (unsafeCoerce)
 
 -- ||| (Section 6.1) Simulation
 simulate :: forall env es b a. (FromSTrace env, es ~ '[ObsReader env, Dist,State STrace, Observe, Sample])
-  => 
+  =>
   -- | A model awaiting an input
-  (b -> Model env es a)  
+  (b -> Model env es a)
   -- | A model environment
-  -> Env env               
-  -- | Model input 
-  -> b                    
-  -- | Model output and output environment  
-  -> Sampler (a, Env env)   
+  -> Env env
+  -- | Model input
+  -> b
+  -- | Model output and output environment
+  -> Sampler (a, Env env)
 simulate model env x  = do
   outputs_strace <- runSimulate env (model x)
   return (fmap fromSTrace outputs_strace)

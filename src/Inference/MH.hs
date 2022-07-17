@@ -33,17 +33,17 @@ import Inference.SIM (handleObs, traceSamples)
 
 -- ||| (Section 6.2.2) Metropolis-Hastings
 mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  => 
+  =>
   -- | Number of MH iterations
-     Int                    
+     Int
   -- | A model awaiting an input
-  -> (b -> Model env es a)  
+  -> (b -> Model env es a)
   -- | A model input and model environment (containing observed values to condition on)
-  -> (b, Env env)           
+  -> (b, Env env)
   -- | An optional list of observable variable names (strings) to specify sample sites of interest (e.g. for interest in sampling #mu, provide "mu"). This causes other variables to not be resampled unless necessary.
-  -> [Tag]                  
+  -> [Tag]
   -- | Trace of output environments, containing values sampled for each MH iteration
-  -> Sampler [Env env]     
+  -> Sampler [Env env]
 mh n model  (x_0, env_0) tags = do
   -- Perform initial run of MH with no proposal sample site
   y0 <- runMH env_0 Map.empty ("", 0) (model x_0)
@@ -54,15 +54,15 @@ mh n model  (x_0, env_0) tags = do
 
 -- | Perform one step of MH
 mhStep :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  => 
+  =>
   -- | Model environment
-     Env env                  
+     Env env
   -- | Model
-  -> Model env es a            
+  -> Model env es a
   -- | Tags indicating sample sites of interest
-  -> [Tag]                     
+  -> [Tag]
   -- | Trace of previous MH outputs
-  -> [((a, STrace), LPTrace)]  
+  -> [((a, STrace), LPTrace)]
   -- | Updated trace of MH outputs
   -> Sampler [((a, STrace), LPTrace)]
 mhStep env model tags trace = do
@@ -86,15 +86,15 @@ mhStep env model tags trace = do
 
 -- | MH handler
 runMH :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  => 
+  =>
   -- | Model environment
-     Env env       
+     Env env
   -- | Sample trace of previous MH iteration
-  -> STrace         
+  -> STrace
   -- | Sample address of interest
-  -> Addr           
+  -> Addr
   -- | Model
-  -> Model env es a 
+  -> Model env es a
   -> Sampler ((a, STrace), LPTrace)
 runMH env strace α_samp =
      handleSamp strace α_samp  . handleObs

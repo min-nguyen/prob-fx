@@ -23,15 +23,15 @@ import Inference.SIM (traceSamples, handleSamp)
 
 -- ||| (Section 6.2.1) Likelihood Weighting (LW)
 lw :: forall env es a b. (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])
-    => 
+    =>
     -- | Number of LW iterations
-       Int                          
+       Int
     -- | A model awaiting an input
-    -> (b -> Model env es a)        
+    -> (b -> Model env es a)
     -- | A model input and model environment (containing observed values to condition on)
-    -> (b, Env env)                 
+    -> (b, Env env)
     -- | Trace of weighted output environments containing values sampled for each LW iteration
-    -> Sampler [(Env env, Double)]  
+    -> Sampler [(Env env, Double)]
 lw n model xs_envs = do
   let runN (x, env) = replicateM n (runLW env (model x))
   lwTrace <- runN xs_envs

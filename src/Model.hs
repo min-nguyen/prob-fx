@@ -44,7 +44,7 @@ handleCore :: (Member Observe es, Member Sample es) => Env env -> Model env (Obs
 handleCore env m = (handleDist . handleRead env) (runModel m)
 
 
--- || Other effects and handlers as the Model type 
+-- || Other effects and handlers as the Model type
 -- | State
 getStM :: (Member (State s) es) => Model env es s
 getStM = Model getSt
@@ -66,7 +66,7 @@ handleWriterM m = Model $ handleWriter $ runModel m
 liftM :: (Member (Lift m) es) => m a -> Model env es a
 liftM op = Model (call (Lift op))
 
--- ||| (Section 4.2.2) Distribution smart constructors 
+-- ||| (Section 4.2.2) Distribution smart constructors
 deterministic' :: (Eq v, Show v, OpenSum.Member v PrimVal)
   => v -> Model env es v
 deterministic' x = Model $ do

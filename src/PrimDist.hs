@@ -109,7 +109,7 @@ instance Show a => Show (PrimDist a) where
    "DirichletDist(" ++ show xs ++ ", " ++ ")"
   show (DeterministicDist x) =
    "DeterministicDist(" ++ show x ++ ", " ++ ")"
-  
+
 -- | For constraining the output types of distributions
 type PrimVal = '[Int, Double, [Double], Bool, String]
 

@@ -74,4 +74,4 @@ instance Show a => Show (Dist a) where
   show (Dist d y tag) = "Dist(" ++ show d ++ ", " ++ show y ++ ", " ++ show tag ++ ")"
 
 instance Eq (Dist a) where
-  (==) (Dist d1 _ _) (Dist d2 _ _) = d1 == d2 
+  (==) (Dist d1 _ _) (Dist d2 _ _) = d1 == d2

@@ -1,4 +1,4 @@
-## ProbFX:    [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf)
+## ProbFX Artifact: [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/master/paper.pdf)
 
 ---
 
@@ -8,7 +8,7 @@ _Running ProbFX_
 
 ProbFX uses the most recent Cabal version ` >= 3.6.x` and a GHC version `>= 8.4.x`:
 1. Install GHCup by following [these instructions](https://www.haskell.org/ghcup/install/)
-2. Both Cabal and GHC versions can be installed and then set by following [this](https://www.haskell.org/ghcup/guide/). 
+2. Both Cabal and GHC versions can be installed and then set by following [this](https://www.haskell.org/ghcup/guide/).
 
 _Visualising ProbFX_
 
@@ -35,20 +35,20 @@ The examples in the paper can be run with one of the following arguments (e.g. `
   - `lwLinRegr` : (Fig 1b)
 - SIR model
   - `simSIR`    : (Fig 4a)
-  - `simSIRS`   : (Fig 4b) SIR + resusceptible model 
-  - `simSIRSV`  : (Fig 4c) SIR + resusceptible + vacc model 
-  - `mhSIR`     : (Fig 5) this takes 2-3 minutes 
+  - `simSIRS`   : (Fig 4b) SIR + resusceptible model
+  - `simSIRSV`  : (Fig 4c) SIR + resusceptible + vacc model
+  - `mhSIR`     : (Fig 5) this takes 2-3 minutes
 
 Extra example models and their corresponding command-line arguments are given below:
 - Linear regression:
   - `mhLinRegr`  : This generates the approximative posterior distribution over the model parameter `mu`, being the gradient of the linear relationship.
 - Logistic regression, which models the occurrence of one event out of two alternatives happening:
   - `simLogRegr`
-  - `lwLogRegr`  : This generates a likelihood distribution over the model parameter `mu`. 
-  - `mhLogRegr`  : This generates an approximative posterior distribution over the model parameters `mu` and `b`. 
+  - `lwLogRegr`  : This generates a likelihood distribution over the model parameter `mu`.
+  - `mhLogRegr`  : This generates an approximative posterior distribution over the model parameters `mu` and `b`.
 - Latent dirichlet allocation, i.e. a [topic model](https://www.tidytextmining.com/topicmodeling.html) modeling the distribution over topics and words in a text document. We assume the example vocabulary "DNA", "evolution", "parsing", and "phonology" for text documents, and we assume there are two possible topics.
   - `simLDA`     : This simulates a document of unstructured words from the vocabulary according.
-  - `mhLDA`      : Given a pre-defined document of words, the generated graph shows a predictive posterior distribution over the two topics occurring in the document, and the distribution over the words occurring in each topic. 
+  - `mhLDA`      : Given a pre-defined document of words, the generated graph shows a predictive posterior distribution over the two topics occurring in the document, and the distribution over the words occurring in each topic.
 - A [case study](https://docs.pymc.io/en/v3/pymc-examples/examples/case_studies/multilevel_modeling.html) by Gelman and Hill as a hierarchical linear regression model, modelling the relationship between radon levels in households and whether these houses contain basements:
   - `simRadon` : This simulates the log-radon levels of houses with basements and those without basements.
   - `mhRadon`  : This genereates the predictive posterior distribution over "gradients" for each county; each gradient models the relationship of log-radon levels of houses with and without basements in that county.

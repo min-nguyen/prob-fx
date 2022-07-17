@@ -29,12 +29,12 @@ sigmoid x = 1 / (1 + exp((-1) * x))
 
 logRegr :: forall rs env.
  -- Specify the "observable variables" that may later be provided observed values
- (Observable env "label" Bool, Observables env '["m", "b"] Double) => 
+ (Observable env "label" Bool, Observables env '["m", "b"] Double) =>
  [Double] -> Model env rs [Bool]
 logRegr xs = do
   -- Specify model parameter distributions
   m     <- normal 0 5 #m    -- Annotating with the observable variable #m lets us later provide observed values for m
-  b     <- normal 0 1 #b     
+  b     <- normal 0 1 #b
   sigma <- gamma' 1 1       -- One can use primed variants of distributions to disable later providing observed values to that variable
   -- Specify model output distributions
   ls    <- foldM (\ls x -> do
