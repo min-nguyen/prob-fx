@@ -6,7 +6,8 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 
-{- | An effect for reading observable variables from a model environment -}
+{- | The effect for reading observable variables from a model environment.
+-}
 
 module Effects.ObsReader (
     ObsReader(..)

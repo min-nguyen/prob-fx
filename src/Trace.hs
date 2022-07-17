@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-{- | For recording samples and log-probabilities during model execution
+{- | For recording samples and log-probabilities during model execution.
 -}
 
 module Trace (
@@ -30,10 +30,12 @@ import OpenSum (OpenSum)
 import qualified Data.Map as Map
 import qualified OpenSum
 
--- | The type of sample traces, mapping addresses of sample/observe operations to their primitive distributions and sampled values
+{- | The type of sample traces, mapping addresses of sample/observe operations
+     to their primitive distributions and sampled values.
+-}
 type STrace = Map Addr (ErasedPrimDist, OpenSum PrimVal)
 
--- | For converting sample traces, as used by simulation and inference, to output model environments
+-- | For converting sample traces to model environments
 class FromSTrace env where
   -- | Convert a sample trace to a model environment
   fromSTrace :: STrace -> Env env
@@ -64,7 +66,9 @@ updateSTrace :: (Show x, OpenSum.Member x PrimVal) =>
   -> STrace
 updateSTrace α d x = Map.insert α (ErasedPrimDist d, OpenSum.inj x)
 
--- | The type of log-probability traces, mapping addresses of sample/observe operations to their log probabilities
+{- | The type of log-probability traces, mapping addresses of sample/observe operations
+     to their log probabilities
+-}
 type LPTrace = Map Addr Double
 
 -- | Compute and update a log-probability trace at an address

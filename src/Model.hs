@@ -59,13 +59,14 @@ import qualified OpenSum
 
 {- | Models are parameterised by:
 
-1) a model environment @env@ containing random variables that can be provided observed values for,
+    1) a model environment @env@ containing random variables that can be provided observed values
 
-2) an effect signature @es@ of the possible effects a model can invoke, and
+    2) an effect signature @es@ of the possible effects a model can invoke
 
-3) an output type @a@ of values that the model generates.
+    3) an output type @a@ of values that the model generates.
 
-A model initially consists of (at least) two effects: @Dist@ for calling primitive distributions and @ObsReader env@ for reading from @env@.
+    A model initially consists of (at least) two effects: @Dist@ for calling primitive distributions
+    and @ObsReader env@ for reading from @env@.
 -}
 newtype Model env es a =
   Model { runModel :: (Member Dist es, Member (ObsReader env) es) => Prog es a }
@@ -88,25 +89,25 @@ handleCore env m = (handleDist . handleRead env) (runModel m)
 
 {- $Smart-Constructors
 
-Smart constructors for calling primitive distribution operations inside models,
-where each distribution comes with a primed and an unprimed variant.
+    Smart constructors for calling primitive distribution operations inside models,
+    where each distribution comes with a primed and an unprimed variant.
 
-An unprimed distribution takes the standard distribution parameters as well as
-an observable variable. This lets one later provide observed values for that
-variable to be conditioned against:
+    An unprimed distribution takes the standard distribution parameters as well as
+    an observable variable. This lets one later provide observed values for that
+    variable to be conditioned against:
 
-@
-exampleModel :: Observable env "b" Bool => Model env es Bool
-exampleModel = bernoulli 0.5 #b
-@
+    @
+    exampleModel :: Observable env "b" Bool => Model env es Bool
+    exampleModel = bernoulli 0.5 #b
+    @
 
-A primed distribution takes no observable variable and so cannot be conditioned against; this will always representing sampling from that distribution:
+    A primed distribution takes no observable variable and so cannot be conditioned against;
+    this will always representing sampling from that distribution:
 
-@
-exampleModel' :: Model env es Bool
-exampleModel' = bernoulli' 0.5
-@
-
+    @
+    exampleModel' :: Model env es Bool
+    exampleModel' = bernoulli' 0.5
+    @
 -}
 
 deterministic :: forall env es a x. (Eq a, Show a, OpenSum.Member a PrimVal, Observable env x a) => a

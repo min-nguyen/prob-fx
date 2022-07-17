@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-{- | An IO-based sampling monad
+{- | An IO-based sampling monad.
 -}
 
 module Sampler (
@@ -65,7 +65,8 @@ createSampler :: (MWC.GenIO -> IO a) -> Sampler a
 createSampler f = Sampler $ ask >>= lift . f
 
 {- $Sampling-functions
-Given their distribution parameters, these functions await a generator and then sample a value from the distribution in the @IO@ monad
+  Given their distribution parameters, these functions await a generator and
+  then sample a value from the distribution in the @IO@ monad.
 -}
 
 sampleRandom

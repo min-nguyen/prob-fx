@@ -4,7 +4,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
 
-{- | Writer effect
+{- | Writer effect.
 -}
 
 module Effects.Writer (

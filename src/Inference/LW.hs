@@ -3,7 +3,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
 
-{- | Likelihood-Weighting inference
+{- | Likelihood-Weighting inference.
 -}
 
 module Inference.LW (

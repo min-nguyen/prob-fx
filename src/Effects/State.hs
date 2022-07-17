@@ -4,7 +4,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
 
-{- | The state effect
+{- | State effect.
 -}
 
 module Effects.State (

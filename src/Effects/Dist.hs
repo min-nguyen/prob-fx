@@ -3,7 +3,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
 
-{- | The effects for primitive distributions, sampling, and observing
+{- | The effects for primitive distributions, sampling, and observing.
 -}
 
 module Effects.Dist (

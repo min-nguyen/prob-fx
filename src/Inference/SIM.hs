@@ -6,7 +6,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-{- | Simulation
+{- | Simulation.
 -}
 
 module Inference.SIM (

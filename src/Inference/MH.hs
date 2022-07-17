@@ -4,7 +4,7 @@
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE ViewPatterns #-}
 
-{- | Metropolis-Hastings inference
+{- | Metropolis-Hastings inference.
 -}
 
 module Inference.MH (

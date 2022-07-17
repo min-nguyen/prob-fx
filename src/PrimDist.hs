@@ -261,12 +261,9 @@ prob d@(CategoricalDist ps) y
   = case lookup y ps of
       Nothing -> error $ "Couldn't find " ++ show y ++ " in categorical dist"
       Just p  -> p
-prob (DiscreteDist ps) y
-  = ps !! y
-prob (PoissonDist λ) y
-  = probability (poisson λ) y
-prob (DeterministicDist x) y
-  = 1
+prob (DiscreteDist ps) y     = ps !! y
+prob (PoissonDist λ) y       = probability (poisson λ) y
+prob (DeterministicDist x) y = 1
 
 -- | Compute the log density of a primitive distribution generating an observed value
 logProb ::

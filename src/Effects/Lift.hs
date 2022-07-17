@@ -3,7 +3,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-{- | For lifting arbitrary monadic computations into an algebraic effect setting
+{- | For lifting arbitrary monadic computations into an algebraic effect setting.
 -}
 
 module Effects.Lift (

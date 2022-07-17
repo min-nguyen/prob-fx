@@ -10,7 +10,9 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-{- | This implements the model environments that users must provide upon running a model; such environments assign traces of values to the "observable variables" (random variables which can be conditioned against) of a model.
+{- | This implements the model environments that users must provide upon running a model;
+     such environments assign traces of values to the "observable variables" (random
+     variables which can be conditioned against) of a model.
 -}
 
 module Env
@@ -48,7 +50,10 @@ varToStr ObsVar = symbolVal (Proxy @x)
 
 -- * Model Environments
 
--- | A model environment assigning traces (lists) of observed values to observable variables i.e. the type @Env ((x := a) : env)@ indicates @x@ is assigned a value of type @[a]@
+{- | A model environment assigning traces (lists) of observed values to observable
+     variables i.e. the type @Env ((x := a) : env)@ indicates @x@ is assigned a value
+     of type @[a]@.
+-}
 data Env (env :: [Assign Symbol *]) where
   ENil  :: Env '[]
   ECons :: [a] -> Env env -> Env (x := a : env)
