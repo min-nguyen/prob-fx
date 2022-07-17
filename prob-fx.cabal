@@ -94,7 +94,7 @@ executable prob-fx
                   Radon,
                   School,
                   SIR,
-                  SIRModular,
+                  SIRNonModular,
   build-depends:  base,
                   prob-fx,
                   lens,
