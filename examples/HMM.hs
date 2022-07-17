@@ -7,7 +7,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant return" #-}
 
-{- | A variety of possible implementations of a [Hidden Markov Model (HMM)](https://en.wikipedia.org/wiki/Hidden_Markov_model)
+{- | A variety of possible implementations of a [Hidden Markov Model (HMM)](https://en.wikipedia.org/wiki/Hidden_Markov_model).
 -}
 
 module HMM where
@@ -28,7 +28,8 @@ type HMMEnv =
      "y"       ':= Int        -- ^ observation
    ]
 
-{- | HMM as a loop -}
+{- | HMM as a loop
+-}
 hmmFor :: (Observable env "y" Int, Observables env '["obs_p", "trans_p"] Double)
   -- | number of HMM nodes
   => Int
@@ -69,7 +70,8 @@ inferLwHMM   = do
       env = #trans_p := [] <:> #obs_p := [] <:> #y := [0, 1, 1, 3, 4, 5, 5, 5, 6, 5] <:> nil
   LW.lw 100 (hmmFor n) (x_0, env)
 
-{- | A modular HMM -}
+{- | A modular HMM.
+-}
 transModel ::  Double -> Int -> Model env ts Int
 transModel transition_p x_prev = do
   dX <- boolToInt <$> bernoulli' transition_p
@@ -95,7 +97,8 @@ hmm n x = do
   obs_p   <- uniform 0 1 #obs_p
   foldr (>=>) return (replicate n (hmmNode trans_p obs_p)) x
 
-{- | A higher-order, generic HMM -}
+{- | A higher-order, generic HMM.
+-}
 type TransModel env ts params lat   = params -> lat -> Model env ts lat
 type ObsModel env ts params lat obs = params -> lat -> Model env ts obs
 

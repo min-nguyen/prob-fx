@@ -9,7 +9,7 @@
 
 {- | A [case study](https://docs.pymc.io/en/v3/pymc-examples/examples/case_studies/multilevel_modeling.html)
     by Gelman and Hill as a hierarchical linear regression model, modelling the relationship between radon levels
-    in households in different counties and whether these houses contain basements
+    in households in different counties and whether these houses contain basements.
 -}
 
 module Radon where

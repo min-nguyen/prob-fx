@@ -30,6 +30,7 @@ import Inference.SIM as SIM ( simulate )
 import Inference.MH as MH ( mh )
 
 {- | An LDA environment.
+
      Assuming 1 document with 2 topics and a vocabulary of 4 words,
      the parameters of the model environment would have the following shape:
       θ would be [[prob_topic_1, prob_topic_2]        -- probabilities of topics in document 1

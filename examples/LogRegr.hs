@@ -20,7 +20,9 @@ import Inference.SIM as SIM ( simulate )
 import Inference.MH as MH ( mh )
 import Inference.LW as LW ( lw )
 
--- | Logistic regression environment
+{- | Logistic regression environment.
+     This type definition is for readability purposes and is not used anywhere.
+-}
 type LogRegrEnv =
     '[  "y" ':= Bool,   -- ^ output
         "m" ':= Double, -- ^ mean
@@ -37,10 +39,13 @@ logRegr
  -> Model env rs [Bool]
 logRegr xs = do
   -- Specify model parameter distributions
-      -- // annotating with the observable variable #m lets us later provide observed values for m
+  {- Annotating with the observable variable #m lets us later provide observed
+     values for m. -}
   m     <- normal 0 5 #m
   b     <- normal 0 1 #b
-      -- // one can use primed variants of distributions to disable later providing observed values to that variable
+  {- One can use primed variants of distributions which don't require observable
+     variables to be provided. This disables being able to later provide
+     observed values to that variable. -}
   sigma <- gamma' 1 1
   -- Specify model output distributions
   ls    <- foldM (\ls x -> do
@@ -84,7 +89,9 @@ inferMHLogRegr = do
   (xs, ys) <- unzip <$> simulateLogRegr
   let -- Define an environment for inference, providing observed values for the model outputs
       env = (#y := ys) <:> (#m := []) <:> (#b := []) <:> nil
-  -- Run MH inference for 20000 iterations; the ["m", "b"] is optional for indicating interest in learning #m and #b in particular, causing other variables to not be resampled (unless necessary) during MH.
+  -- Run MH inference for 20000 iterations
+  {- The agument ["m", "b"] is optional for indicating interest in learning #m and #b in particular,
+     causing other variables to not be resampled (unless necessary) during MH. -}
   mhTrace :: [Env LogRegrEnv] <- MH.mh 50000 logRegr (xs, env) ["m", "b"]
   -- Retrieve values sampled for #m and #b during MH
   let m_samples = concatMap (get #m) mhTrace

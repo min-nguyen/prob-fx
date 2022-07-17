@@ -58,7 +58,7 @@ mkField "v" -- ^ vaccinated individuals
 type Reported = Int
 
 
-{- | SIR model
+{- | SIR model.
 -}
 
 -- | SIR transition prior
@@ -143,7 +143,7 @@ inferSIR = do
       βs = concatMap (get #β) mhTrace
   return (ρs, βs)
 
-{- | SIRS model
+{- | SIRS model.
 -}
 
 -- | SIRS transition prior
@@ -188,7 +188,7 @@ simulateSIRS = do
   return (sirs, 𝜉s)
 
 
-{- | SIRSV model
+{- | SIRSV model.
 -}
 
 -- | SIRSV transition prior

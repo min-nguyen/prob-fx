@@ -5,7 +5,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant return" #-}
 
-{- | A coin-flip model for demonstrating how primitive distributions work in ProbFX
+{- | A coin-flip model for demonstrating how primitive distributions work in ProbFX.
 -}
 
 module CoinFlip where
@@ -19,7 +19,8 @@ import Data.Kind (Constraint)
 import Env ( Observables )
 
 {- | A coin-flip model that draws a coin-bias @p@ between 0 and 1 from a uniform
-     distribution, and uses this to draw a boolean @y@ representing heads or tails. -}
+     distribution, and uses this to draw a boolean @y@ representing heads or tails.
+-}
 coinFlip
   :: (Observables env '["p"] Double
     , Observables env '[ "y"] Bool)
@@ -30,7 +31,8 @@ coinFlip = do
   return y
 
 {- | A desugared version of the above coin-flip model, after inlining the functions
-     @uniform@ and @bernoulli@. -}
+     @uniform@ and @bernoulli@.
+-}
 coinFlip' :: forall env es. (Observables env '["p"] Double, Observables env '[ "y"] Bool) => Model env es Bool
 coinFlip' = Model $ do
   maybe_p  <- call (Ask @env #p)

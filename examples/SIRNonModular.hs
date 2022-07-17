@@ -34,7 +34,8 @@ import Env ( Observables, Observable(get), Assign((:=)), nil, (<:>) )
 import Control.Monad ( (>=>) )
 import HMM ( ObsModel, TransModel, hmmGen )
 
-{- | SIR model-}
+{- | SIR model.
+-}
 
 -- | SIR model environment
 type SIRenv =
@@ -147,7 +148,8 @@ inferSIR = do
   return (ρs, βs)
 
 
-{- | SIRSS model -}
+{- | SIRS model.
+-}
 -- | Transition model parameters
 data TransParamsSIRS = TransParamsSIRS {
     betaP_SIRS  :: Double, -- ^ mean contact rate between susceptible and infected people
@@ -197,7 +199,8 @@ simulateSIRS = do
   return (sirs, 𝜉s)
 
 
-{- | SIRSV model -}
+{- | SIRSV model.
+-}
 -- | Transition model parameters
 data TransParamsSIRSV = TransParamsSIRSV {
     betaP_SIRSV  :: Double, -- ^ mean contact rate between susceptible and infected people

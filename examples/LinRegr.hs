@@ -1,4 +1,3 @@
-
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -9,7 +8,7 @@
 {-# LANGUAGE MonoLocalBinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-{- | A linear regression model, assuming a linear relationship between x and y co-ordinates
+{- | A linear regression model, assuming a linear relationship between x and y co-ordinates.
 -}
 
 module LinRegr where
