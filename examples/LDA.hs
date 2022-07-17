@@ -15,8 +15,8 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
 
-{- | A [Latent Dirichlet Allocation (LDA)](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation)
-     or Topic Model for learning the distribution over words and topics in a text document.
+{- | A [Latent Dirichlet Allocation (LDA)](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation) model
+     (or topic model) for learning the distribution over words and topics in a text document.
 -}
 
 module LDA where
@@ -33,8 +33,10 @@ import Inference.MH as MH ( mh )
 
      Assuming 1 document with 2 topics and a vocabulary of 4 words,
      the parameters of the model environment would have the following shape:
-      θ would be [[prob_topic_1, prob_topic_2]        -- probabilities of topics in document 1
+
+      θ would be [[prob_topic_1, prob_topic_2]                         -- probabilities of topics in document 1
                  ]
+
       φ would be [[prob_word_1, prob_word_2, prob_word_3, prob_word_4] -- probabilities of words in topic 1
                   [prob_word_1, prob_word_2, prob_word_3, prob_word_4] -- probabilities of words in topic 2
                  ]

@@ -18,8 +18,8 @@
 
       Note that the extensions (SIRS and SIRSV) aren't as modular as we would like, due to having to
       redefine the data types Popl and TransParams when adding new variables to the SIR model.
-      The file [SIRModular](https://github.com/min-nguyen/prob-fx/blob/hackage/examples/SIRModular.hs)
-      shows how one could take steps to resolve this by using extensible records.
+      The file [SIRModular](examples/SIR.hs) shows how one could take steps to resolve this by using
+      extensible records.
 -}
 
 module SIRNonModular where

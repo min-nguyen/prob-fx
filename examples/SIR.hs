@@ -24,7 +24,7 @@
 
     For convenience, this makes use of the 'Data.Extensible' library for extensible records, and the 'Control.Lens'
     library to record accessors. If the lens notation is unfamiliar, the code below can be corresponded to a less modular
-    version [here](https://github.com/min-nguyen/prob-fx/blob/hackage/examples/SIR.hs).
+    version the file [SIRNonModular](examples/SIRNonModular.hs).
  -}
 
 module SIR where

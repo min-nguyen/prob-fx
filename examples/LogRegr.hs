@@ -7,7 +7,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE MonoLocalBinds #-}
 
-{- | A logistic regression model, estimating the probability of an event occurring or not.
+{- | A logistic regression model, modelling the probability of an event occurring or not.
 -}
 
 module LogRegr where
