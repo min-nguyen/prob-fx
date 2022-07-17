@@ -3,13 +3,13 @@
 
 module Main where
 
-import LinRegr
-import LogRegr
-import SIR
-import LDA
-import Radon
-import School
-import Sampler
+import LinRegr ( simulateLinRegr, inferLwLinRegr, inferMhLinRegr )
+import LogRegr ( simulateLogRegr, inferLwLogRegr, inferMHLogRegr )
+import SIR ( simulateSIR, inferSIR, simulateSIRS, simulateSIRSV )
+import LDA ( simLDA, mhLDA )
+import Radon ( simRadon, mhRadon )
+import School ( mhSchool )
+import Sampler ( sampleIO )
 import System.Environment (getArgs)
 
 printThenWrite :: Show a => a -> IO ()
