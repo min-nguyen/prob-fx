@@ -7,50 +7,69 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant return" #-}
 
+{- | A variety of possible implementations of a [Hidden Markov Model (HMM)](https://en.wikipedia.org/wiki/Hidden_Markov_model)
+-}
+
 module HMM where
 
-import Model
-import Inference.SIM as SIM
-import Inference.LW as LW
-import Sampler
-import Control.Monad
+import Model ( Model, bernoulli', binomial, uniform )
+import Inference.SIM as SIM ( simulate )
+import Inference.LW as LW ( lw )
+import Sampler ( Sampler )
+import Control.Monad ( (>=>) )
 import Data.Kind (Constraint)
-import Env
-import Util
+import Env ( Observables, Observable, Assign((:=)), Env, nil, (<:>) )
+import Util ( boolToInt )
 
--- ** HMM Loop 
+-- | A HMM environment
 type HMMEnv =
-  '[ "trans_p" ':= Double,
-     "obs_p"   ':= Double,
-     "y"       ':= Int
+  '[ "trans_p" ':= Double,    -- ^ parameter for transitioning between latent states
+     "obs_p"   ':= Double,    -- ^ parameter for projecting latent state to observation
+     "y"       ':= Int        -- ^ observation
    ]
 
-hmmFor :: (Observable env "y" Int, Observables env '["obs_p", "trans_p"] Double) =>
-  Int -> Int -> Model env ts Int
+{- | HMM as a loop -}
+hmmFor :: (Observable env "y" Int, Observables env '["obs_p", "trans_p"] Double)
+  -- | number of HMM nodes
+  => Int
+  -- | initial HMM latent state
+  -> Int
+  -- | final HMM latent state
+  -> Model env ts Int
 hmmFor n x = do
+  -- Draw transition and observation parameters from prior distributions
   trans_p <- uniform 0 1 #trans_p
   obs_p   <- uniform 0 1 #obs_p
+  -- Iterate over @n@ HMM nodes
   let hmmLoop i x_prev | i < n = do
+                            -- transition to next latent state
                             dX <- boolToInt <$> bernoulli' trans_p
                             let x = x_prev + dX
+                            -- project latent state to observation
                             binomial x obs_p #y
                             hmmLoop (i - 1) x
                        | otherwise = return x_prev
   hmmLoop 0 x
 
+-- | Simulate from a HMM
 simulateHMM :: Sampler (Int, Env HMMEnv)
 simulateHMM = do
+  -- Specify model inputs
   let x_0 = 0; n = 10
+  -- Specify model environment
       env = #trans_p := [0.5] <:> #obs_p := [0.8] <:> #y := [] <:> nil
   SIM.simulate (hmmFor n) env 0
 
+-- | Perform likelihood-weighting inference over HMM
 inferLwHMM :: Sampler  [(Env HMMEnv, Double)]
 inferLwHMM   = do
+  -- Specify model inputs
   let x_0 = 0; n = 10
+  -- Specify model environment
       env = #trans_p := [] <:> #obs_p := [] <:> #y := [0, 1, 1, 3, 4, 5, 5, 5, 6, 5] <:> nil
   LW.lw 100 (hmmFor n) (x_0, env)
 
--- ** Modular HMM  
+{- | A modular HMM -}
 transModel ::  Double -> Int -> Model env ts Int
 transModel transition_p x_prev = do
   dX <- boolToInt <$> bernoulli' transition_p
@@ -65,7 +84,7 @@ obsModel observation_p x = do
 hmmNode :: (Observable env "y" Int)
   => Double -> Double -> Int -> Model env ts Int
 hmmNode transition_p observation_p x_prev = do
-  x_i <- transModel  transition_p x_prev
+  x_i <- transModel transition_p x_prev
   y_i <- obsModel observation_p x_i
   return x_i
 
@@ -76,7 +95,7 @@ hmm n x = do
   obs_p   <- uniform 0 1 #obs_p
   foldr (>=>) return (replicate n (hmmNode trans_p obs_p)) x
 
--- ** Higher-order, generic HMM 
+{- | A higher-order, generic HMM -}
 type TransModel env ts params lat   = params -> lat -> Model env ts lat
 type ObsModel env ts params lat obs = params -> lat -> Model env ts obs
 
