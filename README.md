@@ -14,31 +14,38 @@ In general, the process is:
 
 1. Define an appropriate model of type `Model env es a`, and (optionally) a corresponding model environment type `env`.
 
-    For example, a logistic regression model that takes a list of `Double`s as inputs and generates a list of `Bool`s:
+    For example, a logistic regression model that takes a list of `Double`s as inputs and generates a list of `Bool`s, modelling the probability of an event occurring or not:
     ```haskell
+    -- | The model environment type, for readability purposes
     type LogRegrEnv =
       '[  "y" ':= Bool,   -- ^ output
           "m" ':= Double, -- ^ mean
           "b" ':= Double  -- ^ intercept
       ]
 
+    -- | Logistic regression model
     logRegr
       :: (Observable env "y" Bool
        , Observables env '["m", "b"] Double)
       => [Double]
       -> Model env rs [Bool]
     logRegr xs = do
-      -- | Specify distribution of model parameters
+      -- | Specify the distributions of the model parameters
+      -- mean
       m     <- normal 0 5 #m
+      -- intercept
       b     <- normal 0 1 #b
+      -- noise
       sigma <- gamma' 1 1
-      -- | Specify distribution of model output
+      -- | Specify distribution of model outputs
       let sigmoid x = 1.0 / (1.0 + exp((-1.0) * x))
       ys    <- foldM (\ys x -> do
+                        -- probability of event occurring
                         p <- normal' (m * x + b) sigma
+                        -- generate as output whether the event occurs
                         y <- bernoulli (sigmoid p) #y
-                        return (y:ys)) [] xs
-      return (reverse ys)
+                        return (ys ++ [y])) [] xs
+      return ys
     ```
     The `Observables` constraint says that, for example, `"m"` and `"b"` are observable variables in the model environment `env` that may later be provided a trace of observed values of type `Double`.
 

@@ -5,6 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE EmptyCase #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 {- | An open sum implementation for value types.

@@ -48,11 +48,13 @@ logRegr xs = do
      observed values to that variable. -}
   sigma <- gamma' 1 1
   -- Specify model output distributions
-  ls    <- foldM (\ls x -> do
-                     y <- normal' (m * x + b) sigma
-                     l <- bernoulli (sigmoid y) #y
-                     return (l:ls)) [] xs
-  return (reverse ls)
+  ys    <- foldM (\ys x -> do
+                    -- probability of event occurring
+                    p <- normal' (m * x + b) sigma
+                    -- generate as output whether the event occurs
+                    y <- bernoulli (sigmoid p) #y
+                    return (ys ++ [y])) [] xs
+  return ys
 
 sigmoid :: Double -> Double
 sigmoid x = 1 / (1 + exp((-1) * x))
