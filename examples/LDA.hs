@@ -117,12 +117,16 @@ vocab = ["DNA", "evolution", "parsing", "phonology"]
 -- | Simulating from topic model
 simLDA :: Sampler [String]
 simLDA = do
-  let n_words = 100
+  -- Specify model inputs
+  let n_words  = 100
+      n_topics = 2
+  -- Specify model environment
       env_in = #θ := [[0.5, 0.5]] <:>
                #φ := [[0.12491280814569208,1.9941599739151505e-2,0.5385152817942926,0.3166303103208638],
                       [1.72605174564027e-2,2.9475900240868515e-2,9.906011619752661e-2,0.8542034661052021]] <:>
                #w := [] <:> nil
-  (words, env_out) <- SIM.simulate (topicModel vocab 2) env_in n_words
+  -- Simulate from topic model
+  (words, env_out) <- SIM.simulate (topicModel vocab n_topics) env_in n_words
   return words
 
 -- | Example document of words
