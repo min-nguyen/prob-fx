@@ -26,7 +26,7 @@ type LinRegrEnv =
     '[  "m" ':= Double, -- ^ gradient
         "σ" ':= Double, -- ^ noise
         "c" ':= Double, -- ^ intercept
-        "y" ':= Bool    -- ^ output
+        "y" ':= Double  -- ^ output
      ]
 
 -- | Linear regression model
