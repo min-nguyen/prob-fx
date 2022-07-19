@@ -9,7 +9,7 @@ import SIR ( simulateSIR, inferSIR, simulateSIRS, simulateSIRSV )
 import LDA ( simLDA, mhLDA )
 import Radon ( simRadon, mhRadon )
 import School ( mhSchool )
-import Sampler ( sampleIO )
+import Sampler ( sampleIOFixed )
 import System.Environment (getArgs)
 
 printThenWrite :: Show a => a -> IO ()
@@ -19,22 +19,22 @@ availableCommands = "[simLinRegr, lwLinRegr, mhLinRegr, simSIR, simSIRS, simSIRS
 
 parseArgs :: String -> IO ()
 parseArgs cmd = case cmd of
-  "simLinRegr"  -> sampleIO simulateLinRegr >>= printThenWrite
-  "lwLinRegr"   -> sampleIO inferLwLinRegr >>= printThenWrite
-  "simSIR"      -> sampleIO simulateSIR >>= printThenWrite
-  "simSIRS"     -> sampleIO simulateSIRS >>= printThenWrite
-  "simSIRSV"    -> sampleIO simulateSIRSV >>= printThenWrite
-  "mhSIR"       -> sampleIO inferSIR >>= printThenWrite
+  "simLinRegr"  -> sampleIOFixed simulateLinRegr >>= printThenWrite
+  "lwLinRegr"   -> sampleIOFixed inferLwLinRegr >>= printThenWrite
+  "simSIR"      -> sampleIOFixed simulateSIR >>= printThenWrite
+  "simSIRS"     -> sampleIOFixed simulateSIRS >>= printThenWrite
+  "simSIRSV"    -> sampleIOFixed simulateSIRSV >>= printThenWrite
+  "mhSIR"       -> sampleIOFixed inferSIR >>= printThenWrite
 
-  "mhLinRegr"   -> sampleIO inferMhLinRegr >>= printThenWrite
-  "simLogRegr"  -> sampleIO simulateLogRegr >>= printThenWrite
-  "lwLogRegr"   -> sampleIO inferLwLogRegr >>= printThenWrite
-  "mhLogRegr"   -> sampleIO inferMHLogRegr >>= printThenWrite
-  "simLDA"      -> sampleIO simLDA >>= printThenWrite
-  "mhLDA"       -> sampleIO mhLDA >>= printThenWrite
-  "simRadon"    -> sampleIO simRadon >>= printThenWrite
-  "mhRadon"     -> sampleIO mhRadon >>= printThenWrite
-  "mhSchool"    -> sampleIO mhSchool >>= printThenWrite
+  "mhLinRegr"   -> sampleIOFixed inferMhLinRegr >>= printThenWrite
+  "simLogRegr"  -> sampleIOFixed simulateLogRegr >>= printThenWrite
+  "lwLogRegr"   -> sampleIOFixed inferLwLogRegr >>= printThenWrite
+  "mhLogRegr"   -> sampleIOFixed inferMHLogRegr >>= printThenWrite
+  "simLDA"      -> sampleIOFixed simLDA >>= printThenWrite
+  "mhLDA"       -> sampleIOFixed mhLDA >>= printThenWrite
+  "simRadon"    -> sampleIOFixed simRadon >>= printThenWrite
+  "mhRadon"     -> sampleIOFixed mhRadon >>= printThenWrite
+  "mhSchool"    -> sampleIOFixed mhSchool >>= printThenWrite
   _             -> putStrLn $ "unrecognised command: " ++ cmd ++ "\n"
                            ++ "available commands: " ++ availableCommands
 

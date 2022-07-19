@@ -136,7 +136,7 @@ inferSIR = do
   let sir_0     = #s @= 762 <: #i @= 1 <: #r @= 0 <: emptyRecord
   -- Specify model environment
       mh_env_in = #β := [] <:> #γ := [0.0085] <:> #ρ := [] <:> #𝜉 := 𝜉s <:> nil
-  -- Run MH inference over 50000 iterations
+  -- Run MH inference over 5000 iterations
   mhTrace <- MH.mh 5000 (hmmSIR 100) (sir_0, mh_env_in) ["β", "ρ"]
   -- Get the sampled values for model parameters ρ and β
   let ρs = concatMap (get #ρ) mhTrace

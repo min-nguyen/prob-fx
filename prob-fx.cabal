@@ -99,3 +99,22 @@ executable prob-fx
                   prob-fx,
                   lens,
                   extensible
+
+test-suite tests
+  type:               exitcode-stdio-1.0
+  hs-source-dirs:     examples
+  main-is:            Test/Main.hs
+  other-modules:      Test.Expected,
+                      DataSets,
+                      LDA,
+                      LinRegr,
+                      HMM,
+                      SIR
+  build-depends:      base,
+                      containers,
+                      extensible,
+                      split,
+                      prob-fx,
+                      HUnit >= 1.6.0 && < 1.7.0,
+                      lens
+  default-language:   Haskell2010

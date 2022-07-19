@@ -62,8 +62,8 @@ inferLwLinRegr = do
   let xs  = [0 .. 100]
   -- Specify model environments and pair with model input
       xys = [(x, env) | x <- xs, let env = (#m := []) <:> (#c := []) <:> (#σ := []) <:> (#y := [3*x]) <:> nil]
-  -- Run LW for 200 iterations on each pair of model input and environment
-  lwTrace <- mapM (LW.lw 200 linRegr) xys
+  -- Run LW for 20 iterations on each pair of model input and environment
+  lwTrace <- mapM (LW.lw 20 linRegr) xys
    -- Get the sampled values of mu and their likelihood-weighting
   let (env_outs, ps) = unzip $ concat lwTrace
       mus = concatMap (get #m) env_outs
