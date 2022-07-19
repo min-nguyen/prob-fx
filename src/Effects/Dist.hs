@@ -2,6 +2,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE ViewPatterns #-}
 
 {- | The effects for primitive distributions, sampling, and observing.
 -}
@@ -16,13 +18,15 @@ module Effects.Dist (
   , handleDist
   -- ** Sample effect
   , Sample(..)
+  , pattern Samp
   -- ** Observe effect
   , Observe(..)
+  , pattern Obs
   ) where
 
 import Data.Map (Map)
 import Data.Maybe ( fromMaybe )
-import Prog ( call, discharge, Member, Prog(..) )
+import Prog ( call, discharge, Member(..), Prog(..), EffectSum(..) )
 import qualified Data.Map as Map
 import PrimDist ( PrimDist )
 
@@ -54,12 +58,20 @@ data Sample a where
           -> Addr           -- ^ address of @Sample@ operation
           -> Sample a
 
+-- | For projecting and then successfully pattern matching against @Sample@
+pattern Samp :: Member Sample es => PrimDist x -> Addr -> EffectSum es x
+pattern Samp d α <- (prj  -> Just (Sample d α))
+
 -- | The effect @Observe@ for conditioning against observed values
 data Observe a where
   Observe :: PrimDist a     -- ^ distribution to condition with
           -> a              -- ^ observed value
           -> Addr           -- ^ address of @Observe@ operation
           -> Observe a
+
+-- | For projecting and then successfully pattern matching against @Observe@
+pattern Obs :: Member Observe es => PrimDist x -> x -> Addr -> EffectSum es x
+pattern Obs d y α <- (prj -> Just (Observe d y α))
 
 -- | Handle the @Dist@ effect to a @Sample@ or @Observe@ effect and assign an address
 handleDist :: (Member Sample es, Member Observe es)

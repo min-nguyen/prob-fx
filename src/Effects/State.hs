@@ -27,7 +27,7 @@ data State s a where
 get :: Member (State s) es => Prog es s
 get = Op (inj Get) Val
 
--- | Wrapper function for @Set@
+-- | Wrapper function for @Put@
 put :: (Member (State s) es) => s -> Prog es ()
 put s = Op (inj $ Put s) Val
 

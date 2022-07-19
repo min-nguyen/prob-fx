@@ -21,7 +21,7 @@ import Data.Kind (Type)
 import Data.Map (Map)
 import Data.Maybe ( fromJust )
 import Data.Set (Set, (\\))
-import Effects.Dist ( Addr, Tag, Observe(..), Sample(..), Dist )
+import Effects.Dist ( Addr, Tag, Dist, Observe(..), Sample(..), pattern Obs, pattern Samp)
 import Effects.ObsReader ( ObsReader )
 import Effects.State ( State, modify, handleState )
 import Env ( Env )
@@ -110,11 +110,8 @@ runMH env strace α_samp =
    . handleState Map.empty . handleState Map.empty
    . traceLPs . traceSamples . handleCore env
 
-pattern Samp :: Member Sample es => PrimDist x -> Addr -> EffectSum es x
-pattern Samp d α <- (prj  -> Just (Sample d α))
 
-pattern Obs :: Member Observe es => PrimDist x -> x -> Addr -> EffectSum es x
-pattern Obs d y α <- (prj -> Just (Observe d y α))
+
 
 -- | Handler for tracing log-probabilities for each @Sample@ and @Observe@ operation
 traceLPs :: (Member (State LPTrace) es, Member Sample es, Member Observe es)
