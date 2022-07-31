@@ -9,10 +9,10 @@ author:              Minh Nguyen
 maintainer:          minhnguyen1995@googlemail.com
 homepage:            http://github.com/min-nguyen/prob-fx
 synopsis:            A library for modular probabilistic modelling
-description:         
+description:
   A library for probabilistic programming using algebraic effects. The
   emphasis is on modular definitions of probabilistic models, and also
-  compositional implementation of model execution (inference) in terms 
+  compositional implementation of model execution (inference) in terms
   of effect handlers.
 
 category:            Statistics
@@ -25,7 +25,7 @@ tested-with:
   GHC == 9.0.1
 
 library
-  exposed-modules:    
+  exposed-modules:
                       Effects.Dist,
                       Effects.Lift,
                       Effects.ObsReader,
@@ -71,7 +71,7 @@ library
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:      base                          >= 4.11 && <= 4.17,
+  build-depends:      base                          >= 4.11 && <= 4.16,
                       ghc-prim                      >= 0.5.3 && < 0.8,
                       deepseq                       >= 1.4.4 && < 1.5,
                       containers                    >= 0.6.0 && < 0.7,
@@ -105,7 +105,7 @@ executable prob-fx
 
   -- Other library packages from which modules are imported.
   build-depends:       base,
-                       prob-fx 
+                       prob-fx
 
   -- Base language which the package is written in.
   default-language:    Haskell2010

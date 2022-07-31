@@ -6,7 +6,7 @@
 
 _Running ProbFX_
 
-ProbFX uses the most recent Cabal version ` >= 3.6.x` and a GHC version `>= 8.4.x`:
+ProbFX uses Cabal version `3.6` and a GHC version `>= 8.4.1` and `<= 9.0.2`:
 1. Install GHCup by following [these instructions](https://www.haskell.org/ghcup/install/)
 2. Both Cabal and GHC versions can be installed and then set by following [this](https://www.haskell.org/ghcup/guide/).
 
@@ -108,7 +108,7 @@ All example models can be found in `src/Examples`, showing variations on how mod
 
 To compare benchmarks with MonadBayes and Turing:
 
-- _MonadBayes_ uses the most recent Cabal version `3.6.x`, and requires a GHC version of `>= 8.4.x` and `< 8.10.x`. To execute both ProbFX and MonadBayes in the same environment, we suggest GHC version `8.6.5`.
+- _MonadBayes_ uses Cabal version `3.6`, and requires a GHC version of `>= 8.4` and `< 8.10`. To execute both ProbFX and MonadBayes in the same environment, we suggest GHC version `8.6.5`.
 - _Turing_ requires the language [Julia](https://julialang.org/downloads/) to be installed. After doing so, the necessary packages can be installed via:
     ```
     julia
