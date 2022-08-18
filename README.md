@@ -71,7 +71,7 @@ In general, the process is:
     Below performs Metropolis-Hastings inference on the same model, by providing values for the model output `y` and hence *observing* (conditioning against) them, but providing none for the model parameters `m` and `b` and hence *sampling* them.
     ```haskell
     -- | Metropolis-Hastings inference
-    inferMHLogRegr :: Sampler [(Double, Double)]
+    inferMHLogRegr :: Sampler [(Double, Bool)]
     inferMHLogRegr = do
       -- | Simulate data from log regression
       (xs, ys) <- unzip <$> simulateLogRegr
@@ -91,7 +91,7 @@ In general, the process is:
 3. `Sampler` computations can be evaluated with `sampleIO :: Sampler a -> IO a` to produce an `IO` computation.
 
     ```haskell
-    sampleIO simulateLogRegr :: [(Double, Bool)]
+    sampleIO simulateLogRegr :: IO (Double, Bool)]
     ```
 
 
