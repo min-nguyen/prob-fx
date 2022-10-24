@@ -1,12 +1,22 @@
-## ProbFX
+![probFX](https://user-images.githubusercontent.com/44177991/197646371-ebe9a9a0-c28e-4330-92f9-e0e32ae6e155.png)
 
-#### Prelude
-ProbFX is a library for probabilistic programming using algebraic effects that implements the paper [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/main/paper.pdf) -- this paper provides a comprehensive motivation and walkthrough of this library. To have a more interactive and visual play-around with ProbFX, please see the [**artifact**](https://github.com/min-nguyen/prob-fx/tree/artifact) branch: this corresponds parts of the paper to the implementation, and also provides an executable version of ProbFX as a script.
+## What is ProbFX?
+ProbFX is an dsl for probabilistic programming embedded within haskell.
+- Allows for multimodal models
+- Small and modular - easy to extend
+- Models are first-class
 
-#### Description
-ProbFx is a PPL that places emphasis on being able to define modular and reusable probabilistic models, where the decision to `sample` or `observe` against a random variable or distribution of a model is delayed until the point of execution; this allows a model to be defined just *once* and then reused for a variety of applications. We also implement a compositional approach towards model execution (inference) by using effect handlers.
+As from the original respository:
+_"ProbFX is a library for probabilistic programming using algebraic effects that implements the paper [**Modular Probabilistic Models via Algebraic Effects**](https://github.com/min-nguyen/prob-fx/blob/main/paper.pdf) -- this paper provides a comprehensive motivation and walkthrough of this library. To have a more interactive and visual play-around with ProbFX, please see the [**artifact**](https://github.com/min-nguyen/prob-fx/tree/artifact) branch: this corresponds parts of the paper to the implementation, and also provides an executable version of ProbFX as a script."_
 
-#### Building and executing models
+## Why create this fork?
+In order to facilitate work on our lane line detection models (the purpose of this lab) we need probFX, but also need to adapt and extend for our own usage.
+- Moving to using fused-effects rather than a probFX specific effects implementation
+- Improving documentation and the provided interfaces
+- Improving extensibility
+
+## Usage
+### Building and executing models
 
 A large number of example ProbFX programs are documented in the [**examples**](https://github.com/min-nguyen/prob-fx/tree/main/examples) directory, showing how to define and then execute a probabilistic model.
 
@@ -93,6 +103,3 @@ In general, the process is:
     ```haskell
     sampleIO simulateLogRegr :: IO (Double, Bool)]
     ```
-
-
-
