@@ -4,6 +4,7 @@ on:
   push:
     branches-ignore:
       - master
+      - main
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
