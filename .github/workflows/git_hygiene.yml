@@ -1,4 +1,4 @@
-name: Check Branch Name (Git Hygiene) (see the organisation readme)
+name: Check Branch Name (Git Hygiene)
 
 on:
   push:
@@ -15,4 +15,11 @@ jobs:
       - name: Check the branch name for PR ${{ github.event.pull_request.title }}
         shell: bash
         run: |
-          [[ "$BRANCH_NAME" =~ ^(enh|ref|fix|doc|msc)/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)$ ]]
+          echo "Checking format of $BRANCH_NAME"
+          if [[ "$BRANCH_NAME" =~ ^(enh|ref|fix|doc|msc)/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)$ ]]; then
+            echo "Passed"
+            exit 0
+          else
+            echo "Failed. Must use prefix of enh/ref/fix/doc/msc with a single slash and a name separated by hyphens"
+            exit 1
+          fi
