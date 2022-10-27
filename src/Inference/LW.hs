@@ -28,23 +28,22 @@ import Inference.SIM (traceSamples, handleSamp)
 lw :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])
     -- | number of LW iterations
     => Int
-    -- | model awaiting an input
-    -> (b -> Model env es a)
-    -- | (model input, input model environment)
-    -> (b, Env env)
+    -- | model
+    -> Model env es a
+    -- | model environment
+    -> Env env
     -- | [(output model environment, likelihood-weighting)]
     -> Sampler [(Env env, Double)]
-lw n model xs_envs = do
-  let runN (x, env) = replicateM n (runLW env (model x))
-  lwTrace <- runN xs_envs
+lw n model env = do
+  lwTrace <- replicateM n (runLW model env)
   return $ map (\((_, strace), p) -> (fromSTrace strace, p)) lwTrace
 
 -- | Handler for one iteration of LW
 runLW :: es ~ '[ObsReader env, Dist, State STrace, Observe, Sample]
-  -- | model environment
-  => Env env
   -- | model
-  -> Model env es a
+  => Model env es a
+  -- | model environment
+  -> Env env
   -- | ((model output, sample trace), likelihood-weighting)
   -> Sampler ((a, STrace), Double)
 runLW env = handleSamp . handleObs 0 . handleState Map.empty . traceSamples . handleCore env
