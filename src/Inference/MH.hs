@@ -47,35 +47,35 @@ mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, 
   -- | number of MH iterations
   => Int
   -- | model awaiting an input
-  -> (b -> Model env es a)
+  -> Model env es a
   -- | (model input, input model environment)
-  -> (b, Env env)
+  -> Env env
   -- | optional list of observable variable names (strings) to specify sample sites of interest
   {- For example, provide "mu" to specify interest in sampling #mu. This causes other variables to not be resampled unless necessary. -}
   -> [Tag]
   -- | [output model environment]
   -> Sampler [Env env]
-mh n model  (x_0, env_0) tags = do
+mh n model env_0 tags = do
   -- Perform initial run of MH with no proposal sample site
-  y0 <- runMH env_0 Map.empty ("", 0) (model x_0)
+  y0 <- runMH model env_0 Map.empty ("", 0)
   -- Perform n MH iterations
-  mhTrace <- foldl (>=>) return (replicate n (mhStep env_0 (model x_0) tags)) [y0]
+  mhTrace <- foldl (>=>) return (replicate n (mhStep model env_0 tags)) [y0]
   -- Return sample trace
   return $ map (\((_, strace), _) -> fromSTrace strace) mhTrace
 
 -- | Perform one step of MH
 mhStep :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- | model environment
-  => Env env
   -- | model
-  -> Model env es a
+  => Model env es a
+  -- | model environment
+  -> Env env
   -- | tags indicating sample sites of interest
   -> [Tag]
   -- | trace of previous MH outputs
   -> [((a, STrace), LPTrace)]
   -- | updated trace of MH outputs
   -> Sampler [((a, STrace), LPTrace)]
-mhStep env model tags trace = do
+mhStep model env tags trace = do
   -- Get previous mh output
   let ((x, samples), logps) = head trace
   -- Get possible addresses to propose new samples for
@@ -85,7 +85,7 @@ mhStep env model tags trace = do
   α_samp_ind <- sample $ DiscrUniformDist 0 (Map.size sampleSites - 1)
   let (α_samp, _) = Map.elemAt α_samp_ind sampleSites
   -- Run MH with proposal sample address
-  ((x', samples'), logps') <- runMH env samples α_samp model
+  ((x', samples'), logps') <- runMH model env samples α_samp
   -- Compute acceptance ratio
   acceptance_ratio <- liftS $ accept α_samp samples samples' logps logps'
   u <- sample (UniformDist 0 1)
@@ -95,22 +95,20 @@ mhStep env model tags trace = do
 
 -- | Handler for one iteration of MH
 runMH :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
+  -- | model
+  => Model env es a
   -- | model environment
-  => Env env
+  -> Env env
   -- | sample trace of previous MH iteration
   -> STrace
   -- | sample address of interest
   -> Addr
-  -- | model
-  -> Model env es a
   -- | (model output, sample trace, log-probability trace)
   -> Sampler ((a, STrace), LPTrace)
-runMH env strace α_samp =
-     handleSamp strace α_samp  . handleObs
-   . handleState Map.empty . handleState Map.empty
-   . traceLPs . traceSamples . handleCore env
-
-
+runMH model env strace α_samp =
+     handleSamp strace α_samp $ handleObs
+   $ handleState Map.empty $ handleState Map.empty
+   $ traceLPs $ traceSamples $ handleCore model env
 
 
 -- | Handler for tracing log-probabilities for each @Sample@ and @Observe@ operation

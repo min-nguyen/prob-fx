@@ -59,7 +59,7 @@ simulateHMM = do
   let x_0 = 0; n = 10
   -- Specify model environment
       env = #trans_p := [0.5] <:> #obs_p := [0.8] <:> #y := [] <:> nil
-  SIM.simulate (hmmFor n) env 0
+  SIM.simulate (hmmFor n x_0) env
 
 -- | Perform likelihood-weighting inference over HMM
 inferLwHMM :: Sampler  [(Env HMMEnv, Double)]
@@ -68,7 +68,7 @@ inferLwHMM   = do
   let x_0 = 0; n = 10
   -- Specify model environment
       env = #trans_p := [] <:> #obs_p := [] <:> #y := [0, 1, 1, 3, 4, 5, 5, 5, 6, 5] <:> nil
-  LW.lw 100 (hmmFor n) (x_0, env)
+  LW.lw 100 (hmmFor n x_0) env
 
 {- | A modular HMM.
 -}
