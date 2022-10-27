@@ -56,11 +56,11 @@ mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, 
   -- | [output model environment]
   -> Sampler [Env env]
 mh n model  (x_0, env_0) tags = do
-  -- | Perform initial run of MH with no proposal sample site
+  -- Perform initial run of MH with no proposal sample site
   y0 <- runMH env_0 Map.empty ("", 0) (model x_0)
-  -- | Perform n MH iterations
+  -- Perform n MH iterations
   mhTrace <- foldl (>=>) return (replicate n (mhStep env_0 (model x_0) tags)) [y0]
-  -- | Return sample trace
+  -- Return sample trace
   return $ map (\((_, strace), _) -> fromSTrace strace) mhTrace
 
 -- | Perform one step of MH
@@ -157,8 +157,8 @@ lookupSample :: OpenSum.Member a PrimVal
   -> Sampler a
 lookupSample samples d α α_samp
   | α == α_samp = sample d
-  | otherwise
-    = case Map.lookup α samples of
+  | otherwise   =
+      case Map.lookup α samples of
         Just (ErasedPrimDist d', x) -> do
           if d == unsafeCoerce d'
             then return (fromJust $ OpenSum.prj x)
