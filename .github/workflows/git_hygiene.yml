@@ -1,0 +1,18 @@
+name: Check Branch Name (Git Hygiene)
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+  
+jobs:
+  check_branch_name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the branch name for PR ${{ github.event.pull_request.title }}
+        shell: bash
+        run: |
+          [[ "$BRANCH_NAME" =~ ^(enh|ref|fix|doc|msc)/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)$ ]]
