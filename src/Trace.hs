@@ -56,13 +56,13 @@ extractSamples (x, typ)  =
 updateSTrace :: (Show x, OpenSum.Member x PrimVal) =>
   -- | address of sample site
      Addr
-  -- | primitive distribution at address
+  -- primitive distribution at address
   -> PrimDist x
-  -- | sampled value
+  -- sampled value
   -> x
-  -- | previous sample trace
+  -- previous sample trace
   -> STrace
-  -- | updated sample trace
+  -- updated sample trace
   -> STrace
 updateSTrace α d x = Map.insert α (ErasedPrimDist d, OpenSum.inj x)
 
@@ -75,12 +75,12 @@ type LPTrace = Map Addr Double
 updateLPTrace ::
   -- | address of sample/observe site
      Addr
-  -- | primitive distribution at address
+  -- primitive distribution at address
   -> PrimDist x
-  -- | sampled or observed value
+  -- sampled or observed value
   -> x
-  -- | previous log-prob trace
+  -- previous log-prob trace
   -> LPTrace
-  -- | updated log-prob trace
+  -- updated log-prob trace
   -> LPTrace
 updateLPTrace α d x = Map.insert α (logProb d x)
