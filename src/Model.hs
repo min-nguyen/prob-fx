@@ -84,8 +84,8 @@ instance Monad (Model env es) where
 
 {- | The initial handler for models, specialising a model under a certain
 environment to produce a probabilistic program consisting of @Sample@ and @Observe@ operations. -}
-handleCore :: (Member Observe es, Member Sample es) => Env env -> Model env (ObsReader env : Dist : es) a -> Prog es a
-handleCore env m = (handleDist . handleRead env) (runModel m)
+handleCore :: (Member Observe es, Member Sample es) => Model env (ObsReader env : Dist : es) a -> Env env -> Prog es a
+handleCore m env = (handleDist . handleRead env) (runModel m)
 
 {- $Smart-Constructors
 

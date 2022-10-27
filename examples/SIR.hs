@@ -120,7 +120,7 @@ simulateSIR = do
   -- Specify model environment
       sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
   -- Simulate an epidemic over 100 days
-  ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIR 100) sim_env_in sir_0
+  ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIR 100 sir_0) sim_env_in
   -- Get the observed infections over 100 days
   let 𝜉s :: [Reported] = get #𝜉 sim_env_out
   -- Get the true SIR values over 100 days
@@ -137,7 +137,7 @@ inferSIR = do
   -- Specify model environment
       mh_env_in = #β := [] <:> #γ := [0.0085] <:> #ρ := [] <:> #𝜉 := 𝜉s <:> nil
   -- Run MH inference over 5000 iterations
-  mhTrace <- MH.mh 5000 (hmmSIR 100) (sir_0, mh_env_in) ["β", "ρ"]
+  mhTrace <- MH.mh 5000 (hmmSIR 100 sir_0) mh_env_in ["β", "ρ"]
   -- Get the sampled values for model parameters ρ and β
   let ρs = concatMap (get #ρ) mhTrace
       βs = concatMap (get #β) mhTrace
@@ -180,7 +180,7 @@ simulateSIRS = do
   -- Specify model environment
       sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #η := [0.05] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
   -- Simulate an epidemic over 100 days
-  ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIRS 100) sim_env_in sir_0
+  ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIRS 100 sir_0) sim_env_in
   -- Get the observed infections over 100 days
   let 𝜉s :: [Reported] = get #𝜉 sim_env_out
   -- Get the true SIRS values over 100 days
@@ -226,7 +226,7 @@ simulateSIRSV = do
   -- Specify model environment
       sim_env_in = #β := [0.7] <:> #γ := [0.009] <:> #η := [0.05] <:> #ω := [0.02] <:> #ρ := [0.3] <:> #𝜉 := [] <:> nil
   -- Simulate an epidemic over 100 days
-  ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIRSV 100) sim_env_in sir_0
+  ((_, sir_trace), sim_env_out) <- SIM.simulate (hmmSIRSV 100 sir_0) sim_env_in
   -- Get the observed infections over 100 days
   let 𝜉s :: [Reported] = get #𝜉 sim_env_out
   -- Get the true SIRSV values over 100 days
