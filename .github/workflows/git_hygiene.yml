@@ -1,4 +1,4 @@
-name: Check Branch Name (Git Hygiene)
+name: Check Branch Name (Git Hygiene) (see the organisation readme)
 
 on:
   push:
