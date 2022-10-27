@@ -50,7 +50,7 @@ extractSamples ::  forall a x. (Eq a, OpenSum.Member a PrimVal) => (ObsVar x, Pr
 extractSamples (x, typ)  =
     map (fromJust . OpenSum.prj @a . snd . snd)
   . Map.toList
-  . Map.filterWithKey (\(tag, idx) _ -> tag == varToStr x)
+  . Map.filterWithKey (\(tag, _) _ -> tag == varToStr x)
 
 -- | Update a sample trace at an address
 updateSTrace :: (Show x, OpenSum.Member x PrimVal) =>

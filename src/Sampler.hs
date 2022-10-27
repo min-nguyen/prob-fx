@@ -72,71 +72,71 @@ createSampler f = Sampler $ ask >>= lift . f
 sampleRandom
   :: MWC.GenIO
   -> IO Double
-sampleRandom = \gen -> MWC.uniform gen
+sampleRandom = MWC.uniform
 
 sampleCauchy
   :: Double -- ^ location
   -> Double -- ^ scale
   -> (MWC.GenIO -> IO Double)
-sampleCauchy μ σ = \gen -> genContVar (cauchyDistribution μ σ) gen
+sampleCauchy μ σ = genContVar (cauchyDistribution μ σ)
 
 sampleNormal
   :: Double -- ^ mean
   -> Double -- ^ standard deviation
   -> (MWC.GenIO -> IO Double)
-sampleNormal μ σ = \gen -> MWC.Dist.normal μ σ gen
+sampleNormal = MWC.Dist.normal
 
 sampleUniform
   :: Double -- ^ lower-bound
   -> Double -- ^ upper-bound
   -> (MWC.GenIO -> IO Double)
-sampleUniform min max = \gen -> MWC.uniformR (min, max) gen
+sampleUniform min max = MWC.uniformR (min, max)
 
 sampleDiscreteUniform
   :: Int -- ^ lower-bound
   -> Int -- ^ upper-bound
   -> (MWC.GenIO -> IO Int)
-sampleDiscreteUniform min max = \gen -> MWC.uniformR (min, max) gen
+sampleDiscreteUniform min max = MWC.uniformR (min, max)
 
 sampleGamma
   :: Double -- ^ shape k
   -> Double -- ^ scale θ
   -> (MWC.GenIO -> IO Double)
-sampleGamma k θ = \gen -> MWC.Dist.gamma k θ gen
+sampleGamma = MWC.Dist.gamma
 
 sampleBeta
   :: Double -- ^ shape α
   -> Double -- ^ shape β
   -> (MWC.GenIO -> IO Double)
-sampleBeta α β = \gen -> MWC.Dist.beta α β gen
+sampleBeta = MWC.Dist.beta
 
 sampleBernoulli
   :: Double -- ^ probability of @True@
   -> (MWC.GenIO -> IO Bool)
-sampleBernoulli p = \gen -> MWC.Dist.bernoulli p gen
+sampleBernoulli = MWC.Dist.bernoulli
 
 sampleBinomial
   :: Int    -- ^ number of trials
   -> Double -- ^ probability of successful trial
   -> (MWC.GenIO -> IO [Bool])
-sampleBinomial n p = \gen -> replicateM n (MWC.Dist.bernoulli p gen)
+sampleBinomial n p gen = replicateM n (MWC.Dist.bernoulli p gen)
 
 sampleCategorical
   :: V.Vector Double -- ^ probabilities
   -> (MWC.GenIO -> IO Int)
-sampleCategorical ps =  \gen -> MWC.Dist.categorical (ps) gen
+sampleCategorical = MWC.Dist.categorical
 
 sampleDiscrete
   :: [Double] -- ^ probabilities
   -> (MWC.GenIO -> IO Int)
-sampleDiscrete ps = \gen -> MWC.Dist.categorical (V.fromList ps) gen
+sampleDiscrete ps = MWC.Dist.categorical (V.fromList ps)
 
 samplePoisson
   :: Double   -- ^ rate λ
   -> (MWC.GenIO -> IO Int)
-samplePoisson λ = \gen -> MWC.Probability.sample (MWC.Probability.poisson λ) gen
+samplePoisson λ = MWC.Probability.sample (MWC.Probability.poisson λ)
 
 sampleDirichlet
   :: [Double] -- ^ concentrations
   -> (MWC.GenIO -> IO [Double])
-sampleDirichlet xs = \gen -> MWC.Dist.dirichlet xs gen
+sampleDirichlet = MWC.Dist.dirichlet

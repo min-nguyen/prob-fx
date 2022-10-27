@@ -40,6 +40,7 @@ import Statistics.Distribution.Normal ( normalDistr )
 import Statistics.Distribution.Poisson ( poisson )
 import Statistics.Distribution.Uniform ( uniformDistr )
 import Sampler
+import Data.Functor ( (<&>) )
 
 -- | Primitive distribution
 data PrimDist a where
@@ -189,34 +190,34 @@ instance Show ErasedPrimDist where
 sample ::
      PrimDist a
   -> Sampler a
-sample (HalfCauchyDist σ )  =
-  createSampler (sampleCauchy 0 σ) >>= pure . abs
-sample (CauchyDist μ σ )  =
-  createSampler (sampleCauchy μ σ)
-sample (HalfNormalDist σ )  =
-  createSampler (sampleNormal 0 σ) >>= pure . abs
-sample (NormalDist μ σ )  =
-  createSampler (sampleNormal μ σ)
-sample (UniformDist min max )  =
-  createSampler (sampleUniform min max)
-sample (DiscrUniformDist min max )  =
-  createSampler (sampleDiscreteUniform min max)
-sample (GammaDist k θ )        =
-  createSampler (sampleGamma k θ)
-sample (BetaDist α β  )         =
-  createSampler (sampleBeta α β)
-sample (BinomialDist n p  )     =
-  createSampler (sampleBinomial n p) >>=  pure .  length . filter (== True)
-sample (BernoulliDist p )      =
-  createSampler (sampleBernoulli p)
-sample (CategoricalDist ps )   =
-  createSampler (sampleCategorical (V.fromList $ fmap snd ps)) >>= \i -> pure $ fst $ ps !! i
-sample (DiscreteDist ps )      =
-  createSampler (sampleDiscrete ps)
-sample (PoissonDist λ ) =
-  createSampler (samplePoisson λ)
-sample (DirichletDist xs ) =
-  createSampler (sampleDirichlet xs)
+sample (HalfCauchyDist σ )
+  = createSampler (sampleCauchy 0 σ) <&> abs
+sample (CauchyDist μ σ )
+  = createSampler (sampleCauchy μ σ)
+sample (HalfNormalDist σ )
+  = createSampler (sampleNormal 0 σ) <&> abs
+sample (NormalDist μ σ )
+  = createSampler (sampleNormal μ σ)
+sample (UniformDist min max )
+  = createSampler (sampleUniform min max)
+sample (DiscrUniformDist min max )
+  = createSampler (sampleDiscreteUniform min max)
+sample (GammaDist k θ )
+  = createSampler (sampleGamma k θ)
+sample (BetaDist α β  )
+  = createSampler (sampleBeta α β)
+sample (BinomialDist n p  )
+  = createSampler (sampleBinomial n p) <&> (length . filter (== True))
+sample (BernoulliDist p )
+  = createSampler (sampleBernoulli p)
+sample (CategoricalDist ps )
+  = createSampler (sampleCategorical $ V.fromList $ fmap snd ps) <&> (fst . (ps !!))
+sample (DiscreteDist ps )
+  = createSampler (sampleDiscrete ps)
+sample (PoissonDist λ )
+  = createSampler (samplePoisson λ)
+sample (DirichletDist xs )
+  = createSampler (sampleDirichlet xs)
 sample (DeterministicDist x) = pure x
 
 -- | Compute the density of a primitive distribution generating an observed value
@@ -228,7 +229,7 @@ prob ::
   -- density
   -> Double
 prob (DirichletDist xs) ys =
-  let xs' = map (/(Prelude.sum xs)) xs
+  let xs' = map (/Prelude.sum xs) xs
   in  if Prelude.sum xs' /= 1 then error "dirichlet can't normalize" else
       case dirichletDistribution (UV.fromList xs')
       of Left e -> error "dirichlet error"
