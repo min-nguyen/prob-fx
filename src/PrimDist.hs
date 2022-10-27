@@ -40,7 +40,6 @@ import Statistics.Distribution.Normal ( normalDistr )
 import Statistics.Distribution.Poisson ( poisson )
 import Statistics.Distribution.Uniform ( uniformDistr )
 import Sampler
-import Util ( boolToInt )
 
 -- | Primitive distribution
 data PrimDist a where
@@ -224,9 +223,9 @@ sample (DeterministicDist x) = pure x
 prob ::
   -- | distribution
      PrimDist a
-  -- | observed value
+  -- observed value
   -> a
-  -- | density
+  -- density
   -> Double
 prob (DirichletDist xs) ys =
   let xs' = map (/(Prelude.sum xs)) xs
@@ -256,7 +255,7 @@ prob (DiscrUniformDist min max) y
 prob (BinomialDist n p) y
   = probability (binomial n p) y
 prob (BernoulliDist p) i
-  = probability (binomial 1 p) (boolToInt i)
+  = probability (binomial 1 p) (fromEnum i)
 prob d@(CategoricalDist ps) y
   = case lookup y ps of
       Nothing -> error $ "Couldn't find " ++ show y ++ " in categorical dist"
@@ -269,8 +268,8 @@ prob (DeterministicDist x) y = 1
 logProb ::
   -- | distribution
      PrimDist a
-  -- | observed value
+  -- observed value
   -> a
-  -- | log density
+  -- log density
   -> Double
 logProb d = log . prob d

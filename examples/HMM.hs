@@ -19,7 +19,6 @@ import Sampler ( Sampler )
 import Control.Monad ( (>=>) )
 import Data.Kind (Constraint)
 import Env ( Observables, Observable, Assign((:=)), Env, nil, (<:>) )
-import Util ( boolToInt )
 
 -- | A HMM environment
 type HMMEnv =
@@ -44,7 +43,7 @@ hmmFor n x = do
   -- Iterate over @n@ HMM nodes
   let hmmLoop i x_prev | i < n = do
                             -- transition to next latent state
-                            dX <- boolToInt <$> bernoulli' trans_p
+                            dX <- fromEnum <$> bernoulli' trans_p
                             let x = x_prev + dX
                             -- project latent state to observation
                             binomial x obs_p #y
@@ -74,7 +73,7 @@ inferLwHMM   = do
 -}
 transModel ::  Double -> Int -> Model env ts Int
 transModel transition_p x_prev = do
-  dX <- boolToInt <$> bernoulli' transition_p
+  dX <- fromEnum <$> bernoulli' transition_p
   return (x_prev + dX)
 
 obsModel :: (Observable env "y" Int)

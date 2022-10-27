@@ -153,7 +153,7 @@ discrete ps field = Model $ do
 discrete' ::
   -- | list of @n@ probabilities
      [Double]
-  -- | integer index from @0@ to @n - 1@
+  -- integer index from @0@ to @n - 1@
   -> Model env es Int
 discrete' ps = Model $ do
   call (Dist (DiscreteDist ps) Nothing Nothing)
@@ -187,7 +187,7 @@ normal mu sigma field = Model $ do
 normal' ::
   -- | mean
      Double
-  -- | standard deviation
+  -- standard deviation
   -> Double
   -> Model env es Double
 normal' mu sigma = Model $ do
@@ -222,7 +222,7 @@ cauchy mu sigma field = Model $ do
 cauchy' ::
   -- | location
      Double
-  -- | scale
+  -- scale
   -> Double
   -> Model env es Double
 cauchy' mu sigma = Model $ do
@@ -273,7 +273,7 @@ beta α β field = Model $ do
 beta' ::
   -- | shape 1 (α)
      Double
-  -- | shape 2 (β)
+  -- shape 2 (β)
   -> Double
   -> Model env es Double
 beta' α β = Model $ do
@@ -292,9 +292,9 @@ binomial n p field = Model $ do
 binomial' ::
   -- | number of trials
      Int
-  -- | probability of successful trial
+  -- probability of successful trial
   -> Double
-  -- | number of successful trials
+  -- number of successful trials
   -> Model env es Int
 binomial' n p = Model $ do
   call (Dist (BinomialDist n p) Nothing Nothing)
@@ -312,7 +312,7 @@ gamma k θ field = Model $ do
 gamma' ::
   -- | shape (k)
      Double
-  -- | scale (θ)
+  -- scale (θ)
   -> Double
   -> Model env es Double
 gamma' k θ = Model $ do
@@ -331,7 +331,7 @@ uniform min max field = Model $ do
 uniform' ::
   -- | lower-bound
      Double
-  -- | upper-bound
+  -- upper-bound
   -> Double
   -> Model env es Double
 uniform' min max = Model $ do
@@ -349,7 +349,7 @@ poisson λ field = Model $ do
 poisson' ::
   -- | rate (λ)
      Double
-  -- | number of events
+  -- number of events
   -> Model env es Int
 poisson' λ = Model $ do
   call (Dist (PoissonDist λ) Nothing Nothing)
