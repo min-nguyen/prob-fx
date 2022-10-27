@@ -40,7 +40,6 @@ import Statistics.Distribution.Normal ( normalDistr )
 import Statistics.Distribution.Poisson ( poisson )
 import Statistics.Distribution.Uniform ( uniformDistr )
 import Sampler
-import Data.Functor ( (<&>) )
 
 -- | Primitive distribution
 data PrimDist a where
@@ -191,11 +190,11 @@ sample ::
      PrimDist a
   -> Sampler a
 sample (HalfCauchyDist σ )
-  = createSampler (sampleCauchy 0 σ) <&> abs
+  = abs <$> createSampler (sampleCauchy 0 σ)
 sample (CauchyDist μ σ )
   = createSampler (sampleCauchy μ σ)
 sample (HalfNormalDist σ )
-  = createSampler (sampleNormal 0 σ) <&> abs
+  = abs <$> createSampler (sampleNormal 0 σ)
 sample (NormalDist μ σ )
   = createSampler (sampleNormal μ σ)
 sample (UniformDist min max )
@@ -207,11 +206,11 @@ sample (GammaDist k θ )
 sample (BetaDist α β  )
   = createSampler (sampleBeta α β)
 sample (BinomialDist n p  )
-  = createSampler (sampleBinomial n p) <&> (length . filter (== True))
+  = length . filter (== True) <$> createSampler (sampleBinomial n p)
 sample (BernoulliDist p )
   = createSampler (sampleBernoulli p)
 sample (CategoricalDist ps )
-  = createSampler (sampleCategorical $ V.fromList $ fmap snd ps) <&> (fst . (ps !!))
+  =  fst . (ps !!) <$> createSampler (sampleCategorical $ V.fromList $ fmap snd ps) 
 sample (DiscreteDist ps )
   = createSampler (sampleDiscrete ps)
 sample (PoissonDist λ )
