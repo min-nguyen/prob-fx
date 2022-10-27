@@ -21,7 +21,10 @@ import Sampler ( Sampler, liftS )
 import DataSets ( n_counties, logRadon, countyIdx, dataFloorValues )
 import Inference.SIM as SIM ( simulate )
 import Inference.MH as MH ( mh )
-import Util ( findIndexes )
+
+-- | Return all the positions that a value occurs within a list
+findIndexes :: Eq a => a -> [a] -> [Int]
+findIndexes x = map fst . filter ((x==) . snd) . zip [0..]
 
 -- | Radon model environment
 type RadonEnv =
@@ -86,8 +89,8 @@ simRadon = do
   -- Simulate model
   (bs, env_out) <- SIM.simulate (radonModel n_counties dataFloorValues countyIdx) env_in
   -- Retrieve and return the radon-levels for houses with basements and those without basements
-  let basementIdxs      = findIndexes dataFloorValues 0
-      noBasementIdxs    = findIndexes dataFloorValues 1
+  let basementIdxs      = findIndexes 0 dataFloorValues
+      noBasementIdxs    = findIndexes 1 dataFloorValues
       basementPoints    = map (bs !!) basementIdxs
       nobasementPoints  = map (bs !!) noBasementIdxs
   return (basementPoints, nobasementPoints)

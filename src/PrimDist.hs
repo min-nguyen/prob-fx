@@ -40,7 +40,6 @@ import Statistics.Distribution.Normal ( normalDistr )
 import Statistics.Distribution.Poisson ( poisson )
 import Statistics.Distribution.Uniform ( uniformDistr )
 import Sampler
-import Util ( boolToInt )
 
 -- | Primitive distribution
 data PrimDist a where
@@ -190,34 +189,34 @@ instance Show ErasedPrimDist where
 sample ::
      PrimDist a
   -> Sampler a
-sample (HalfCauchyDist σ )  =
-  createSampler (sampleCauchy 0 σ) >>= pure . abs
-sample (CauchyDist μ σ )  =
-  createSampler (sampleCauchy μ σ)
-sample (HalfNormalDist σ )  =
-  createSampler (sampleNormal 0 σ) >>= pure . abs
-sample (NormalDist μ σ )  =
-  createSampler (sampleNormal μ σ)
-sample (UniformDist min max )  =
-  createSampler (sampleUniform min max)
-sample (DiscrUniformDist min max )  =
-  createSampler (sampleDiscreteUniform min max)
-sample (GammaDist k θ )        =
-  createSampler (sampleGamma k θ)
-sample (BetaDist α β  )         =
-  createSampler (sampleBeta α β)
-sample (BinomialDist n p  )     =
-  createSampler (sampleBinomial n p) >>=  pure .  length . filter (== True)
-sample (BernoulliDist p )      =
-  createSampler (sampleBernoulli p)
-sample (CategoricalDist ps )   =
-  createSampler (sampleCategorical (V.fromList $ fmap snd ps)) >>= \i -> pure $ fst $ ps !! i
-sample (DiscreteDist ps )      =
-  createSampler (sampleDiscrete ps)
-sample (PoissonDist λ ) =
-  createSampler (samplePoisson λ)
-sample (DirichletDist xs ) =
-  createSampler (sampleDirichlet xs)
+sample (HalfCauchyDist σ )
+  = abs <$> createSampler (sampleCauchy 0 σ)
+sample (CauchyDist μ σ )
+  = createSampler (sampleCauchy μ σ)
+sample (HalfNormalDist σ )
+  = abs <$> createSampler (sampleNormal 0 σ)
+sample (NormalDist μ σ )
+  = createSampler (sampleNormal μ σ)
+sample (UniformDist min max )
+  = createSampler (sampleUniform min max)
+sample (DiscrUniformDist min max )
+  = createSampler (sampleDiscreteUniform min max)
+sample (GammaDist k θ )
+  = createSampler (sampleGamma k θ)
+sample (BetaDist α β  )
+  = createSampler (sampleBeta α β)
+sample (BinomialDist n p  )
+  = length . filter (== True) <$> createSampler (sampleBinomial n p)
+sample (BernoulliDist p )
+  = createSampler (sampleBernoulli p)
+sample (CategoricalDist ps )
+  =  fst . (ps !!) <$> createSampler (sampleCategorical $ V.fromList $ fmap snd ps) 
+sample (DiscreteDist ps )
+  = createSampler (sampleDiscrete ps)
+sample (PoissonDist λ )
+  = createSampler (samplePoisson λ)
+sample (DirichletDist xs )
+  = createSampler (sampleDirichlet xs)
 sample (DeterministicDist x) = pure x
 
 -- | Compute the density of a primitive distribution generating an observed value
@@ -228,21 +227,22 @@ prob ::
   -> a
   -- | density
   -> Double
-prob (DirichletDist xs) ys =
-  let xs' = map (/(Prelude.sum xs)) xs
-  in  if Prelude.sum xs' /= 1 then error "dirichlet can't normalize" else
-      case dirichletDistribution (UV.fromList xs')
+prob (DirichletDist xs) ys
+  | Prelude.sum xs' /= 1 = error "dirichlet can't normalize"
+  | otherwise 
+    = case dirichletDistribution (UV.fromList xs')
       of Left e -> error "dirichlet error"
-         Right d -> let Exp p = dirichletDensity d (UV.fromList ys)
-                        in  exp p
+         Right d -> let Exp p = dirichletDensity d (UV.fromList ys) in exp p
+  where
+    xs' = map (/Prelude.sum xs) xs
 prob (HalfCauchyDist σ) y
-  = if y < 0 then 0 else
-            2 * density (cauchyDistribution 0 σ) y
+  | y < 0     = 0
+  | otherwise = 2 * density (cauchyDistribution 0 σ) y
 prob (CauchyDist μ σ) y
   = density (cauchyDistribution μ σ) y
 prob (HalfNormalDist σ) y
-  = if y < 0 then 0 else
-            2 * density (normalDistr 0 σ) y
+  | y < 0 = 0
+  | otherwise = 2 * density (normalDistr 0 σ) y
 prob (NormalDist μ σ) y
   = density (normalDistr μ σ) y
 prob (UniformDist min max) y
@@ -256,7 +256,7 @@ prob (DiscrUniformDist min max) y
 prob (BinomialDist n p) y
   = probability (binomial n p) y
 prob (BernoulliDist p) i
-  = probability (binomial 1 p) (boolToInt i)
+  = probability (binomial 1 p) (fromEnum i)
 prob d@(CategoricalDist ps) y
   = case lookup y ps of
       Nothing -> error $ "Couldn't find " ++ show y ++ " in categorical dist"
