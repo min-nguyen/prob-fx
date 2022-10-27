@@ -224,25 +224,26 @@ sample (DeterministicDist x) = pure x
 prob ::
   -- | distribution
      PrimDist a
-  -- observed value
+  -- | observed value
   -> a
-  -- density
+  -- | density
   -> Double
-prob (DirichletDist xs) ys =
-  let xs' = map (/Prelude.sum xs) xs
-  in  if Prelude.sum xs' /= 1 then error "dirichlet can't normalize" else
-      case dirichletDistribution (UV.fromList xs')
+prob (DirichletDist xs) ys
+  | Prelude.sum xs' /= 1 = error "dirichlet can't normalize"
+  | otherwise 
+    = case dirichletDistribution (UV.fromList xs')
       of Left e -> error "dirichlet error"
-         Right d -> let Exp p = dirichletDensity d (UV.fromList ys)
-                        in  exp p
+         Right d -> let Exp p = dirichletDensity d (UV.fromList ys) in exp p
+  where
+    xs' = map (/Prelude.sum xs) xs
 prob (HalfCauchyDist σ) y
-  = if y < 0 then 0 else
-            2 * density (cauchyDistribution 0 σ) y
+  | y < 0     = 0
+  | otherwise = 2 * density (cauchyDistribution 0 σ) y
 prob (CauchyDist μ σ) y
   = density (cauchyDistribution μ σ) y
 prob (HalfNormalDist σ) y
-  = if y < 0 then 0 else
-            2 * density (normalDistr 0 σ) y
+  | y < 0 = 0
+  | otherwise = 2 * density (normalDistr 0 σ) y
 prob (NormalDist μ σ) y
   = density (normalDistr μ σ) y
 prob (UniformDist min max) y
@@ -269,8 +270,8 @@ prob (DeterministicDist x) y = 1
 logProb ::
   -- | distribution
      PrimDist a
-  -- observed value
+  -- | observed value
   -> a
-  -- log density
+  -- | log density
   -> Double
 logProb d = log . prob d

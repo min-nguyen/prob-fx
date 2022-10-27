@@ -44,36 +44,36 @@ import Unsafe.Coerce ( unsafeCoerce )
 
 -- | Top-level wrapper for Metropolis-Hastings (MH) inference
 mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- number of MH iterations
+  -- | number of MH iterations
   => Int
-  -- model awaiting an input
+  -- | model awaiting an input
   -> (b -> Model env es a)
-  -- (model input, input model environment)
+  -- | (model input, input model environment)
   -> (b, Env env)
-  -- optional list of observable variable names (strings) to specify sample sites of interest
+  -- | optional list of observable variable names (strings) to specify sample sites of interest
   {- For example, provide "mu" to specify interest in sampling #mu. This causes other variables to not be resampled unless necessary. -}
   -> [Tag]
-  -- [output model environment]
+  -- | [output model environment]
   -> Sampler [Env env]
 mh n model  (x_0, env_0) tags = do
-  -- Perform initial run of MH with no proposal sample site
+  -- | Perform initial run of MH with no proposal sample site
   y0 <- runMH env_0 Map.empty ("", 0) (model x_0)
-  -- Perform n MH iterations
+  -- | Perform n MH iterations
   mhTrace <- foldl (>=>) return (replicate n (mhStep env_0 (model x_0) tags)) [y0]
-  -- Return sample trace
+  -- | Return sample trace
   return $ map (\((_, strace), _) -> fromSTrace strace) mhTrace
 
 -- | Perform one step of MH
 mhStep :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- model environment
+  -- | model environment
   => Env env
-  -- model
+  -- | model
   -> Model env es a
-  -- tags indicating sample sites of interest
+  -- | tags indicating sample sites of interest
   -> [Tag]
-  -- trace of previous MH outputs
+  -- | trace of previous MH outputs
   -> [((a, STrace), LPTrace)]
-  -- updated trace of MH outputs
+  -- | updated trace of MH outputs
   -> Sampler [((a, STrace), LPTrace)]
 mhStep env model tags trace = do
   -- Get previous mh output
@@ -95,15 +95,15 @@ mhStep env model tags trace = do
 
 -- | Handler for one iteration of MH
 runMH :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- model environment
+  -- | model environment
   => Env env
-  -- sample trace of previous MH iteration
+  -- | sample trace of previous MH iteration
   -> STrace
-  -- sample address of interest
+  -- | sample address of interest
   -> Addr
-  -- model
+  -- | model
   -> Model env es a
-  -- (model output, sample trace, log-probability trace)
+  -- | (model output, sample trace, log-probability trace)
   -> Sampler ((a, STrace), LPTrace)
 runMH env strace α_samp =
      handleSamp strace α_samp  . handleObs
@@ -131,7 +131,7 @@ traceLPs (Op op k) = case op of
 handleSamp ::
   -- | sample trace
      STrace
-  -- address of the proposal sample site for the current MH iteration
+  -- | address of the proposal sample site for the current MH iteration
   -> Addr
   -> Prog '[Sample] a
   -> Sampler a
@@ -148,17 +148,17 @@ lookupSample :: OpenSum.Member a PrimVal
   =>
   -- | sample trace
      STrace
-  -- distribution to sample from
+  -- | distribution to sample from
   -> PrimDist a
-  -- address of current sample site
+  -- | address of current sample site
   -> Addr
-  -- address of proposal sample site
+  -- | address of proposal sample site
   -> Addr
   -> Sampler a
 lookupSample samples d α α_samp
   | α == α_samp = sample d
-  | otherwise   =
-      case Map.lookup α samples of
+  | otherwise
+    = case Map.lookup α samples of
         Just (ErasedPrimDist d', x) -> do
           if d == unsafeCoerce d'
             then return (fromJust $ OpenSum.prj x)
@@ -169,13 +169,13 @@ lookupSample samples d α α_samp
 accept ::
   -- | address of new sampled value
      Addr
-  -- previous MH sample trace
+  -- | previous MH sample trace
   -> STrace
-  -- new MH sample trace
+  -- | new MH sample trace
   -> STrace
-  -- previous MH log-probability trace
+  -- | previous MH log-probability trace
   -> LPTrace
-  -- current MH log-probability trace
+  -- | current MH log-probability trace
   -> LPTrace
   -> IO Double
 accept x0 _Ⲭ _Ⲭ' logℙ logℙ' = do
