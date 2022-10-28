@@ -33,24 +33,18 @@ import Unsafe.Coerce (unsafeCoerce)
 
 -- | Top-level wrapper for simulating from a model
 simulate :: (FromSTrace env, es ~ '[ObsReader env, Dist,State STrace, Observe, Sample])
-  -- | model
-  => Model env es a
-  -- | model environment
-  -> Env env
-  -- | (model output, output environment)
-  -> Sampler (a, Env env)
+  => Model env es a       -- ^ model
+  -> Env env              -- ^ model environment
+  -> Sampler (a, Env env) -- ^ (model output, output environment)
 simulate model env = do
   (output, strace) <- runSimulate model env
   return (output, fromSTrace strace)
 
 -- | Handler for simulating once from a probabilistic program
 runSimulate :: (es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])
- -- | model
- => Model env es a
- -- | model environment
- -> Env env
- -- | (model output, sample trace)
- -> Sampler (a, STrace)
+ => Model env es a      -- ^ model
+ -> Env env             -- ^ model environment
+ -> Sampler (a, STrace) -- ^ (model output, sample trace)
 runSimulate model
   = handleSamp . handleObs . handleState Map.empty . traceSamples . handleCore model
 
