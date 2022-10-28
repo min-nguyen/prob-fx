@@ -221,12 +221,9 @@ sample (DeterministicDist x) = pure x
 
 -- | Compute the density of a primitive distribution generating an observed value
 prob ::
-  -- | distribution
-     PrimDist a
-  -- | observed value
-  -> a
-  -- | density
-  -> Double
+     PrimDist a -- ^ distribution
+  -> a          -- ^ observed value
+  -> Double     -- ^ density
 prob (DirichletDist xs) ys
   | Prelude.sum xs' /= 1 = error "dirichlet can't normalize"
   | otherwise 
@@ -266,11 +263,7 @@ prob (PoissonDist λ) y       = probability (poisson λ) y
 prob (DeterministicDist x) y = 1
 
 -- | Compute the log density of a primitive distribution generating an observed value
-logProb ::
-  -- | distribution
-     PrimDist a
-  -- | observed value
-  -> a
-  -- | log density
-  -> Double
+logProb :: PrimDist a -- ^ distribution
+  -> a                -- ^ observed value
+  -> Double           -- ^ log density
 logProb d = log . prob d

@@ -44,17 +44,12 @@ import Unsafe.Coerce ( unsafeCoerce )
 
 -- | Top-level wrapper for Metropolis-Hastings (MH) inference
 mh :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- | number of MH iterations
-  => Int
-  -- | model awaiting an input
-  -> Model env es a
-  -- | (model input, input model environment)
-  -> Env env
-  -- | optional list of observable variable names (strings) to specify sample sites of interest
-  {- For example, provide "mu" to specify interest in sampling #mu. This causes other variables to not be resampled unless necessary. -}
-  -> [Tag]
-  -- | [output model environment]
-  -> Sampler [Env env]
+  => Int            -- ^ number of MH iterations
+  -> Model env es a -- ^ model awaiting an input
+  -> Env env        -- ^ (model input, input model environment)
+  -> [Tag] -- ^ optional list of observable variable names (strings) to specify sample sites of interest
+           {- For example, provide "mu" to specify interest in sampling #mu. This causes other variables to not be resampled unless necessary. -}
+  -> Sampler [Env env] -- ^ [output model environment]
 mh n model env_0 tags = do
   -- Perform initial run of MH with no proposal sample site
   y0 <- runMH model env_0 Map.empty ("", 0)
@@ -65,16 +60,11 @@ mh n model env_0 tags = do
 
 -- | Perform one step of MH
 mhStep :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- | model
-  => Model env es a
-  -- | model environment
-  -> Env env
-  -- | tags indicating sample sites of interest
-  -> [Tag]
-  -- | trace of previous MH outputs
-  -> [((a, STrace), LPTrace)]
-  -- | updated trace of MH outputs
-  -> Sampler [((a, STrace), LPTrace)]
+  => Model env es a           -- ^ model
+  -> Env env                  -- ^ model environment
+  -> [Tag]                    -- ^ tags indicating sample sites of interest
+  -> [((a, STrace), LPTrace)] -- ^ trace of previous MH outputs
+  -> Sampler [((a, STrace), LPTrace)] -- ^ updated trace of MH outputs
 mhStep model env tags trace = do
   -- Get previous mh output
   let ((x, samples), logps) = head trace
@@ -95,16 +85,11 @@ mhStep model env tags trace = do
 
 -- | Handler for one iteration of MH
 runMH :: (es ~ '[ObsReader env, Dist, State STrace, State LPTrace, Observe, Sample])
-  -- | model
-  => Model env es a
-  -- | model environment
-  -> Env env
-  -- | sample trace of previous MH iteration
-  -> STrace
-  -- | sample address of interest
-  -> Addr
-  -- | (model output, sample trace, log-probability trace)
-  -> Sampler ((a, STrace), LPTrace)
+  => Model env es a -- ^ model
+  -> Env env        -- ^ model environment
+  -> STrace         -- ^ sample trace of previous MH iteration
+  -> Addr           -- ^ sample address of interest
+  -> Sampler ((a, STrace), LPTrace) -- ^ (model output, sample trace, log-probability trace)
 runMH model env strace α_samp =
      handleSamp strace α_samp $ handleObs
    $ handleState Map.empty $ handleState Map.empty
@@ -127,10 +112,8 @@ traceLPs (Op op k) = case op of
 
 -- | Handler for @Sample@ that selectively reuses old samples or draws new ones
 handleSamp ::
-  -- | sample trace
-     STrace
-  -- | address of the proposal sample site for the current MH iteration
-  -> Addr
+     STrace -- ^ sample trace
+  -> Addr   -- ^ address of the proposal sample site for the current MH iteration
   -> Prog '[Sample] a
   -> Sampler a
 handleSamp strace α_samp (Op op k) = case discharge op of
@@ -144,14 +127,10 @@ handleSamp _ _ (Val x) = return x
 --   it only if the primitive distribution it was sampled from matches the current one.
 lookupSample :: OpenSum.Member a PrimVal
   =>
-  -- | sample trace
-     STrace
-  -- | distribution to sample from
-  -> PrimDist a
-  -- | address of current sample site
-  -> Addr
-  -- | address of proposal sample site
-  -> Addr
+     STrace     -- ^ sample trace
+  -> PrimDist a -- ^ distribution to sample from
+  -> Addr       -- ^ address of current sample site
+  -> Addr       -- ^ address of proposal sample site
   -> Sampler a
 lookupSample samples d α α_samp
   | α == α_samp = sample d
@@ -164,17 +143,11 @@ lookupSample samples d α α_samp
         Nothing -> sample d
 
 -- | Compute acceptance probability
-accept ::
-  -- | address of new sampled value
-     Addr
-  -- | previous MH sample trace
-  -> STrace
-  -- | new MH sample trace
-  -> STrace
-  -- | previous MH log-probability trace
-  -> LPTrace
-  -- | current MH log-probability trace
-  -> LPTrace
+accept :: Addr -- ^ address of new sampled value
+  -> STrace    -- ^ previous MH sample trace
+  -> STrace    -- ^ new MH sample trace
+  -> LPTrace   -- ^ previous MH log-probability trace
+  -> LPTrace   -- ^ current MH log-probability trace
   -> IO Double
 accept x0 _Ⲭ _Ⲭ' logℙ logℙ' = do
   let _X'sampled = Set.singleton x0 `Set.union` (Map.keysSet _Ⲭ' \\ Map.keysSet _Ⲭ)

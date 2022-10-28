@@ -26,35 +26,26 @@ import Inference.SIM (traceSamples, handleSamp)
 
 -- | Top-level wrapper for Likelihood-Weighting (LW) inference
 lw :: (FromSTrace env, es ~ '[ObsReader env, Dist, State STrace, Observe, Sample])
-    -- | number of LW iterations
-    => Int
-    -- | model
-    -> Model env es a
-    -- | model environment
-    -> Env env
-    -- | [(output model environment, likelihood-weighting)]
-    -> Sampler [(Env env, Double)]
+    => Int            -- ^ number of LW iterations
+    -> Model env es a -- ^ model
+    -> Env env        -- ^ model environment
+    -> Sampler [(Env env, Double)] -- ^ [(output model environment, likelihood-weighting)]
 lw n model env = do
   lwTrace <- replicateM n (runLW model env)
   return $ map (\((_, strace), p) -> (fromSTrace strace, p)) lwTrace
 
 -- | Handler for one iteration of LW
 runLW :: es ~ '[ObsReader env, Dist, State STrace, Observe, Sample]
-  -- | model
-  => Model env es a
-  -- | model environment
-  -> Env env
-  -- | ((model output, sample trace), likelihood-weighting)
-  -> Sampler ((a, STrace), Double)
+  => Model env es a -- ^ model
+  -> Env env        -- ^ model environment
+  -> Sampler ((a, STrace), Double) -- ^ ((model output, sample trace), likelihood-weighting)
 runLW env = handleSamp . handleObs 0 . handleState Map.empty . traceSamples . handleCore env
 
 -- | Handle each @Observe@ operation by computing and accumulating a log probability
 handleObs :: Member Sample es
-  -- | accumulated log-probability
-  => Double
+  => Double -- ^ accumulated log-probability
   -> Prog (Observe : es) a
-  -- | (model output, final log-probability)
-  -> Prog es (a, Double)
+  -> Prog es (a, Double) -- ^ (model output, final log-probability)
 handleObs logp (Val x) = return (x, exp logp)
 handleObs logp (Op u k) = case discharge u of
     Right (Observe d y α) -> do

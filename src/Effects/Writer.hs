@@ -34,8 +34,7 @@ tellM w = Model $ tell w
 -- | Handle the @Writer@ effect for a stream @w@
 handleWriter :: forall w es a. Monoid w
   => Prog (Writer w ': es) a
-  -- | (output, final stream)
-  -> Prog es (a, w)
+  -> Prog es (a, w) -- ^ (output, final stream)
 handleWriter = loop mempty where
   loop ::  w -> Prog (Writer w ': es) a -> Prog es (a, w)
   loop w (Val x) = return (x, w)
@@ -46,6 +45,5 @@ handleWriter = loop mempty where
 -- | Handle the @Writer@ effect inside a @Model@
 handleWriterM :: Monoid w
   => Model env (Writer w : es) a
-  -- | (output, final stream)
-  -> Model env es (a, w)
+  -> Model env es (a, w) -- ^ (output, final stream)
 handleWriterM m = Model $ handleWriter $ runModel m
