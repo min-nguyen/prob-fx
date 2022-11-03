@@ -50,7 +50,7 @@ class (FindElem a as) => Member (a :: *) (as :: [*]) where
   prj ::  OpenSum as  -> Maybe a
 
 instance (Typeable a, a ~ a') => Member a '[a'] where
-   inj x          = UnsafeOpenSum 0 x
+   inj = UnsafeOpenSum 0
    prj (UnsafeOpenSum _ x) = Just (unsafeCoerce x)
 
 instance (FindElem a as) => Member a as where
