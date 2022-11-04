@@ -96,16 +96,16 @@ instance (FindElem x env, LookupType x env ~ a)
   get _ env =
     let idx = unIdx $ findElem @x @env
         f :: Int -> Env env' -> [a]
-        f n (ECons a env) = if   n == 0
-                            then unsafeCoerce a
-                            else f (n - 1) env
+        f n (ECons a env) 
+         | n == 0    = unsafeCoerce a
+         | otherwise = f (n - 1) env
     in  f idx env
   set _ a' env =
     let idx = unIdx $ findElem @x @env
         f :: Int -> Env env' -> Env env'
-        f n (ECons a env) = if   n == 0
-                            then ECons (unsafeCoerce a') env
-                            else ECons a (f (n - 1) env)
+        f n (ECons a env)
+          | n == 0    = ECons (unsafeCoerce a') env
+          | otherwise = ECons a (f (n - 1) env)
     in  f idx env
 
 -- | For each observable variable @x@ in @xs@, construct the constraint @Observable env x a@

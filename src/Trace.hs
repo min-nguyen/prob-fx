@@ -50,20 +50,15 @@ extractSamples ::  forall a x. (Eq a, OpenSum.Member a PrimVal) => (ObsVar x, Pr
 extractSamples (x, typ)  =
     map (fromJust . OpenSum.prj @a . snd . snd)
   . Map.toList
-  . Map.filterWithKey (\(tag, idx) _ -> tag == varToStr x)
+  . Map.filterWithKey (\(tag, _) _ -> tag == varToStr x)
 
 -- | Update a sample trace at an address
 updateSTrace :: (Show x, OpenSum.Member x PrimVal) =>
-  -- | address of sample site
-     Addr
-  -- | primitive distribution at address
-  -> PrimDist x
-  -- | sampled value
-  -> x
-  -- | previous sample trace
-  -> STrace
-  -- | updated sample trace
-  -> STrace
+     Addr       -- ^ address of sample site
+  -> PrimDist x -- ^ primitive distribution at address
+  -> x          -- ^ sampled value
+  -> STrace     -- ^ previous sample trace
+  -> STrace     -- ^ updated sample trace
 updateSTrace α d x = Map.insert α (ErasedPrimDist d, OpenSum.inj x)
 
 {- | The type of log-probability traces, mapping addresses of sample/observe operations
@@ -73,14 +68,9 @@ type LPTrace = Map Addr Double
 
 -- | Compute and update a log-probability trace at an address
 updateLPTrace ::
-  -- | address of sample/observe site
-     Addr
-  -- | primitive distribution at address
-  -> PrimDist x
-  -- | sampled or observed value
-  -> x
-  -- | previous log-prob trace
-  -> LPTrace
-  -- | updated log-prob trace
-  -> LPTrace
+     Addr       -- ^ address of sample/observe site
+  -> PrimDist x -- ^ primitive distribution at address
+  -> x          -- ^ sampled or observed value
+  -> LPTrace    -- ^ previous log-prob trace
+  -> LPTrace    -- ^ updated log-prob trace
 updateLPTrace α d x = Map.insert α (logProb d x)

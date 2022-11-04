@@ -16,7 +16,7 @@ module Effects.ObsReader (
 
 import Prog ( call, discharge, Member, Prog(..) )
 import Env ( Env, ObsVar, Observable(..) )
-import Util ( safeHead, safeTail )
+import Data.Maybe (listToMaybe)
 
 -- | The effect for reading observed values from a model environment @env@
 data ObsReader env a where
@@ -41,7 +41,7 @@ handleRead env (Val x) = return x
 handleRead env (Op op k) = case discharge op of
   Right (Ask x) ->
     let vs       = get x env
-        maybe_v  = safeHead vs
-        env'     = set x (safeTail vs) env
+        maybe_v  = listToMaybe vs
+        env'     = set x (drop 1 vs) env
     in  handleRead env' (k maybe_v)
   Left op' -> Op op' (handleRead env . k)

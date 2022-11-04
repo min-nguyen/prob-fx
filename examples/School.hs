@@ -52,7 +52,7 @@ mhSchool = do
   -- Specify model environment
       env       = #mu := [] <:> #theta := [] <:> #y := ys <:> ENil
   -- Run MH inference for 10000 iterations
-  env_mh_out <- MH.mh 10000 (schoolModel n_schools ) (sigmas, env) ["mu", "theta"]
+  env_mh_out <- MH.mh 10000 (schoolModel n_schools sigmas) env ["mu", "theta"]
   -- Retrieve and returns the trace of model parameters mu and theta
   let mus    = concatMap (get #mu) env_mh_out
       thetas = concatMap (get #theta) env_mh_out

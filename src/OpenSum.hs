@@ -37,10 +37,9 @@ instance forall a as. (Eq a, Eq (OpenSum as)) => Eq (OpenSum (a : as)) where
     UnsafeOpenSum (i - 1) x == (UnsafeOpenSum (j - 1) y :: OpenSum as)
 
 instance forall a as. (Show a, Show (OpenSum as)) => Show (OpenSum (a : as)) where
-  show (UnsafeOpenSum i a) =
-    if i == 0
-    then show (unsafeCoerce a :: a)
-    else show (UnsafeOpenSum (i - 1) a :: OpenSum as)
+  show (UnsafeOpenSum i a) 
+    | i == 0    = show (unsafeCoerce a :: a)
+    | otherwise = show (UnsafeOpenSum (i - 1) a :: OpenSum as)
 
 instance {-# OVERLAPPING #-} Show a => Show (OpenSum '[a]) where
   show (UnsafeOpenSum i a) = show (unsafeCoerce a :: a)
@@ -51,7 +50,7 @@ class (FindElem a as) => Member (a :: *) (as :: [*]) where
   prj ::  OpenSum as  -> Maybe a
 
 instance (Typeable a, a ~ a') => Member a '[a'] where
-   inj x          = UnsafeOpenSum 0 x
+   inj = UnsafeOpenSum 0
    prj (UnsafeOpenSum _ x) = Just (unsafeCoerce x)
 
 instance (FindElem a as) => Member a as where

@@ -84,8 +84,8 @@ instance Monad (Model env es) where
 
 {- | The initial handler for models, specialising a model under a certain
 environment to produce a probabilistic program consisting of @Sample@ and @Observe@ operations. -}
-handleCore :: (Member Observe es, Member Sample es) => Env env -> Model env (ObsReader env : Dist : es) a -> Prog es a
-handleCore env m = (handleDist . handleRead env) (runModel m)
+handleCore :: (Member Observe es, Member Sample es) => Model env (ObsReader env : Dist : es) a -> Env env -> Prog es a
+handleCore m env = (handleDist . handleRead env) (runModel m)
 
 {- $Smart-Constructors
 
@@ -119,8 +119,7 @@ deterministic x field = Model $ do
   call (Dist (DeterministicDist x) maybe_y tag)
 
 deterministic' :: (Eq a, Show a, OpenSum.Member a PrimVal) =>
-  -- | value to be deterministically generated
-     a
+     a -- ^ value to be deterministically generated
   -> Model env es a
 deterministic' x = Model $ do
   call (Dist (DeterministicDist x) Nothing Nothing)
@@ -135,8 +134,7 @@ dirichlet xs field = Model $ do
   call (Dist (DirichletDist xs) maybe_y tag)
 
 dirichlet' ::
-  -- | concentration parameters
-     [Double]
+     [Double] -- ^ concentration parameters
   -> Model env es [Double]
 dirichlet' xs = Model $ do
   call (Dist (DirichletDist xs) Nothing Nothing)
@@ -151,10 +149,8 @@ discrete ps field = Model $ do
   call (Dist (DiscreteDist ps) maybe_y tag)
 
 discrete' ::
-  -- | list of @n@ probabilities
-     [Double]
-  -- | integer index from @0@ to @n - 1@
-  -> Model env es Int
+     [Double]         -- ^ list of @n@ probabilities
+  -> Model env es Int -- ^ integer index from @0@ to @n - 1@
 discrete' ps = Model $ do
   call (Dist (DiscreteDist ps) Nothing Nothing)
 
@@ -168,8 +164,7 @@ categorical xs field = Model $ do
   call (Dist (CategoricalDist xs) maybe_y tag)
 
 categorical' :: (Eq a, Show a, OpenSum.Member a PrimVal) =>
-  -- | primitive values and their probabilities
-     [(a, Double)]
+     [(a, Double)] -- ^ primitive values and their probabilities
   -> Model env es a
 categorical' xs = Model $ do
   call (Dist (CategoricalDist xs) Nothing Nothing)
@@ -185,10 +180,8 @@ normal mu sigma field = Model $ do
   call (Dist (NormalDist mu sigma) maybe_y tag)
 
 normal' ::
-  -- | mean
-     Double
-  -- | standard deviation
-  -> Double
+     Double -- ^ mean
+  -> Double -- ^ standard deviation
   -> Model env es Double
 normal' mu sigma = Model $ do
   call (Dist (NormalDist mu sigma) Nothing Nothing)
@@ -203,8 +196,7 @@ halfNormal sigma field = Model $ do
   call (Dist (HalfNormalDist sigma) maybe_y tag)
 
 halfNormal' ::
-  -- | standard deviation
-     Double
+     Double -- ^ standard deviation
   -> Model env es Double
 halfNormal' sigma = Model $ do
   call (Dist (HalfNormalDist sigma) Nothing Nothing)
@@ -220,10 +212,8 @@ cauchy mu sigma field = Model $ do
   call (Dist (CauchyDist mu sigma) maybe_y tag)
 
 cauchy' ::
-  -- | location
-     Double
-  -- | scale
-  -> Double
+     Double -- ^ location
+  -> Double -- ^ scale
   -> Model env es Double
 cauchy' mu sigma = Model $ do
   call (Dist (CauchyDist mu sigma) Nothing Nothing)
@@ -238,8 +228,7 @@ halfCauchy sigma field = Model $ do
   call (Dist (HalfCauchyDist sigma) maybe_y tag)
 
 halfCauchy' ::
-  -- | scale
-     Double
+     Double -- ^ scale
   -> Model env es Double
 halfCauchy' sigma = Model $ do
   call (Dist (HalfCauchyDist sigma) Nothing Nothing)
@@ -254,8 +243,7 @@ bernoulli p field = Model $ do
   call (Dist (BernoulliDist p) maybe_y tag)
 
 bernoulli' ::
-  -- | probability of @True@
-     Double
+     Double -- ^ probability of @True@
   -> Model env es Bool
 bernoulli' p = Model $ do
   call (Dist (BernoulliDist p) Nothing Nothing)
@@ -271,10 +259,8 @@ beta α β field = Model $ do
   call (Dist (BetaDist α β) maybe_y tag)
 
 beta' ::
-  -- | shape 1 (α)
-     Double
-  -- | shape 2 (β)
-  -> Double
+     Double -- ^ shape 1 (α)
+  -> Double -- ^ shape 2 (β)
   -> Model env es Double
 beta' α β = Model $ do
   call (Dist (BetaDist α β) Nothing Nothing)
@@ -290,12 +276,9 @@ binomial n p field = Model $ do
   call (Dist (BinomialDist n p) maybe_y tag)
 
 binomial' ::
-  -- | number of trials
-     Int
-  -- | probability of successful trial
-  -> Double
-  -- | number of successful trials
-  -> Model env es Int
+     Int              -- ^ number of trials
+  -> Double           -- ^ probability of successful trial
+  -> Model env es Int -- ^ number of successful trials
 binomial' n p = Model $ do
   call (Dist (BinomialDist n p) Nothing Nothing)
 
@@ -310,10 +293,8 @@ gamma k θ field = Model $ do
   call (Dist (GammaDist k θ) maybe_y tag)
 
 gamma' ::
-  -- | shape (k)
-     Double
-  -- | scale (θ)
-  -> Double
+     Double -- ^ shape (k)
+  -> Double -- ^ scale (θ)
   -> Model env es Double
 gamma' k θ = Model $ do
   call (Dist (GammaDist k θ) Nothing Nothing)
@@ -329,10 +310,8 @@ uniform min max field = Model $ do
   call (Dist (UniformDist min max) maybe_y tag)
 
 uniform' ::
-  -- | lower-bound
-     Double
-  -- | upper-bound
-  -> Double
+     Double -- ^ lower-bound
+  -> Double -- ^ upper-bound
   -> Model env es Double
 uniform' min max = Model $ do
   call (Dist (UniformDist min max) Nothing Nothing)
@@ -347,10 +326,8 @@ poisson λ field = Model $ do
   call (Dist (PoissonDist λ) maybe_y tag)
 
 poisson' ::
-  -- | rate (λ)
-     Double
-  -- | number of events
-  -> Model env es Int
+     Double           -- ^ rate (λ)
+  -> Model env es Int -- ^ number of events
 poisson' λ = Model $ do
   call (Dist (PoissonDist λ) Nothing Nothing)
 

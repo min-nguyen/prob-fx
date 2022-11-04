@@ -44,8 +44,7 @@ library
                       PrimDist,
                       Prog,
                       Sampler,
-                      Trace,
-                      Util
+                      Trace
 
   -- Modules included in this library but not exported.
   -- other-modules:
